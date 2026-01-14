@@ -3,7 +3,7 @@ layout  : wiki
 title   : vimwiki+github.io 시작하기
 summary : 이종립 선생님 버전 을 이용한 vimwiki+github.io를 통한 개인 위키 시작.
 date    : 2026-01-14 14:27:11 +0900
-updated : 2026-01-14 14:31:57 +0900
+updated : 2026-01-14 17:26:49 +0900
 tag     : log
 toc     : true
 public  : true
@@ -24,9 +24,9 @@ resource: b0b032a7-f51c-4620-b58d-f53c15eea3bb
 
 정말 똑똑하신 분들이 많고 그 분들 덕분에 많은 걸 누리는 듯...
 
-# 설정에 대한 참고 자료
+## 설정에 대한 참고 자료
 
-## 원본
+### 원본
 
 다음은 모두 이종립 선생님이 작성하신 자료들임.
 
@@ -35,6 +35,10 @@ resource: b0b032a7-f51c-4620-b58d-f53c15eea3bb
 * [vimwiki 사용법](https://johngrib.github.io/wiki/vimwiki/)
 * [기타 설정 내용](https://johngrib.github.io/wiki/blog/)
 
-## 이 블로그 설정 문서
+### 이 블로그 설정 문서
 
 * [ds31x's vimwiki+github.io 설치 작업 로그](https://ds31x.tistory.com/604)
+
+## 이미지 테스트.
+
+![](https://github.com/user-attachments/assets/7153c3a4-533a-4cd1-83b0-505710af66ab)
