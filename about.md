@@ -30,64 +30,27 @@ latex: true
 
 ## About Me
 
-* 유물론자입니다.
-* 무신론자입니다.
-* 모르는 것이 많아 매일 공부합니다.
-* 수학과 과학을 동경합니다.
-* 소프트웨어 개발자입니다.
+* 하나님의 은혜와 긍휼 덕에 주변의 좋으신 분들을 만나 사람 구실을 겨우 하려고 합니다.
+* 학교 다닐 때 공부를 열심히 안 한 걸 무지 후회합니다.
+* 수학과 과학, 외국어 를 잘하는 사람을 정말 부러워합니다.
+* 개발자 와 연구자 사이에서 왔다갔다 합니다..
 
 ## Life
 
-* 사랑하는 아내와 행복하게 살고 있습니다.
-* 실내에 있는 것을 좋아합니다.
-* 술과 담배를 매우 싫어합니다.
-* 근처에 컴퓨터가 있어야 마음이 놓입니다.
-* 항상 규칙적으로 생활하려 노력합니다.
-    * 잠은 매일 23시 ~ 24시에 잡니다.
-    * 늦어도 8시에는 일어납니다.
-    * 주말도 예외가 아닙니다.
-* Vim 사용자입니다.
-
-## 기고
-
-* 2020-09-07 [신규 서비스 배포 전에 실험과 개선을 반복한 이야기]( https://helloworld.kurly.com/blog/vsms-performance-experiment/ ) - 컬리 기술 블로그
-* 2020-03-09 [새로 입사한 개발자가 프로젝트에 기여하는 방법 한 가지]( https://helloworld.kurly.com/blog/fix-style-with-command/ ) - 컬리 기술 블로그
-* 2020-02-10 [기술 블로그를 다시 디자인하며]( https://helloworld.kurly.com/blog/redesign-tech-blog/ ) - 컬리 기술 블로그
-* 2018-02-26 [MySQL에서 'a' = 'a '가 true로 평가된다?]( https://woowabros.github.io/study/2018/02/26/mysql-char-comparison.html ) - 우아한형제들 기술 블로그
-* 2017-07-06 [레거시 코드를 파괴하는 Vim 벽돌 깨기]( https://woowabros.github.io/tools/2017/07/06/vim-game-code-break.html ) - 우아한형제들 기술 블로그
-* 2016-06-18 [IntelliJ 의 VIM 플러그인 마개조하기]( https://woowabros.github.io/tools/2016/06/18/ideavim-customize-00.html ) - 우아한형제들 기술 블로그
-
-## 인터뷰, 발표
-
-* 2022-07-23 [Vim 교정학원 (VIMRC 2022)]( https://youtu.be/yWkVn4SSHn0 )
-* 2022-06-10 [송파 Clojure 밋업 1회]( https://youtu.be/BdSoNmWksuk )
-* 2021-12-21 [스타트업 개발자, 회사와 함께 성장하기]( https://class101.net/hidden-products/wqHXxHcuEhhENRMoo8cz )
-* 2020-01-29 [2020릴레이인터뷰 첫 번째 주자, 마켓컬리 소프트웨어 엔지니어 "이종립"]( https://monthly-jiandson.tistory.com/49 )
-* 2019-05-23 [Vim 교정학원 (VIMRC 2019)]( https://youtu.be/lNWuf48vgV4 )
-* 2017-11-16 [OKKY 미니세미나 "비전공 학원출신 SI개발자, 유명스타트업 들어간.ssul" 참석 후기]( https://jojoldu.tistory.com/247 )
+* 사랑하는 아내와 사랑스런 아들들, 그리고 존경하는 아버지와 (가정에선) 행복하게 살고 있습니다.
+* 컴퓨터와 전기 먹는 도구들을 매우 좋아합니다.
+* 고기와 날로 먹는 것을 사랑합니다.
+* 술과 담배를 못 합니다 (담배는 싫어해요.) .
+* C, C++, Java, Python을 좋아하고 Basic, JavaScript는 좀 꺼려 합니다.
+* Machine Learning과 Linear Algebra, Probability, Statisitcs 등에 관심이 많습니다.
 
 ## Job Experience
 
-- (주)그린랩스 - _2021-12-13 ~ 현재_
-    - Clojure 백엔드 개발
-
-- (주)컬리 - _2019-11-04 ~ 2021-12-10_
-    - 마켓컬리의 가상재고, 전시제어, 이벤트 서비스 등 개발
-        - Java 백엔드 개발
-
-- (주)아티프렌즈 - _2018-08-22 ~ 2019-06-26_
-    - Go 블록체인 엔진 개발
-    - PHP 백엔드 개발
-
-- (주)우아한형제들 - _2016-04-04 ~ 2018-08-21_
-    - 푸드 커머스 "배민찬" 개발
-        - Java 백엔드 개발
-        - PHP 프론트엔드 개발
-
-- (주)휘스코앤드비즈파크 - _2012-10-08 ~ 2016-03-07_
-    - Java 웹 개발
+수정 예정....
 
 ## Public Key
+
+수정 예정....
 
 ```sh
 curl https://keybase.io/johngrib/key.asc | gpg --import

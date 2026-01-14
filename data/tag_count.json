@@ -56,6 +56,10 @@
   "size": 1
  },
  {
+  "name": "log",
+  "size": 1
+ },
+ {
   "name": "martin-fowler",
   "size": 1
  },

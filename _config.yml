@@ -1,16 +1,16 @@
 # Site settings
-title: 기계인간 John Grib
-url: "https://johngrib.github.io"
+title: ds31x's blog
+url: "https://ds31x.github.io"
 baseurl: ""
 description: >
-    기계인간 블로그
+    이종립 선생님의 vimwiki로 구현한 기억보조 사이트.
 
 # My information
-email: johngrib82@gmail.com
-author: 기계인간 John Grib
-profile: 유물론자
-twitter_username: John_Grib
-github_username: johngrib
+email: dsaint31@gmail.com
+author: ds31x
+profile: ordinary person
+twitter_username: dsaint31
+github_username: ds31x
 comment-support: utterances
 
 # Build settings
@@ -38,10 +38,10 @@ collections:
 
 # Comment Service
 giscus:
-  repo: johngrib/johngrib.github.io
-  repo_id: SAMPLE-VALUE
+  repo: ds31x/ds31x.github.io
+  repo_id: R_kgDOQ5Wjjw
   category: Announcements
-  category_id: SAMPLE-VALUE
+  category_id: DIC_kwDOQ5Wjj84C07kQ
 
 google_analytics:
   ua: SAMPLE-VALUE
@@ -50,9 +50,9 @@ google_analytics:
 google_adsense:
   client: SAMPLE-VALUE
 
-blame: "https://github.com/johngrib/johngrib.github.io/blame/master/_wiki"
-edit: "https://github.com/johngrib/johngrib.github.io/edit/master/_wiki"
-issue: "https://github.com/johngrib/johngrib.github.io/issues/new"
+blame: "https://github.com/ds31x/ds31x.github.io/blame/master/_wiki"
+edit: "https://github.com/ds31x/ds31x.github.io/edit/master/_wiki"
+issue: "https://github.com/ds31x/ds31x.github.io/issues/new"
 
 timezone: "Asia/Seoul"
 
