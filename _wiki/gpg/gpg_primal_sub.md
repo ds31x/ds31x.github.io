@@ -3,7 +3,7 @@ layout  : wiki
 title   : GPG 에서의 primal keys와 sub keys 
 summary : 
 date    : 2026-01-17 21:37:51 +0900
-updated : 2026-01-17 21:39:41 +0900
+updated : 2026-01-17 21:46:08 +0900
 tag     : 
 resource: 34/5126287A1C4E9A8B0874BFDE1CA261
 toc     : true
@@ -99,7 +99,7 @@ gpg --list-keys --keyid-format=long
 
 ### 4.1 identity의 기준
 
-**primary key**는 다음 질문에 답하는 key임.
+**primary key**는 다음 질문에 답에 해당하는 key임.
 
 > 이 키 묶음은 누구의 것인가?
 

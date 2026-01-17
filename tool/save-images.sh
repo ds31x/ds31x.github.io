@@ -11,7 +11,8 @@ FAIL_COUNT=0
 for CHANGED_FILE in $CHANGE_LIST; do
     echo "이미지경로를 교정할 문서 파일: [$CHANGED_FILE]"
 
-    RESOURCE_DIR=`head $CHANGED_FILE | egrep -o '[A-F0-9-]{2}/[A-F0-9-]{34}$'`
+    # RESOURCE_DIR=`head $CHANGED_FILE | egrep -o '[A-F0-9-]{2}/[A-F0-9-]{34}$'`
+    RESOURCE_DIR=`head $CHANGED_FILE | egrep -o '[A-F0-9-]{2}/[A-F0-9-]{30}$'`
     TARGET_PATH="./resource/$RESOURCE_DIR"
 
     echo "생성할 디렉토리 경로: [$TARGET_PATH]"
