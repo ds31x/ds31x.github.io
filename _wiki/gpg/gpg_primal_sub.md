@@ -1,9 +1,9 @@
 ---
 layout  : wiki
-title   : 
+title   : GPG 에서의 primal keys와 sub keys 
 summary : 
 date    : 2026-01-17 19:17:15 +0900
-updated : 2026-01-17 20:31:39 +0900
+updated : 2026-01-17 20:54:10 +0900
 tag     : 
 toc     : true
 public  : true
@@ -14,7 +14,7 @@ resource: 4d6a0b7b-ffe5-4feb-aa69-04bcd8875580
 * TOC
 {:toc}
 
-# OpenPGP(GnuPG)에서 공개키·비밀키와 primary key·subkey의 구조와 운용
+# OpenPGP(GnuPG)에서 공개키/비밀키와 primary key/subkey의 구조와 운용
 
 
 ## 1. 일반적인 public key (공개키)와 private key (비밀키)
