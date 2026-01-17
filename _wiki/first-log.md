@@ -3,13 +3,13 @@ layout  : wiki
 title   : vimwiki+github.io 시작하기
 summary : 이종립 선생님 버전 을 이용한 vimwiki+github.io를 통한 개인 위키 시작.
 date    : 2026-01-14 14:27:11 +0900
-updated : 2026-01-17 22:14:42 +0900
+updated : 2026-01-17 22:19:11 +0900
 tag     : log
 toc     : true
+resource: 00/A81B517A884804B81F045AD8B34B84
 public  : true
 parent  : [[index]]
 latex   : false
-resource: b0b032a7-f51c-4620-b58d-f53c15eea3bb
 ---
 * TOC
 {:toc}
@@ -42,4 +42,7 @@ resource: b0b032a7-f51c-4620-b58d-f53c15eea3bb
 ## 이미지 테스트.
 
 test 이미지.
-![](/resource//7153c3a4-533a-4cd1-83b0-505710af66ab.png)
+![](/resource/00/A81B517A884804B81F045AD8B34B84/7153c3a4-533a-4cd1-83b0-505710af66ab.png)
+
+test2 이미지.
+![](/resource/00/A81B517A884804B81F045AD8B34B84/bc825a25-31fb-4f6a-a811-200a5e39083b.png)
