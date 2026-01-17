@@ -226,7 +226,16 @@ function parseInfo(file, info) {
         modified: fs.statSync(file.path).mtime
     };
 
-    const rawData = info.split('\n');
+  if (typeof info !== 'string') {
+    console.error('[parseInfo] info is not a string:', {
+      file: file.path,
+      type: typeof info,
+      info
+    });
+    return obj; // 또는 null을 리턴해서 호출부에서 fail 처리
+  }
+    
+    const rawData = info.split('\n');    
 
     rawData.forEach(str => {
         const result = /^\s*([^:]+):\s*(.+)\s*$/.exec(str);

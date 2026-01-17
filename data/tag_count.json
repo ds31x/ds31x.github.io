@@ -28,6 +28,10 @@
   "size": 1
  },
  {
+  "name": "gpg",
+  "size": 2
+ },
+ {
   "name": "hammerspoon",
   "size": 1
  },
