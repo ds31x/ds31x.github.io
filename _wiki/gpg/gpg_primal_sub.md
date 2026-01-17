@@ -3,8 +3,8 @@ layout  : wiki
 title   : GPG 에서의 primal keys와 sub keys 
 summary : 
 date    : 2026-01-17 21:37:51 +0900
-updated : 2026-01-17 21:58:16 +0900
-tag     : gpg, key
+updated : 2026-01-17 22:01:57 +0900
+tag     : gpg,key
 resource: 34/5126287A1C4E9A8B0874BFDE1CA261
 toc     : true
 public  : true
@@ -39,7 +39,7 @@ public-key cryptography 는 기본적으로 **두 종류의 키** 를 가짐.
 # 비밀키로 서명. hello.txt.gpg 파일 생성.
 gpg --sign hello.txt
 
-# 공개키로 서명 검증. 검증 결과가 출력됨.
+# 공개키로 서명 검증: 검증 결과가 출력됨.
 gpg --verify hello.txt.gpg
 ```
 
@@ -87,7 +87,7 @@ gpg --list-keys --keyid-format=long
 
 출력 예:
 
-![](https://github.com/user-attachments/assets/0b8f074b-e4b2-4a65-84a8-76043e7d1d9e){style="display: block; width:500px"}
+![](/resource/34/5126287A1C4E9A8B0874BFDE1CA261/0b8f074b-e4b2-4a65-84a8-76043e7d1d9e.png){style="display: block; width:500px"}
 
 * `pub` → primary key
 * `sub` → subkey

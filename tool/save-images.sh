@@ -39,6 +39,15 @@ for CHANGED_FILE in $CHANGE_LIST; do
             #sed -i '' -E 's, *https://.*('"$FILE_NAME"') *, '$RESOLVE_URL' ,g' $CHANGED_FILE
             sed -i '' -E "s|$URI|$RESOLVE_URL|g" "$CHANGED_FILE"
 
+	    if sed --version >/dev/null 2>&1; then
+               # GNU sed (Linux/WSL)
+               sed -i -E "s|$URI|$RESOLVE_URL|g" "$CHANGED_FILE"
+            else
+               # BSD sed (macOS)
+               sed -i '' -E "s|$URI|$RESOLVE_URL|g" "$CHANGED_FILE"
+            fi
+
+
             git add $RESOLVE_FILE_PATH
 
             SUCCESS_COUNT=$((SUCCESS_COUNT+1))
