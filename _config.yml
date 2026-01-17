@@ -8,7 +8,7 @@ description: >
 # My information
 email: dsaint31@gmail.com
 author: ds31x
-profile: ordinary person
+profile: A life lived solely by grace
 twitter_username: dsaint31
 github_username: ds31x
 comment-support: utterances
@@ -49,9 +49,10 @@ google_analytics:
 google_adsense:
   client: SAMPLE-VALUE
 
-blame: "https://github.com/ds31x/ds31x.github.io/blame/master/_wiki"
-edit: "https://github.com/ds31x/ds31x.github.io/edit/master/_wiki"
-issue: "https://github.com/ds31x/ds31x.github.io/issues/new"
+blame:   "https://github.com/ds31x/ds31x.github.io/blame/master/_wiki"
+history: "https://github.com/ds31x/ds31x.github.io/commits/master/_wiki"
+edit:    "https://github.com/ds31x/ds31x.github.io/edit/master/_wiki"
+issue:   "https://github.com/ds31x/ds31x.github.io/issues/new"
 
 timezone: "Asia/Seoul"
 
