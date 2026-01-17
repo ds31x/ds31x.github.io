@@ -3,7 +3,7 @@ layout  : wiki
 title   : vimwiki+github.io 시작하기
 summary : 이종립 선생님 버전 을 이용한 vimwiki+github.io를 통한 개인 위키 시작.
 date    : 2026-01-14 14:27:11 +0900
-updated : 2026-01-14 17:26:49 +0900
+updated : 2026-01-17 22:14:42 +0900
 tag     : log
 toc     : true
 public  : true
@@ -41,4 +41,5 @@ resource: b0b032a7-f51c-4620-b58d-f53c15eea3bb
 
 ## 이미지 테스트.
 
-![](https://github.com/user-attachments/assets/7153c3a4-533a-4cd1-83b0-505710af66ab)
+test 이미지.
+![](/resource//7153c3a4-533a-4cd1-83b0-505710af66ab.png)
