@@ -37,7 +37,6 @@ for CHANGED_FILE in $CHANGE_LIST; do
         if [ "$?" == "0" ]; then
             echo "DOWNLOAD SUCCESS: $FILE_NAME"
             #sed -i '' -E 's, *https://.*('"$FILE_NAME"') *, '$RESOLVE_URL' ,g' $CHANGED_FILE
-            sed -i '' -E "s|$URI|$RESOLVE_URL|g" "$CHANGED_FILE"
 
 	    if sed --version >/dev/null 2>&1; then
                # GNU sed (Linux/WSL)

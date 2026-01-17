@@ -3,7 +3,7 @@ layout  : wiki
 title   : GPG 에서의 primal keys와 sub keys 
 summary : 
 date    : 2026-01-17 21:37:51 +0900
-updated : 2026-01-17 22:01:57 +0900
+updated : 2026-01-17 22:04:55 +0900
 tag     : gpg,key
 resource: 34/5126287A1C4E9A8B0874BFDE1CA261
 toc     : true
@@ -36,7 +36,7 @@ public-key cryptography 는 기본적으로 **두 종류의 키** 를 가짐.
 ### 예제: signing 과 certification 
 
 ```bash
-# 비밀키로 서명. hello.txt.gpg 파일 생성.
+# 비밀키로 서명: hello.txt.gpg 파일 생성.
 gpg --sign hello.txt
 
 # 공개키로 서명 검증: 검증 결과가 출력됨.
