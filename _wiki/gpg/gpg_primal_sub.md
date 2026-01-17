@@ -3,7 +3,7 @@ layout  : wiki
 title   : GPG 에서의 primal keys와 sub keys 
 summary : 
 date    : 2026-01-17 21:37:51 +0900
-updated : 2026-01-17 21:53:10 +0900
+updated : 2026-01-17 21:58:16 +0900
 tag     : gpg, key
 resource: 34/5126287A1C4E9A8B0874BFDE1CA261
 toc     : true
@@ -19,7 +19,7 @@ latex   : false
 
 ## 1. 일반적인 public key (공개키)와 private key (비밀키)
 
-public-key cryptography 는 기본적으로 **두 종류의 키**를 가짐.
+public-key cryptography 는 기본적으로 **두 종류의 키** 를 가짐.
 
 * **public key (공개키)**
 	* 외부에 배포되는 키로,

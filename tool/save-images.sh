@@ -27,12 +27,12 @@ for CHANGED_FILE in $CHANGE_LIST; do
     URI_LIST=$(ag -o "https://github\.com/user-attachments/assets/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}" "$CHANGED_FILE")
     for URI in $URI_LIST; do
         FILE_NAME=`echo $URI | sed 's,^.*/,,'`
-        RESOLVE_FILE_PATH="$TARGET_PATH/$FILE_NAME"
+        RESOLVE_FILE_PATH="$TARGET_PATH/${FILE_NAME}.png"
         RESOLVE_URL=`echo "$RESOLVE_FILE_PATH" | sed -E 's/^\.//'`
 
         echo "작업 대상 URI: [$URI]"
         echo "작업 대상 파일 패스: [$RESOLVE_FILE_PATH]"
-        curl -sL "$URI" > "${RESOLVE_FILE_PATH}\.png"
+        curl -sL "$URI" > "${RESOLVE_FILE_PATH}"
 
         if [ "$?" == "0" ]; then
             echo "DOWNLOAD SUCCESS: $FILE_NAME"
