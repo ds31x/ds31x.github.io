@@ -1,5 +1,4 @@
 [
  "gpg",
- "gpg/gpg_keyserver",
- "gpg/gpg_primal_sub"
+ "gpg/gpg_keyserver"
 ]

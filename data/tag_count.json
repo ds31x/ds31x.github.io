@@ -29,7 +29,11 @@
  },
  {
   "name": "gpg",
-  "size": 3
+  "size": 2
+ },
+ {
+  "name": "gpg,",
+  "size": 1
  },
  {
   "name": "hammerspoon",
@@ -53,6 +57,10 @@
  },
  {
   "name": "karabiner",
+  "size": 1
+ },
+ {
+  "name": "key",
   "size": 1
  },
  {
