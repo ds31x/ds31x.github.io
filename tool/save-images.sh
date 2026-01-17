@@ -32,7 +32,7 @@ for CHANGED_FILE in $CHANGE_LIST; do
 
         echo "작업 대상 URI: [$URI]"
         echo "작업 대상 파일 패스: [$RESOLVE_FILE_PATH]"
-        curl -s "$URI" > "$RESOLVE_FILE_PATH"
+        curl -sL "$URI" > "$RESOLVE_FILE_PATH"
 
         if [ "$?" == "0" ]; then
             echo "DOWNLOAD SUCCESS: $FILE_NAME"

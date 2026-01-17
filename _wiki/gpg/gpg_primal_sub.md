@@ -3,8 +3,8 @@ layout  : wiki
 title   : GPG 에서의 primal keys와 sub keys 
 summary : 
 date    : 2026-01-17 21:37:51 +0900
-updated : 2026-01-17 21:46:08 +0900
-tag     : 
+updated : 2026-01-17 21:50:54 +0900
+tag     : gpg
 resource: 34/5126287A1C4E9A8B0874BFDE1CA261
 toc     : true
 public  : true
