@@ -3,7 +3,7 @@ layout  : wiki
 title   : GPG 에서의 primal keys와 sub keys 
 summary : 
 date    : 2026-01-17 19:17:15 +0900
-updated : 2026-01-17 20:54:10 +0900
+updated : 2026-01-17 21:15:06 +0900
 tag     : 
 toc     : true
 public  : true
@@ -33,7 +33,7 @@ public-key cryptography 는 기본적으로 **두 종류의 키**를 가짐.
 > public key로 암호화한 것은 private key로 풀 수 있음.
 
 
-### 예제: 서명과 검증
+### 예제: signing 과 certification 
 
 ```bash
 # 비밀키로 서명. hello.txt.gpg 파일 생성.
