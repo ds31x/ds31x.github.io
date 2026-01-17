@@ -3,7 +3,7 @@ layout  : wiki
 title   : GPG 에서의 primal keys와 sub keys 
 summary : 
 date    : 2026-01-17 21:37:51 +0900
-updated : 2026-01-17 22:08:06 +0900
+updated : 2026-01-17 22:13:25 +0900
 tag     : gpg,key
 resource: 34/5126287A1C4E9A8B0874BFDE1CA262
 toc     : true
@@ -87,7 +87,7 @@ gpg --list-keys --keyid-format=long
 
 출력 예:
 
-![](/resource/34/5126287A1C4E9A8B0874BFDE1CA261/0b8f074b-e4b2-4a65-84a8-76043e7d1d9e.png){style="display: block; width:500px"}
+![](/resource/34/5126287A1C4E9A8B0874BFDE1CA262/0b8f074b-e4b2-4a65-84a8-76043e7d1d9e.png){style="display: block; width:500px"}
 
 * `pub` → primary key
 * `sub` → subkey
