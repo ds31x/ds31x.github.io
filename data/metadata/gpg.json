@@ -8,7 +8,6 @@
  "resource": "d9c1b8be-a52e-4dc0-9a1d-c2f64e54d9eb",
  "children": [
   "gpg/gpg_keyserver",
-  "gpg/gpg_primal_sub",
-  "gpg/gpg_primal_sub2"
+  "gpg/gpg_primal_sub"
  ]
 }

@@ -2,10 +2,10 @@
 layout  : wiki
 title   : GPG 에서의 primal keys와 sub keys 
 summary : 
-date    : 2026-01-17 19:17:15 +0900
-updated : 2026-01-17 21:32:00 +0900
+date    : 2026-01-17 21:37:51 +0900
+updated : 2026-01-17 21:39:41 +0900
 tag     : 
-resource: 4d6a0b7b-ffe5-4feb-aa69-04bcd8875580
+resource: 34/5126287A1C4E9A8B0874BFDE1CA261
 toc     : true
 public  : true
 parent  : [[/gpg]]
