@@ -3,11 +3,11 @@ layout  : wiki
 title   : Key Server - keys.openpgp.org 
 summary : 
 date    : 2026-01-17 15:37:50 +0900
-updated : 2026-01-17 15:40:36 +0900
-tag     : 
+updated : 2026-01-17 15:48:25 +0900
+tag     : gpg
 toc     : true
 public  : true
-parent  : GNU_Privacy_Guard
+parent  : [[/GNU_Privacy_Guard]]
 latex   : false
 resource: 69c864d7-f69b-47ef-ade3-9f594306bddb
 ---
