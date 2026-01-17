@@ -3,13 +3,13 @@ layout  : wiki
 title   : Key Server - keys.openpgp.org 
 summary : 
 date    : 2026-01-17 15:37:50 +0900
-updated : 2026-01-17 18:13:14 +0900
+updated : 2026-01-18 08:43:17 +0900
 tag     : gpg
+resource: 69/c864d7f69b47efade39f594306bddb
 toc     : true
 public  : true
 parent  : [[/gpg]]
 latex   : false
-resource: 69c864d7-f69b-47ef-ade3-9f594306bddb
 ---
 * TOC
 {:toc}
