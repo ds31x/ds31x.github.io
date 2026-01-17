@@ -23,9 +23,9 @@ latex: true
 
 ## Motto
 
-> Whenever you fall, pick something up. – Oswald Avery
+> Blessed are the merciful, for they will be shown mercy. – Matthew 5:7
 >
-> 넘어지면 무언가를 주워라. - 오스왈드 에이버리
+> 긍휼히 여기는 자는 복이 있나니 그들이 긍휼히 여김을 받을 것임이요. - 마태복음 5:7
 
 
 ## About Me
@@ -54,8 +54,8 @@ latex: true
 curl https://keys.openpgp.org/vks/v1/by-fingerprint/55A156F326435DEEAC72DB2E6E4F678248FF1935 | gpg --import
 ```
 
-* [https://keys.openpgp.org/search?q=dsaint31%40naver.com](https://keys.openpgp.org/search?q=dsaint31%40naver.com)
-* [publickey.asc](https://keys.openpgp.org/vks/v1/by-fingerprint/55A156F326435DEEAC72DB2E6E4F678248FF1935)
+* key server: [https://keys.openpgp.org/search?q=dsaint31%40naver.com](https://keys.openpgp.org/search?q=dsaint31%40naver.com)
+* publickey : [publickey.asc](https://keys.openpgp.org/vks/v1/by-fingerprint/55A156F326435DEEAC72DB2E6E4F678248FF1935)
 
 ```
 -----BEGIN PGP PUBLIC KEY BLOCK-----
@@ -161,63 +161,4 @@ ptfiii1cz57bqX49
 =ztA8
 -----END PGP PUBLIC KEY BLOCK-----
 ```
-
-
-
----------------------
-```
------BEGIN PGP PUBLIC KEY BLOCK-----
-
-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
-Eg==
-=4GMP
------END PGP PUBLIC KEY BLOCK-----
-```
-
 
