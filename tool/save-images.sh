@@ -27,8 +27,17 @@ for CHANGED_FILE in $CHANGE_LIST; do
     URI_LIST=$(ag -o "https://github\.com/user-attachments/assets/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}" "$CHANGED_FILE")
     for URI in $URI_LIST; do
         FILE_NAME=`echo $URI | sed 's,^.*/,,'`
-        RESOLVE_FILE_PATH="$TARGET_PATH/${FILE_NAME}.png"
-        RESOLVE_URL=`echo "$RESOLVE_FILE_PATH" | sed -E 's/^\.//'`
+        # RESOLVE_FILE_PATH="$TARGET_PATH/${FILE_NAME}.png"
+        # RESOLVE_URL=`echo "$RESOLVE_FILE_PATH" | sed -E 's/^\.//'`
+        FILE_NAME=$(echo "$URI" | sed 's,^.*/,,')
+        case "$FILE_NAME" in
+          *.png|*.jpg|*.jpeg|*.gif|*.webp|*.mp4)
+            ;;  # 이미 확장자 있음 → 그대로 사용
+          *)
+            FILE_NAME="${FILE_NAME}.png"
+            ;;
+        esac
+        RESOLVE_FILE_PATH="$TARGET_PATH/$FILE_NAME"
 
         echo "작업 대상 URI: [$URI]"
         echo "작업 대상 파일 패스: [$RESOLVE_FILE_PATH]"
