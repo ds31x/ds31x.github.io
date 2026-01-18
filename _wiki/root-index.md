@@ -4,7 +4,7 @@ title   : wiki
 toc     : true
 public  : true
 comment : false
-updated : 2026-01-17 16:19:56 +0900
+updated : 2026-01-18 22:20:36 +0900
 regenerate: true
 ---
 
@@ -12,6 +12,7 @@ regenerate: true
 {:toc}
 
 
+## [[/network]]
 ## [[/gpg]]
 
 
