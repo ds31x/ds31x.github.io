@@ -3,7 +3,7 @@ layout  : wiki
 title   : TCP/IP
 summary : 
 date    : 2026-01-18 19:04:11 +0900
-updated : 2026-01-18 20:29:34 +0900
+updated : 2026-01-18 21:42:32 +0900
 tag     : TCP
 resource: E2/C0249A7C97400FA78527FA2A10712C
 toc     : true
@@ -42,7 +42,15 @@ Internet Protocol의 약어.
 
 Network Layer(3계층) 에 속함: Transport Layer(4계층) 의 지시에 따라, 목적지 주소(IP Address)를 기준으로 데이터를 어디로 보낼지, 어떤 경로(Route)를 사용할지를 처리.
 
-> 데이터를 어디 address로 어떤 route 로 보낼지를 담당.
+> 데이터를 어디 IP address로 어떤 route 로 보낼지를 담당.
+
+* [IP Address 에 대한 자료](https://dsaint31.tistory.com/439)
+* [IP 에 대한 자료들](https://dsaint31.tistory.com/tag/IP)
+
+주의할 점은 인간은 IP address보다는 ***Domain Name*** 으로 목적지를 지정한다.
+(이를 가능하게하는 Domain Name System은 응용계층에 속함)
+
+* [Domain Name 과 Domain Name System](https://dsaint31.tistory.com/440)
  
 ## TCP 
 

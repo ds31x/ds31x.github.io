@@ -3,7 +3,7 @@ layout  : wiki
 title   : 
 summary : 
 date    : 2026-01-18 20:59:09 +0900
-updated : 2026-01-18 21:12:49 +0900
+updated : 2026-01-18 22:09:27 +0900
 tag     : 
 resource: 51/4EC8DFE6BD4BE2AE1156696B9450AB
 toc     : true
@@ -87,13 +87,13 @@ OSI 7계층 모델은 네트워크 아키텍처의 표준 [protocol](https://dsa
 
 내 PC에서 라이엇 게임 서버까지 **IP address를 기준으로 패킷이 이동할 경로를 결정**.
 
-어느 서버로, 어떤 라우터들을 거쳐 갈지가 이 계층에서 결정됨.
+어느 서버로, 어떤 [라우터](https://dsaint31.tistory.com/449)들을 거쳐 갈지가 이 계층에서 결정됨.
 
 ### 2. 데이터 링크 계층 (Data Link Layer)
 
-PC와 공유기, 공유기와 ISP 장비 사이에서 **프레임 단위 통신과 오류 검출**을 담당.
+PC와 [공유기](https://dsaint31.tistory.com/226#%EA%B3%B5%EC%9C%A0%EA%B8%B0%20(NAT%20%EC%9E%A5%EB%B9%84)-1-3), 공유기와 ISP 장비 사이에서 **프레임 단위 통신과 오류 검출**을 담당.
 
-같은 네트워크 구간(LAN)에서의 안정적인 전달이 이 계층의 역할임.
+같은 네트워크 구간([LAN[(https://dsaint31.me/mkdocs_site/CE/ch06/ce06_2_01_history/#lan-vs-wan))에서의 안정적인 전달이 이 계층의 역할임.
 
 ### 1. 물리 계층 (Physical Layer)
 
