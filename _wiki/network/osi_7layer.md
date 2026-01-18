@@ -3,7 +3,7 @@ layout  : wiki
 title   : 
 summary : 
 date    : 2026-01-18 20:59:09 +0900
-updated : 2026-01-18 22:09:27 +0900
+updated : 2026-01-18 22:23:12 +0900
 tag     : 
 resource: 51/4EC8DFE6BD4BE2AE1156696B9450AB
 toc     : true
@@ -74,7 +74,7 @@ OSI 7계층 모델은 네트워크 아키텍처의 표준 [protocol](https://dsa
 
 ### 4. 전송 계층 (Transport Layer)
 
-[[/network/tcp_ip#TCP|Transport layer의 대표적인 protocol.]]
+[[/network/tcp_ip#TCP]] 에서 TCP가 Transport Layer (Layer 4)임.
 
 클라이언트와 서버 간 데이터 전달의 **전송 방식과 특성**을 담당.
 
@@ -83,7 +83,7 @@ OSI 7계층 모델은 네트워크 아키텍처의 표준 [protocol](https://dsa
 
 ### 3. 네트워크 계층 (Network Layer)
 
-[[/network/tcp_ip#IP]]
+[[/network/tcp_ip#IP]] 에서 IP 가 Network Layer (Layer 3)임.
 
 내 PC에서 라이엇 게임 서버까지 **IP address를 기준으로 패킷이 이동할 경로를 결정**.
 
