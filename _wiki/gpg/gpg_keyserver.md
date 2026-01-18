@@ -19,23 +19,23 @@ latex   : false
 # OpenPGP key-server와 keys.openpgp.org
 
 
-## 1. key-server(key server)의 목적
+## 1. key-server의 목적
 
-**key-server(key server)** 는 OpenPGP 환경에서
+**key-server** 는 OpenPGP 환경에서
 
-* public keys(public primary key, public subkey)를 
+* public keys(public primary key 와 public subkey)를 
 * distribution (배포)하고 
 * search (검색)하기 위한 서버.
 
 key-server의 존재 목적은 다음과 같다.
 
-1. public key를 중앙에서 공유할 수 있게 한다.
-2. 특정 사용자의 public key를 쉽게 찾을 수 있게 한다.
-3. public key의 변경 사항을 다른 사용자에게 전달한다.
+1. public keys (공개키)를 중앙에서 공유할 수 있게 한다.
+2. 특정 사용자의 public keys를 쉽게 찾을 수 있게 한다.
+3. public keys의 변경 사항을 다른 사용자에게 전달한다.
 
 중요한 점은 다음과 같다.
 
-> key-server는 **public key만을 다루며**,
+> key-server는 **public keys 만을 다루며**,
 > private key(개인키)는 어떠한 경우에도 저장하거나 처리하지 않음.
 
 
