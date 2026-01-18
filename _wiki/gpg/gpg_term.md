@@ -107,7 +107,14 @@ gpg --verify message.txt.gpg
 * `--sign` 은 서명을 함 (실제로 서명과 암호화가 같이 진행됨)
 * `--verify` 는 서명에 대한 verification을 수행.
 
----
+### Signature vs. Encryption
+| 구분        | 서명(Signature) | 암호화(Encryption) |
+| --------- | ------------- | --------------- |
+| 목적        | 무결성·인증        | 기밀성             |
+| 공개키 연산 결과 | 유효성 판단        | 원문 복원           |
+| 원본 데이터 복원 | 불가해도 상관없음 | 가능            |
+| SSH에서 사용  | 서버 인증         | 사용 안 함          |
+
 
 ## 5. Verification / Verify (검증)
 
@@ -126,8 +133,6 @@ Verification does not determine:
 * who the signer is
 * whether the signer should be trusted
 * whether the key is still acceptable for use
-
----
 
 ## 6. Authentication / Authenticate (인증)
 
