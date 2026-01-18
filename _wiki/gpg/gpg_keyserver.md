@@ -3,7 +3,7 @@ layout  : wiki
 title   : Key Server - keys.openpgp.org 
 summary : 
 date    : 2026-01-17 15:37:50 +0900
-updated : 2026-01-18 08:43:17 +0900
+updated : 2026-01-18 16:01:09 +0900
 tag     : gpg
 resource: 69/c864d7f69b47efade39f594306bddb
 toc     : true
@@ -224,12 +224,13 @@ key-server에서 가능한 조작은 다음으로 제한됨:
 
 ## 10. Revocation(폐기 선언)과 key-server
 
-**revocation(폐기 선언)** 은 key-server에서 매우 중요한 정보이다.
+Revocation 은 key-server에서 매우 중요한 정보이다.
 
 * 폐기된 key는 서버에서 “무효”로 표시된다.
 * key는 여전히 다운로드 가능하지만, 제대로 된 클라이언트에서 이의 사용을 거부하는 방식임.
 * 이는 삭제가 아니라 **영구적인 신뢰 중단 선언** 에 해당함.
 
+참고: [[gpg_term#11-revoation-revoke-폐기]]
 
 ## 11. key-server에서의 만료(expire)
 
