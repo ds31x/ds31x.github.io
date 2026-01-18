@@ -18,11 +18,11 @@ latex   : false
 
 **네트워크는 "컴퓨터들이 서로 대화할 수 있게 만든 연결 구조(topology)와 규칙(protocol)의 집합"**
 
-# Documents
-
 * 컴퓨터들이 물리적/논리적으로 연결되어 있고
 * **주소(IP Address)**와 **통신 규칙(TCP/IP 등)**을 사용하여
 * 데이터, 자원, 서비스를 서로 공유하는 구조
+
+# Documents
 
 
 
