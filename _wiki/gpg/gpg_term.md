@@ -134,8 +134,6 @@ Verification does not determine:
 * whether the signer should be trusted
 * whether the key is still acceptable for use
 
----
-
 ## 6. Authentication / Authenticate (인증)
 
 ### 정의
