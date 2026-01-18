@@ -3,7 +3,7 @@ layout  : wiki
 title   : GPG 관련 용어
 summary : 
 date    : 2026-01-18 15:04:08 +0900
-updated : 2026-01-18 15:52:34 +0900
+updated : 2026-01-18 16:07:39 +0900
 tag     : gpg
 resource: 17/8DC5A0BEDB4C8783BC8168B5ABD928
 toc     : true
@@ -51,8 +51,8 @@ gpg --full-generate-key
 
 Signature verification은 상대가 **public key를 알고 있을 때만** 성립.
 
-* 즉, 먼저 public key를 배포하거나 상대방에 전달하는 단계가 필요: key-server 사용([[gpg_keyserver]]
-* 상대방의 public key를 얻기 위해 [[gpg_keyserver]]를 이용할 수 있음.
+* 즉, 먼저 public key를 배포하거나 상대방에 전달하는 단계가 필요: key-server 사용([[/gpg/gpg_keyserver]]
+* 상대방의 public key를 얻기 위해 [[/gpg/gpg_keyserver]]를 이용할 수 있음.
 
 다음은 public key를 export하는 명령어임.
 
@@ -151,13 +151,13 @@ Authentication은 다음 요소가 결합될 때 성립한다.
 
 ## 7. Primary Key와 Subkey 구조 (GPG, OpenPGP)
 
-보다 자세한 건 다음을 참고: [[gpg_primal_sub]]
+보다 자세한 건 다음을 참고: [[/gpg/gpg_primal_sub]]
 
 ### 7.1 역할 구분
 
 OpenPGP(GPG)에서는 Private and Public 외에도 Primary and Sub 의 구분이 존재.
 
-* **Primary key **
+* **Primary key**
   * 신원의 기준점 (Act as the identity anchor)
   * 사용자 ID에 대한 서명에 사용됨.
   * 서브키에 대한 **certification** 에 사용됨.
@@ -272,7 +272,7 @@ revocation은 한번 이루어지면 영구적임
 ### 사전 단계
 
 1. Key pair 생성
-2. 공개키 배포 ([[gpg-keyserver]])
+2. 공개키 배포 ( [[/gpg/gpg-keyserver]] )
 3. Primary key에 의한 Subkey certification (일부는 key pair 생성에서 이루어짐)
 
 ### 실행 단계
