@@ -35,6 +35,10 @@ latex   : false
 * [vimwiki 사용법](https://johngrib.github.io/wiki/vimwiki/)
 * [기타 설정 내용](https://johngrib.github.io/wiki/blog/)
 
+### 다른 urls
+
+*[DFDRDODM95's blog - 같은 wiki를 사용하시는 분.]https://dfdrdodm95.github.io/)
+
 ### 이 블로그 설정 문서
 
 * [ds31x's vimwiki+github.io 설치 작업 로그](https://ds31x.tistory.com/604)
