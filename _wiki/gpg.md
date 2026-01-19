@@ -20,5 +20,10 @@ ssh-keygen이 SSH 인증을 위해 설계된 단순한 키 생성 도구인 반�
 
 ssh-keygen에 대해서 다음을 참고: [ssh 정의 및 private key와 public key 생성하기](https://ds31x.tistory.com/153)
 
+## 외부 참고 문서:
+
+* [GitHub에 GPG key 등록하기](https://velog.io/@peeeeeter_j/GitHub%EC%97%90-GPG-key-%EB%93%B1%EB%A1%9D%ED%95%98%EA%B8%B0)
+* [PGP를 안전하게 사용하는 방법](https://csrc.kaist.ac.kr/blog/2024/01/10/pgp%EB%A5%BC-%EC%95%88%EC%A0%84%ED%95%98%EA%B2%8C-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95/)
+
 ## Documents
 
