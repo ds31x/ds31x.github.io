@@ -25,6 +25,7 @@ ssh-keygen에 대해서 다음을 참고: [ssh 정의 및 private key와 public 
 * [GitHub에 GPG key 등록하기](https://velog.io/@peeeeeter_j/GitHub%EC%97%90-GPG-key-%EB%93%B1%EB%A1%9D%ED%95%98%EA%B8%B0)
 * [PGP를 안전하게 사용하는 방법](https://csrc.kaist.ac.kr/blog/2024/01/10/pgp%EB%A5%BC-%EC%95%88%EC%A0%84%ED%95%98%EA%B2%8C-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95/)
 * [PGP and the Keybase.io Security Architecture](https://unifiedh.medium.com/pgp-and-the-keybase-io-security-architecture-%EC%A4%91%EC%95%99%ED%99%94%EB%90%9C-%EA%B2%80%EC%97%B4%EC%A0%80%ED%95%AD%EC%84%B1-b7d9ae3ae4e3)
+* [keybaes.io에 대해서](https://librewiki.net/wiki/Keybase)
 
 ## Documents
 
