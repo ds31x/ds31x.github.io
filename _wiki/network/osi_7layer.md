@@ -1,14 +1,14 @@
 ---
 layout  : wiki
-title   : 
+title   : Open System Interconnection (OSI) 7-layer
 summary : 
 date    : 2026-01-18 20:59:09 +0900
 updated : 2026-01-18 22:24:29 +0900
-tag     : 
+tag     : OSI network
 resource: 51/4EC8DFE6BD4BE2AE1156696B9450AB
 toc     : true
 public  : true
-parent  : 
+parent  : [[/network]]
 latex   : false
 ---
 * TOC
