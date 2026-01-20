@@ -21,7 +21,7 @@ latex   : false
 * TCP/IP는 Internet에 접속하고 통신하기 위해 사용되는 표준 프로토콜
 * [Internet](https://dsaint31.me/mkdocs_site/CE/ch06/ce06_2_03_Internet/#internet)은 본질적으로 TCP/IP를 기반으로 구성된 거대한 네트워크라고 볼 수 있음.
 * 이는 
-	* **네트워크 계층(Layer 3)의 IP 프로토콜**과 
+	* [[/network/OSI]]의 **네트워크 계층(Layer 3)의 IP 프로토콜**과 
 	* **전송 계층(Layer 4)의 TCP 프로토콜**을 함께 사용
 	* 즉, IP 위에 TCP가 정의되는 구조를 가짐.
 
@@ -40,7 +40,7 @@ Internet Protocol의 약어.
 
 데이터를 작은 패킷으로 나누어 목적지 주소(address 지정)를 붙이고, 여러 네트워크를 거쳐 최종 목적지까지 전달되도록 경로를 결정(routing)하는 네트워크 계층 프로토콜
 
-Network Layer(3계층) 에 속함: Transport Layer(4계층) 의 지시에 따라, 목적지 주소(IP Address)를 기준으로 데이터를 어디로 보낼지, 어떤 경로(Route)를 사용할지를 처리.
+OSI의 Network Layer(3계층) 에 속함: Transport Layer(4계층) 의 지시에 따라, 목적지 주소(IP Address)를 기준으로 데이터를 어디로 보낼지, 어떤 경로(Route)를 사용할지를 처리.
 
 > 데이터를 어디 IP address로 어떤 route 로 보낼지를 담당.
 
@@ -58,9 +58,9 @@ Network Layer(3계층) 에 속함: Transport Layer(4계층) 의 지시에 따라
 
 네트워크 상에서 데이터가 순서대로, 빠짐없이, 오류 없이 전달되도록 연결을 설정하고 흐름과 오류를 제어하는 전송(신뢰성 있는 전송) 계층 프로토콜.
 
-Transport Layer(4계층) 에 속함: **Network Layer**보다 상위 계층으로, 데이터를 어떻게 안전하고 정확하게 보낼지를 정의.
+OSI의 Transport Layer(4계층) 에 속함: **Network Layer**보다 상위 계층으로, 데이터를 어떻게 안전하고 정확하게 보낼지를 정의.
 
-> 데이터를 어떻게 잘 보낼지를 담당.
+> 데이터를 어떻게 **잘** 보낼지를 담당.
 
 Transport Layer 에는 TCP 와 UDP(User Datagram Protocol)가 유명.
 
