@@ -249,7 +249,7 @@ Tokenization은 기본 단위에 따라 다음과 같이 구분됩니다:
 **장점처럼 보이는 것:**
 
 * Vocabulary 크기가 매우 작음 (수십~수백 개)
-* Embedding matrix 크기 |V| × d가 작음
+* Embedding matrix 크기 $\|V\| \times d$가 작음
 
 **예제:**
 
