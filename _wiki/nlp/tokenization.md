@@ -109,9 +109,9 @@ $$
 \textbf{e} \in \mathbb{R}^{|V| \times d}
 $$
 
-* $\textbf{e}$: embedding 
-* $|V|$: vacabulary size
-* $d$: dimension of embedding (예: BERT는 768)
+* $\textbf{e}$ : embedding 
+* $|V|$ : vacabulary size
+* $d$ : dimension of embedding (예: BERT는 768)
 
 **Embedding lookup 연산:**
 
