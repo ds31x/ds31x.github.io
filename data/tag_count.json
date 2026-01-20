@@ -8,6 +8,10 @@
   "size": 1
  },
  {
+  "name": "BPE",
+  "size": 1
+ },
+ {
   "name": "chatbot",
   "size": 1
  },
@@ -100,7 +104,19 @@
   "size": 1
  },
  {
+  "name": "token",
+  "size": 1
+ },
+ {
+  "name": "UnigramLM",
+  "size": 1
+ },
+ {
   "name": "vim",
+  "size": 1
+ },
+ {
+  "name": "WordPiece",
   "size": 1
  },
  {
