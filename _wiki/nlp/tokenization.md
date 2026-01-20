@@ -9,7 +9,7 @@ resource: 6E/305305E7CE447E926358B6D98F19C9
 toc     : true
 public  : true
 parent  : [[/nlp]]
-latex   : false
+latex   : true
 ---
 * TOC
 {:toc}
