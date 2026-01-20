@@ -30,7 +30,7 @@ tokenization을 단순한 전처리 단계로 오인되기도하지만, 실제�
 
 ### Q2: Vocabulary 크기는 왜 중요할까?
 
-* Vocabulary 크기 $|V|$는 embedding matrix의 크기($|V| \times d$)에 직접적으로 영향을 줌.
+* Vocabulary 크기 $|V|$ 는 embedding matrix의 크기( $|V| \times d$ )에 직접적으로 영향을 줌.
 * 이 크기는 결국 전체 모델의 파라미터 수와 메모리 사용량에 큰 영향을 미침. 
 * vocabulary 크기는 tokenization 방식(character/word/subword)의 선택, OOV 처리 능력, 그리고 sequence length 간의 trade-off를 반영하여 결정.
 
