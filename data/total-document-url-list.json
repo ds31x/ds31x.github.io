@@ -31,5 +31,7 @@
  "/wiki/network",
  "/wiki/network/osi_7layer",
  "/wiki/network/tcp_ip",
+ "/wiki/nlp",
+ "/wiki/nlp/tokenization",
  "/wiki/root-index"
 ]
