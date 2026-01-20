@@ -4,7 +4,7 @@ title   : Tokenizer
 summary : 
 date    : 2026-01-20 14:09:40 +0900
 updated : 2026-01-20 20:26:56 +0900
-tag     : 
+tag     : token BPE WordPiece UnigramLM 
 resource: 6E/305305E7CE447E926358B6D98F19C9
 toc     : true
 public  : true
@@ -24,23 +24,17 @@ tokenization을 단순한 전처리 단계로 오인되기도하지만, 실제�
 
 ### Q1: 오늘날 Tokenization의 기본 단위는 왜 character나 word가 아닌 subword 단위를 사용할까?
 
-**A:** 
-
 * Character tokenization은 sequence length 증가로 O(L²) 연산 비용이 폭증하고 단어 경계나 형태소 등 언어 구조가 완전히 소실되어 이후 layer 등의 학습 부담이 큼.
 * Word tokenization은 data sparsity와 OOV (Out Of Vocabulary) 문제가 심각함.
 * 적절한 vocabulary 크기(30K-50K)로 의미 단위를 보존하면서 OOV를 구조적으로 해결하는 subword가 최적의 균형점임.
 
 ### Q2: Vocabulary 크기는 왜 중요할까?
 
-**A:** 
-
 * Vocabulary 크기 $|V|$는 embedding matrix의 크기($|V| \times d$)에 직접적으로 영향을 줌.
 * 이 크기는 결국 전체 모델의 파라미터 수와 메모리 사용량에 큰 영향을 미침. 
 * vocabulary 크기는 tokenization 방식(character/word/subword)의 선택, OOV 처리 능력, 그리고 sequence length 간의 trade-off를 반영하여 결정.
 
 ### Q3: Contextual embedding은 tokenization과 어떤 관계일까?
-
-**A:** 
 
 * 현대의 contextual embedding 모델(BERT, GPT 등)은 사실상 모두 subword tokenization을 전제로 설계됨.
 * 최소한의 의미 단위를 가진 subword embedding을 초기 입력으로 사용함. 
