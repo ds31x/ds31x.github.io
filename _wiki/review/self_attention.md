@@ -3,7 +3,7 @@ layout  : wiki
 title   : Self Attention
 summary : 
 date    : 2026-01-22 14:56:26 +0900
-updated : 2026-01-22 17:38:06 +0900
+updated : 2026-01-22 17:39:06 +0900
 tag     : 
 resource: FF/667E6983EE4427B2095D84BEFB87C1
 toc     : true
@@ -50,7 +50,7 @@ $$\mathrm{Attention}(Q, K, V)
 * $V \in \mathbb{R}^{T \times d_v}$ ("실제로 전달할 정보 내용")로 사상(projection)되며,  
 * 이 분리를 통해 Transformer는 토큰 간 관계를 학습 가능한 방식으로 모델링.
 * 이는 주로 multi-head attention에서 사용됨:
-	* $d_q = d_k = d_k = d_model/h$ 가 성립.
+	* $d_q = d_k = d_k = d_{model}/h$ 가 성립.
 	* $d_q$ 는 $d_k$ 와 inner product를 하므로 거의 같은게 관례임. 
 	* $h$ : head의 수.
 
