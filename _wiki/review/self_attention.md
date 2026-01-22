@@ -3,7 +3,7 @@ layout  : wiki
 title   : Self Attention
 summary : 
 date    : 2026-01-22 14:56:26 +0900
-updated : 2026-01-22 18:10:29 +0900
+updated : 2026-01-22 18:15:53 +0900
 tag     : 
 resource: FF/667E6983EE4427B2095D84BEFB87C1
 toc     : true
@@ -19,7 +19,7 @@ latex   : true
 Self-attention은 
 
 * 하나의 sequence 안에서 각 token이 
-* 같은 sequence에 속한 모든 token들을 참조하여 
+* 같은 sequence에 속한 모든 token들과의 관련성([attention score](https://wikidocs.net/65775))을 고려하여 
 * 자신의 representation(표현, dense vector)을 계산하는 메커니즘이다.
 
 각 token은 `query`, `key`, `value`로 변환(linear transform)되며,  
@@ -129,4 +129,5 @@ $$\mathrm{Attention}(Q, K, V)
 
 ## 참고
 
-[Natural Language Processing with Transformers, O'Reilly](https://colab.research.google.com/github/nlp-with-transformers/notebooks/blob/main/03_transformer-anatomy.ipynb#scrollTo=N1CswhxaU1ko)
+* [Natural Language Processing with Transformers, O'Reilly](https://colab.research.google.com/github/nlp-with-transformers/notebooks/blob/main/03_transformer-anatomy.ipynb#scrollTo=N1CswhxaU1ko)
+* [Attentino Mechanism](https://wikidocs.net/65775)
