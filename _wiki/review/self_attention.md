@@ -3,7 +3,7 @@ layout  : wiki
 title   : Self Attention
 summary : 
 date    : 2026-01-22 14:56:26 +0900
-updated : 2026-01-22 17:39:06 +0900
+updated : 2026-01-22 17:49:18 +0900
 tag     : 
 resource: FF/667E6983EE4427B2095D84BEFB87C1
 toc     : true
@@ -39,9 +39,9 @@ $$\mathrm{Attention}(Q, K, V)
 실제로, 각 token은 적절한 key, query, value가 되도록 trainable parameter인 $W^Q, W^k, W^V$를 통한 linear transform (로 다른 역할의 표현 공간으로 projection)을 함.
 입력이 $X$ 일때 $Q,K,V$는 다음과 같음:
 
-- $Q = W^Q X$
-- $K = W^K X$
-- $V = W^V X$
+- $Q =X W^Q $
+- $K =X W^K $
+- $V =X W^V $
 
 입력 $X \in \mathbb{R}^{T \times d_{\text{model}}} $는  
 * $ W^Q, W^K, W^V $를 통해 각각  
