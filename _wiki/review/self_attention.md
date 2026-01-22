@@ -3,7 +3,7 @@ layout  : wiki
 title   : Self Attention
 summary : 
 date    : 2026-01-22 14:56:26 +0900
-updated : 2026-01-22 17:57:05 +0900
+updated : 2026-01-22 18:05:53 +0900
 tag     : 
 resource: FF/667E6983EE4427B2095D84BEFB87C1
 toc     : true
@@ -57,19 +57,17 @@ $$\mathrm{Attention}(Q, K, V)
 
 또한 $\mathrm{softmax}(\cdot)$ 함수는 각 쿼리에 대해 키 차원 방향으로 적용되어, 어텐션 가중치의 합이 1이 되도록 정규화한다.
 
-<figure style-"text-align:center;">
 <img src="/resource/FF/667E6983EE4427B2095D84BEFB87C1/43855de8-ab28-450a-8e6a-e6034d8dbc85.png" sytle="display:block; margin:0 auto; max-width:30%" />
 
-<figcaption>[ref: Self-Attention. Ramendra Kumar](https://medium.com/@ramendrakumar/self-attention-d8196b9e9143)</figcaption>
-</figure>
+* [ref: Self-Attention. Ramendra Kumar](https://medium.com/@ramendrakumar/self-attention-d8196b9e9143)
+
 
 다음 그림이 Transformer에서의 Self Attention을 구하기 위한 scaled dot product의 computational graph임.
 
-<figure style-"text-align:center;">
 <img src="/resource/FF/667E6983EE4427B2095D84BEFB87C1/1b273a75-f1da-446b-ac04-68fc5a42b9ee.png" style="display:block; margin:0 auto; max-width:40%;" />
 
-<figcaption>[original: Attention is All You Need, 2017](https://arxiv.org/pdf/1706.03762.pdf)</figcaption></figcaption>
-</figure>
+* [original: Attention is All You Need, 2017](https://arxiv.org/pdf/1706.03762.pdf)
+
 
 
 ## 예제
@@ -77,17 +75,15 @@ $$\mathrm{Attention}(Q, K, V)
 
 "Time flies like an arrow" 라는 sentense의 self attention 을 구하여 시각화 한 예임.
 
-<figure style-"text-align:center;">
 <img src="/resource/FF/667E6983EE4427B2095D84BEFB87C1/16993377-7f09-41a9-8523-bc03465b1157.png" style="display:block; margin:0 auto; max-width:50%;" />
-</figure>
+
 * flies 가 파리들, 날다 의 뜻을 가질 수 있는데
 * 위의 경우 날다 이므로 "arrow"와 매우 큰 관계를 가짐을 확인할 수 있음.
 
 "Fruit flies likes a banana" 의 sentense의 예는 다음과 같음:
 
-<figure style-"text-align:center;">
 <img src="/resource/FF/667E6983EE4427B2095D84BEFB87C1/23aebdaf-3da7-4681-8c2b-637812be769b.png" style="display:block; max-width:50%; margin:0 auto;" />
-</figure>
+
 ## code
 
 ```python
