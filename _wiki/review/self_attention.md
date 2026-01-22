@@ -3,7 +3,7 @@ layout  : wiki
 title   : Self Attention
 summary : 
 date    : 2026-01-22 14:56:26 +0900
-updated : 2026-01-22 18:05:53 +0900
+updated : 2026-01-22 18:10:29 +0900
 tag     : 
 resource: FF/667E6983EE4427B2095D84BEFB87C1
 toc     : true
@@ -25,6 +25,9 @@ Self-attention은
 각 token은 `query`, `key`, `value`로 변환(linear transform)되며,  
 * token 간의 관련성은 scaled dot-product 방식으로 
 * $q \cdot k / \sqrt{d_k}$를 계산한 뒤 softmax로 정규화.
+	* scaled ($1/\sqrt{d_k}$) 는 embedding의 크기 $d_k$가 커질 경우, dot product의 값이 커지게 되어
+	* softmax 처리시 특정 token에 지나치게 큰 attention이 집중되고
+	* 이로 인해 학습시 gradient 가 불안정해지는 것을 방지해줌.
 
 이 과정을 통해 sequence 내에서 중요한 token에는 더 큰 가중치가 부여되고, context(문맥)을 반영한 token representation이 생성
 
