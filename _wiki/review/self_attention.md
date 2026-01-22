@@ -3,7 +3,7 @@ layout  : wiki
 title   : Self Attention
 summary : 
 date    : 2026-01-22 14:56:26 +0900
-updated : 2026-01-22 17:21:37 +0900
+updated : 2026-01-22 17:28:21 +0900
 tag     : 
 resource: FF/667E6983EE4427B2095D84BEFB87C1
 toc     : true
@@ -61,14 +61,15 @@ $$\mathrm{Attention}(Q, K, V)
 [ref: Self-Attention. Ramendra Kumar](https://medium.com/@ramendrakumar/self-attention-d8196b9e9143)
 
 다음 그림이 Transformer에서의 Self Attention을 구하기 위한 scaled dot product의 computational graph임.
-![](/resource/FF/667E6983EE4427B2095D84BEFB87C1/1b273a75-f1da-446b-ac04-68fc5a42b9ee.png){style="display: block; width:300px"}
+
+<img src="/resource/FF/667E6983EE4427B2095D84BEFB87C1/1b273a75-f1da-446b-ac04-68fc5a42b9ee.png" width="300px" />
 [original: Attention is All You Need, 2017](https://arxiv.org/pdf/1706.03762.pdf)
 
 ## 예제
 
 
 "Time flies like an arrow" 라는 sentense의 self attention 을 구하여 시각화 한 예임.
-![]("/resource/FF/667E6983EE4427B2095D84BEFB87C1/16993377-7f09-41a9-8523-bc03465b1157.png)
+![](/resource/FF/667E6983EE4427B2095D84BEFB87C1/16993377-7f09-41a9-8523-bc03465b1157.png)
 * flies 가 파리들, 날다 의 뜻을 가질 수 있는데
 * 위의 경우 날다 이므로 "arrow"와 매우 큰 관계를 가짐을 확인할 수 있음.
 
