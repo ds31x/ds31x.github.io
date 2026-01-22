@@ -38,6 +38,7 @@ for CHANGED_FILE in $CHANGE_LIST; do
             ;;
         esac
         RESOLVE_FILE_PATH="$TARGET_PATH/$FILE_NAME"
+        RESOLVE_URL=`echo "$RESOLVE_FILE_PATH" | sed -E 's/^\.//'`
 
         echo "작업 대상 URI: [$URI]"
         echo "작업 대상 파일 패스: [$RESOLVE_FILE_PATH]"

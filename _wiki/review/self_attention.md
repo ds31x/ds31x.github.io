@@ -3,7 +3,7 @@ layout  : wiki
 title   : Self Attention
 summary : 
 date    : 2026-01-22 14:56:26 +0900
-updated : 2026-01-22 17:03:41 +0900
+updated : 2026-01-22 17:14:13 +0900
 tag     : 
 resource: FF/667E6983EE4427B2095D84BEFB87C1
 toc     : true
@@ -57,7 +57,7 @@ $$\mathrm{Attention}(Q, K, V)
 
 또한 $\mathrm{softmax}(\cdot)$ 함수는 각 쿼리에 대해 키 차원 방향으로 적용되어, 어텐션 가중치의 합이 1이 되도록 정규화한다.
 
-![test]()
+![test](/resource/FF/667E6983EE4427B2095D84BEFB87C1/43855de8-ab28-450a-8e6a-e6034d8dbc85.png)
 [ref: Self-Attention. Ramendra Kumar](https://medium.com/@ramendrakumar/self-attention-d8196b9e9143)
 
 다음 그림이 Transformer에서의 Self Attention을 구하기 위한 scaled dot product의 computational graph임.
