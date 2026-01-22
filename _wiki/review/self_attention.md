@@ -3,13 +3,13 @@ layout  : wiki
 title   : 
 summary : 
 date    : 2026-01-22 14:56:26 +0900
-updated : 2026-01-22 15:58:37 +0900
+updated : 2026-01-22 16:44:43 +0900
 tag     : 
 resource: FF/667E6983EE4427B2095D84BEFB87C1
 toc     : true
 public  : true
 parent  : [[/review/2017_Attention_is_all_you_need]]
-latex   : false
+latex   : true
 ---
 * TOC
 {:toc}
