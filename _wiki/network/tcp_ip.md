@@ -3,7 +3,7 @@ layout  : wiki
 title   : TCP/IP
 summary : 
 date    : 2026-01-18 19:04:11 +0900
-updated : 2026-01-18 21:42:32 +0900
+updated : 2026-01-22 17:43:27 +0900
 tag     : TCP
 resource: E2/C0249A7C97400FA78527FA2A10712C
 toc     : true
@@ -21,7 +21,7 @@ latex   : false
 * TCP/IP는 Internet에 접속하고 통신하기 위해 사용되는 표준 프로토콜
 * [Internet](https://dsaint31.me/mkdocs_site/CE/ch06/ce06_2_03_Internet/#internet)은 본질적으로 TCP/IP를 기반으로 구성된 거대한 네트워크라고 볼 수 있음.
 * 이는 
-	* [[/network/OSI]]의 **네트워크 계층(Layer 3)의 IP 프로토콜**과 
+	* [[/network/osi_7layer]]{OSI 7계층} 의 **네트워크 계층(Layer 3)의 IP 프로토콜**과 
 	* **전송 계층(Layer 4)의 TCP 프로토콜**을 함께 사용
 	* 즉, IP 위에 TCP가 정의되는 구조를 가짐.
 
