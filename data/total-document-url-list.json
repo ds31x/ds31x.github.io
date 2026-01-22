@@ -33,5 +33,8 @@
  "/wiki/network/tcp_ip",
  "/wiki/nlp",
  "/wiki/nlp/tokenization",
+ "/wiki/review",
+ "/wiki/review/2017_Attention_is_all_you_need",
+ "/wiki/review/self_attention",
  "/wiki/root-index"
 ]
