@@ -29,8 +29,11 @@ Self-attention은
 	* softmax 처리시 특정 token에 지나치게 큰 attention이 집중되고
 	* 이로 인해 학습시 gradient 가 불안정해지는 것을 방지해줌.
 
-이 과정을 통해 sequence 내에서 중요한 token에는 더 큰 가중치가 부여되고, context(문맥)을 반영한 token representation이 생성
+이 과정을 통해 sequence 내에서 중요한 token에는 더 큰 가중치(attention weight)가 부여되고, context(문맥)을 반영한 token representation이 생성
 
+<img src="https://github.com/user-attachments/assets/d23f92d2-3492-498b-b793-b8d763025912" sytle="display:block; margin:0 auto; max-width:50%" />
+* [Hanus Kim's blog](https://cpm0722.github.io/pytorch-implementation/transformer)
+ 
 $$\mathrm{Attention}(Q, K, V)
 = \mathrm{softmax}\!\left(\frac{QK^{\top}}{\sqrt{d_k}}\right)V$$
 
