@@ -16,12 +16,20 @@ latex   : false
 
 # Hugging Face 시작하기
 
-hugging face 를 시작하는 방법으로 `hf auth login` 과 `hf auth logout`을 살펴본다.
+hugging face 를 시작하는 문서.
 
-Hugging Face Hub에 접근하기 위해 개인 Access Token을 로컬에 저장하여 이후 명령과 라이브러리에서 authentication을 자동으로 사용할 수 있음.
-이는 비공개 모델과 데이터셋 접근, 모델 업로드·업데이트, Spaces 배포, CLI·라이브러리에서의 인증 자동 사용가능해짐.
+Hugging Face의 Hub (웹사이트: [huggingface.co](huggingface.co)) 종류들을 소개하고,
+Hugging Face가 제공하는 Library들의 구성을 간단히 살펴본다.
+
+이후,  `hf auth login` 과 `hf auth logout`을 살펴본다.
+
+* 이는 Hugging Face Hub에 접근하기 위한 명령어임(과거 huggingface-cli)
+* 일반적으로 개인 Access Token을 로컬에 저장하여 이후 명령과 라이브러리에서 HF Hub 나 repository에 대한 authentication을 자동으로 사용할 수 있음.
+* 이는 비공개 모델과 데이터셋 접근, 모델 업로드·업데이트, Spaces 배포, CLI·라이브러리에서의 인증 등을 가능하게 해 줌.
 
 > 공개모델만 사용하는 경우엔, 굳이 필요하지않긴 함.
+
+이 문서는 WSL (Ubuntu distro기준) 와 Colab 을 기준으로 다룸.
 
 ## huggingface.co 상단 메뉴 설명:
 
