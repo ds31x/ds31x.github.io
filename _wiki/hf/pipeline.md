@@ -331,6 +331,10 @@ print(f"label2id 개수: {len(classifier.model.config.label2id)}")
 
 ## 주요 Pipeline taks list
 
+다음의 task를 지원함. 적절한 모델은 HuggingFace Hub 의 모델에서 찾을 수 있음 [https://huggingface.co/models](https://huggingface.co/models)
+
+<img src="https://github.com/user-attachments/assets/636675dc-9867-436c-a76a-f534e03d1e64" style="display: block; margin: 0 auto; width: 500px" />
+
 정확한 건 src를 참고하는 것임.
 
 [`transformers.pipelines.__init__.py`](https://github.com/huggingface/transformers/blob/main/src/transformers/pipelines/__init__.py?utm_source=chatgpt.com)
