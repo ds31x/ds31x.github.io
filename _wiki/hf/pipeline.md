@@ -4,7 +4,7 @@ title   : transformers.pipeline
 summary : 
 date    : 2026-01-23 23:33:04 +0900
 updated : 2026-01-24 01:04:01 +0900
-tag     : hf
+tag     : hf pipeline
 resource: 59/1E4C9B648A4B22AB54B0D2E67CB897
 toc     : true
 public  : true
@@ -17,6 +17,8 @@ latex   : false
 # transformers.pipeline
 
 `Pipeline` 은 ML 의 여러 단계를 하나로 묶어 한 번에 실행하는 고수준 추론 API 클래스임.
+
+* 일반적인 pipeline 및 scikit-learn의 pipeline은 다음을 참고: [scikit-learn: Pipeline 사용법](https://dsaint31.tistory.com/829)
 
 일반적으로 다음의 단계가 묶임.
 
