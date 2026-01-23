@@ -3,7 +3,7 @@ layout  : wiki
 title   : transformers.pipeline
 summary : 
 date    : 2026-01-23 23:33:04 +0900
-updated : 2026-01-24 00:38:05 +0900
+updated : 2026-01-24 01:04:01 +0900
 tag     : hf
 resource: 59/1E4C9B648A4B22AB54B0D2E67CB897
 toc     : true
@@ -188,9 +188,9 @@ labels = ["의료", "법률", "금융", "교육", "기술"]
 
 # 3) (중요) hypothesis_template
 # - 모델이 NLI 기반으로 "text" (premise) 와 "가설 문장" (hypothesis) 쌍을 만들어 판단합니다.
-# - 라벨을 {label}에 끼워 넣어 hypothesis를 구성합니다.
+# - 라벨을 {}에 끼워 넣어 hypothesis를 구성합니다.
 # - 다국어/한국어 입력이면 한국어 템플릿이 대개 유리합니다.
-hypothesis_template_ko = "이 글의 주제는 {label}이다."
+hypothesis_template_ko = "이 글의 주제는 {}이다."
 
 # 4) (중요) multi_label
 # - False: 라벨이 상호배타적(하나만 정답)인 상황 가정 -> softmax로 정규화 경향
@@ -225,7 +225,7 @@ print(out_multilabel["scores"])
 
 다음은 batch_size 의 예임.
 
-```
+```python
 texts = [
     "이 영화는 연출이 훌륭했지만 스토리가 약했습니다.",
     "환자 통증이 지속되어 추가 검사와 처치가 필요합니다.",
@@ -237,14 +237,13 @@ labels = ["의료", "금융", "엔터테인먼트", "기술"]
 
 # list로 넘기면 내부에서 각각 처리함. 
 # 굳이 loop를 만들 필요 없음.
-outs = zs(
-    texts,
-    candidate_labels=labels,
-    multi_label=True,
-    hypothesis_template="이 문장의 주제는 {label}이다.",
-    truncation=True,
-    max_length=192,
-    batch_size=16,
+outs = zs(texts,
+          candidate_labels=labels,
+          multi_label=True,
+          hypothesis_template="이 문장의 주제는 {}이다.",
+          truncation=True,
+          max_length=192,
+          batch_size=16,
 )
 
 # --- top 4 선택 ---
@@ -252,25 +251,29 @@ for t, o in zip(texts, outs):
     print("\n---")
     print(t)
     print(list(zip(o["labels"], [round(s, 4) for s in o["scores"]])))
-    
+
+print( "=======================")  
 # --- threshold 적용 ---
 THRESHOLD = 0.5
 
-selected = [
-    label for label, score in zip(out["labels"], out["scores"])
-    if score >= THRESHOLD
-]
-
-print("labels :", out["labels"])
-print("scores :", [round(s, 3) for s in out["scores"]])
-print("selected (>= threshold):", selected)
+# --- top 4 선택 ---
+for t, o in zip(texts, outs):
+    print("\n---")
+    print(t)
+    print(list(
+        zip(
+            o["labels"], 
+             [round(s, 4) for s in o["scores"] if s>=THRESHOLD]
+            )
+        )
+    )
 ```
 * Thresholdind 의 경우, 아무것도 없을 수 있음.
 * 최대 점수를 받은 라벨을 하나 강제 선택하는 것도 방법임.
 
 ### 4. 이미지 분류 (ViT)
 
-```Python
+```python
 from transformers import pipeline
 from PIL import Image
 import requests
@@ -295,7 +298,7 @@ print(results[:5])
 pipeline을 호출시 파라메터로 받아들이는 인자들은 다음의 코드로 확인 가능함  
 (Pipeline 이 callable객체이기 때문)
 
-```Python
+```python
 import inspect
 print(inspect.signature(pipe.__call__))
 
@@ -308,7 +311,7 @@ for name, param in signature.parameters.items():
 
 반환되는 output은 dictionary 객체이므로 다음으로 확인 가능
 
-```Python
+```python
 print("--- output.keys()를 리스트로 변환하여 display()로 출력 ---")
 display(list(output.keys()))
 
@@ -319,7 +322,7 @@ for key in output.keys():
 
 Pipeline이 사용하는 모델의 명세는 `pipe.model.config`를 통해 확인하면 됨.
 
-```Python
+```python
 print(f"id2label 개수: {len(classifier.model.config.id2label)}")
 print(f"label2id 개수: {len(classifier.model.config.label2id)}")
 ```
