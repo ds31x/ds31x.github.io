@@ -66,6 +66,8 @@ pipeline은 아래와 같은 class hierachy상 위치를 가짐:
 
 ## Tutorial
 
+* 같이 보면 좋은 [gist](https://gist.github.com/dsaint31x/c3c0aa7c6666b46bbca3f4957e9cae66) 
+
 ### 1. pipeline 생성과 실행.
 
 ```
@@ -190,7 +192,7 @@ labels = ["의료", "법률", "금융", "교육", "기술"]
 # - 모델이 NLI 기반으로 "text" (premise) 와 "가설 문장" (hypothesis) 쌍을 만들어 판단합니다.
 # - 라벨을 {}에 끼워 넣어 hypothesis를 구성합니다.
 # - 다국어/한국어 입력이면 한국어 템플릿이 대개 유리합니다.
-hypothesis_template_ko = "이 글의 주제는 {}이다."
+hypothesis_template_ko = "이 글의 주제는 {}이다." # {} 안에 빈 칸 넣으면 에러발생함. 주의!
 
 # 4) (중요) multi_label
 # - False: 라벨이 상호배타적(하나만 정답)인 상황 가정 -> softmax로 정규화 경향
