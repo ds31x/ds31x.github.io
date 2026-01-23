@@ -329,6 +329,60 @@ print(f"id2label 개수: {len(classifier.model.config.id2label)}")
 print(f"label2id 개수: {len(classifier.model.config.label2id)}")
 ```
 
+## 주요 Pipeline taks list
+
+정확한 건 src를 참고하는 것임.
+
+[`transformers.pipelines.__init__.py`](https://github.com/huggingface/transformers/blob/main/src/transformers/pipelines/__init__.py?utm_source=chatgpt.com)
+* `SUPPORTED_TASKS` 딕셔너리의 키를 참고!
+
+### A. 텍스트(Text) 계열
+
+| task 문자열 | 설명 | Pipeline 클래스 | postprocess() 동작 요약 | 공식 문서 |
+|---|---|---|---|---|
+| `text-classification` | 문장/문서 분류 (sentiment analysis 포함) | `TextClassificationPipeline` | logits에 sigmoid(단일 라벨) 또는 softmax(다중 라벨) 적용 후, `id2label`로 라벨명을 붙여 `[{label, score}]` 반환 (top-k 가능) | [link](https://huggingface.co/docs/transformers/main/en/task_summary#text-classification) |
+| `token-classification` | 토큰 단위 분류 (NER 등) | `TokenClassificationPipeline` | 토큰별 logits -> 라벨/점수로 변환 후, 서브워드/연속 토큰을 엔티티로 **aggregation**하여 `entity/score/word/start/end` 형태 리스트 반환 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#token-classification) |
+| `question-answering` | Extractive QA | `QuestionAnsweringPipeline` | start/end logits로 후보 span 점수 계산 -> 최적 span 선택 -> `answer, score, start, end`(context 내 문자 인덱스) 반환 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#question-answering) |
+| `text-generation` | 자동 텍스트 생성 (causal LM) | `TextGenerationPipeline` | `generate()` 결과 토큰을 디코딩하여 `generated_text` 생성 (옵션에 따라 prompt 포함/제외, 여러 시퀀스 반환) | [link](https://huggingface.co/docs/transformers/main/en/task_summary#text-generation) |
+| `text2text-generation` | Seq2Seq 생성 (번역, 요약 등) | `Text2TextGenerationPipeline` | `generate()` 결과를 디코딩하여 `generated_text` 반환 (task별로 키 이름만 달라질 수 있음) | [link](https://huggingface.co/docs/transformers/main/en/task_summary#text2text-generation) |
+| `summarization` | 문서 요약 | `SummarizationPipeline` | seq2seq 생성 결과를 디코딩하여 `summary_text` 반환 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#summarization) |
+| `translation_xx_to_yy` | 기계 번역 | `TranslationPipeline` | seq2seq 생성 결과를 디코딩하여 `translation_text` 반환 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#translation) |
+| `fill-mask` | 마스크 토큰 예측 | `FillMaskPipeline` | [MASK] 위치의 분포에서 top-k 토큰을 뽑아 `sequence, token_str, score` 등을 반환 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#fill-mask) |
+| `feature-extraction` | hidden state / embedding 추출 | `FeatureExtractionPipeline` | 모델 출력 hidden states(대개 last_hidden_state 등)를 그대로 추출해 배열/리스트 형태로 반환 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#feature-extraction) |
+
+---
+
+### B. 비전(Vision) 계열
+
+| task 문자열 | 설명 | Pipeline 클래스 | postprocess() 동작 요약 | 공식 문서 |
+|---|---|---|---|---|
+| `image-classification` | 이미지 분류 | `ImageClassificationPipeline` | logits -> softmax 후 `label, score`로 정렬해 top-k 반환 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#image-classification) |
+| `image-segmentation` | 이미지 분할 | `ImageSegmentationPipeline` | 픽셀 단위 예측을 마스크/세그먼트로 변환하고, `label/score` 및 마스크(또는 맵) 반환 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#image-segmentation) |
+| `object-detection` | 객체 탐지 | `ObjectDetectionPipeline` | 예측 박스를 이미지 좌표계로 변환하고 NMS 등 적용 후 `box, label, score` 리스트 반환 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#object-detection) |
+| `depth-estimation` | 깊이 추정 | `DepthEstimationPipeline` | 모델 출력 depth를 depth map(예: PIL/ndarray)로 변환해 반환 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#depth-estimation) |
+| `image-to-text` | 이미지 캡셔닝 | `ImageToTextPipeline` | `generate()` 결과를 디코딩하여 캡션 텍스트 `generated_text` 반환 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#image-to-text) |
+
+---
+
+### C. 오디오(Audio) 계열
+
+| task 문자열 | 설명 | Pipeline 클래스 | postprocess() 동작 요약 | 공식 문서 |
+|---|---|---|---|---|
+| `automatic-speech-recognition` | 음성 인식 (ASR) | `AutomaticSpeechRecognitionPipeline` | 디코딩(CTC/seq2seq)에 따라 `text` 생성, 옵션에 따라 chunk/timestamp 정보 포함 가능 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#automatic-speech-recognition) |
+| `audio-classification` | 오디오 분류 | `AudioClassificationPipeline` | logits -> softmax 후 `label, score` top-k 반환 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#audio-classification) |
+| `text-to-speech` | 음성 합성 (TTS) | `TextToSpeechPipeline` | 생성된 waveform을 정리해 `audio`(샘플 배열)와 `sampling_rate` 등을 반환 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#text-to-speech) |
+
+---
+
+### D. 멀티모달(Multimodal) 계열
+
+| task 문자열 | 설명 | Pipeline 클래스 | postprocess() 동작 요약 | 공식 문서 |
+|---|---|---|---|---|
+| `zero-shot-image-classification` | 텍스트 조건 기반 이미지 분류 | `ZeroShotImageClassificationPipeline` | 이미지-텍스트 점수(유사도)를 정규화해 `label, score`로 반환 (candidate labels 기반) | [link](https://huggingface.co/docs/transformers/main/en/task_summary#zero-shot-image-classification) |
+| `visual-question-answering` | 이미지 기반 질문 응답 | `VisualQuestionAnsweringPipeline` | (대개) 답 후보 분포에서 최적 답을 선택해 `answer, score` 형태로 반환 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#visual-question-answering) |
+| `document-question-answering` | 문서 이미지 기반 Extractive QA | `DocumentQuestionAnsweringPipeline` | start/end logits(문서 토큰/OCR 토큰 기준)로 최적 span 선택 -> `answer, score, start, end` 반환 | [link](https://huggingface.co/docs/transformers/main/en/task_summary#document-question-answering) |
+
+
 
 ## 같이보면 좋은 자료들
 
