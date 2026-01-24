@@ -96,6 +96,10 @@
   "size": 1
  },
  {
+  "name": "pipeline",
+  "size": 1
+ },
+ {
   "name": "study",
   "size": 17
  },
