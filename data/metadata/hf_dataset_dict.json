@@ -1,10 +1,10 @@
 {
  "type": "wiki",
- "title": "[HF] DatasetDict 와 Dataset",
+ "title": "HF - DatasetDict 와 Dataset",
  "summary": "",
  "parent": "index",
  "url": "/wiki/hf_dataset_dict",
- "updated": "2026-01-25 16:36:20 +0900",
+ "updated": "2026-01-25 16:39:20 +0900",
  "resource": "24/020FA19AC243A8BE8ECF070EDFD860",
  "children": [
   "hf_dataset_dict/dd_csv",
