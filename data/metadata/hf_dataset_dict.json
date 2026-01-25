@@ -1,0 +1,14 @@
+{
+ "type": "wiki",
+ "title": "DatasetDict 와 Dataset",
+ "summary": "",
+ "parent": "index",
+ "url": "/wiki/hf_dataset_dict",
+ "updated": "2026-01-25 16:33:36 +0900",
+ "resource": "24/020FA19AC243A8BE8ECF070EDFD860",
+ "children": [
+  "hf_dataset_dict/dd_csv",
+  "hf_dataset_dict/dd_ds",
+  "hf_dataset_dict/dd_map"
+ ]
+}
