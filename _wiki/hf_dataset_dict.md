@@ -3,7 +3,7 @@ layout  : category
 title   : DatasetDict 와 Dataset
 summary : 
 date    : 2026-01-25 15:07:53 +0900
-updated : 2026-01-25 16:14:39 +0900
+updated : 2026-01-25 16:25:20 +0900
 tag     : 
 resource: 24/020FA19AC243A8BE8ECF070EDFD860
 toc     : true
@@ -32,9 +32,9 @@ latex   : false
 
 ## Index
 
-* [[/hf/dataset_dict/dd_ds]]{load_dataset으로 Dataset과 DatasetDict 익히기}
-* [[/hf/dataset_dict/dd_csv]]{Text 기반 Dataset 생성}
-* [[/hf/dataset_dict/dd_map]]{map을 이용한 전처리와 학습 데이터 고정}
+* [[/hf_dataset_dict/dd_ds]]{load_dataset으로 Dataset과 DatasetDict 익히기}
+* [[/hf_dataset_dict/dd_csv]]{Text 기반 Dataset 생성}
+* [[/hf_dataset_dict/dd_map]]{map을 이용한 전처리와 학습 데이터 고정}
 
 
 ---

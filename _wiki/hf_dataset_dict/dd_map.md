@@ -1,14 +1,14 @@
 ---
 layout  : wiki
-title   : 
+title   : map 활용하기
 summary : 
 date    : 2026-01-25 15:14:44 +0900
-updated : 2026-01-25 16:01:04 +0900
+updated : 2026-01-25 16:27:31 +0900
 tag     : 
 resource: D0/8C9B62FC5046DE831A8092239AFAC4
 toc     : true
 public  : true
-parent  : 
+parent  : [[/hf_dataset_dict]]
 latex   : false
 ---
 * TOC

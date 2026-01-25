@@ -3,12 +3,12 @@ layout  : wiki
 title   : Dataset for Text
 summary : 
 date    : 2026-01-25 14:18:45 +0900
-updated : 2026-01-25 15:11:09 +0900
+updated : 2026-01-25 16:25:51 +0900
 tag     : 
 resource: BC/167B46711A42F3B3DED8C36A5FBDB3
 toc     : true
 public  : true
-parent  : [[/hf/dataset_dict]]
+parent  : [[/hf_dataset_dict]]
 latex   : false
 ---
 * TOC

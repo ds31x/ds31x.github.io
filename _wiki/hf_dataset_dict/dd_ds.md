@@ -3,12 +3,12 @@ layout  : wiki
 title   : load_dataset
 summary : 
 date    : 2026-01-25 14:39:24 +0900
-updated : 2026-01-25 15:10:24 +0900
+updated : 2026-01-25 16:26:46 +0900
 tag     : 
 resource: F9/EC2A8F313A4C07ADBE2F55F3AB31C8
 toc     : true
 public  : true
-parent  : [[/hf]]
+parent  : [[/hf_dataset_dict]]
 latex   : false
 ---
 * TOC
@@ -175,7 +175,7 @@ EOF
 
 ### 7.2 CSV 로딩 실습
 
-좀 더 자세한 건 [[/hf/dd_csv]]{DatasetDict와 CSV} 문서를 참고할 것:
+좀 더 자세한 건 [[/hf_dataset_dict/dd_csv]]{DatasetDict와 CSV} 문서를 참고할 것:
 
 ```python
 ds_csv = load_dataset(
@@ -265,5 +265,5 @@ trainer.train_dataset[0]
 
 * Trainer는 Dataset 객체를 그대로 받음
 * 현재는 전처리 미적용 상태: 학습 불가
-* 좀더 자세한 전처리는 "[[/hf/dd_map]]{map을 활용한 전처리와 학습데이터 처리} 문서" 참고.
+* 좀더 자세한 전처리는 "[[/hf_dataset_dict/dd_map]]{map을 활용한 전처리와 학습데이터 처리} 문서" 참고.
 
