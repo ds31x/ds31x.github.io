@@ -9,6 +9,7 @@
  "/wiki/hf_dataset_dict",
  "/wiki/hf_dataset_dict/dd_csv",
  "/wiki/hf_dataset_dict/dd_ds",
+ "/wiki/hf_dataset_dict/dd_image",
  "/wiki/hf_dataset_dict/dd_map",
  "/wiki/hf/hf_start",
  "/wiki/hf/pipeline",

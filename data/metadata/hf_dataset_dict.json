@@ -9,6 +9,7 @@
  "children": [
   "hf_dataset_dict/dd_csv",
   "hf_dataset_dict/dd_ds",
+  "hf_dataset_dict/dd_image",
   "hf_dataset_dict/dd_map"
  ]
 }
