@@ -2,20 +2,30 @@
 
 set -euo pipefail; IFS=$'\n\t'
 
-if [[ $1 = "docker" ]]; then
+usage() {
+    echo "Usage: $0 {docker|watch|inc|null|back|kill}"
+    exit 2
+}
+
+# 인자 없으면 안내 후 종료
+[[ $# -ge 1 ]] || usage
+
+MODE="${MODE}"
+
+if [[ ${MODE} = "docker" ]]; then
     ./generateData.js
     docker-compose up
 
-elif [[ $1 = "watch" ]]; then
+elif [[ ${MODE} = "watch" ]]; then
     ./generateData.js
     bundle exec jekyll server --watch
 
-elif [[ $1 = "inc" ]]; then
+elif [[ ${MODE} = "inc" ]]; then
     bundle update && bundle install
     ./generateData.js
     bundle exec jekyll server --incremental --trace
 
-elif [[ $1 = "null" ]]; then
+elif [[ ${MODE} = "null" ]]; then
     bundle update && bundle install
     ./generateData.js
 
@@ -25,7 +35,7 @@ elif [[ $1 = "null" ]]; then
     pgrep 'jekyll serve' > .localhost.pid
     echo "PID is saved in .localhost.pid"
 
-elif [[ $1 = "back" ]]; then
+elif [[ ${MODE} = "back" ]]; then
     # local server를 백그라운드로 띄웁니다.
     # 로그는 .localhost.log 파일에 추가로 기록합니다.
     # 종료할 때 ps -ef | grep jekyll 을 다시 하면 귀찮으니까 pid는 .localhost.pid 파일에 저장해 둡니다.
@@ -39,10 +49,13 @@ elif [[ $1 = "back" ]]; then
     pgrep 'jekyll serve' > .localhost.pid
     echo "PID is saved in .localhost.pid"
 
-elif [[ $1 = "kill" && -f .localhost.pid ]]; then
+elif [[ ${MODE} = "kill" && -f .localhost.pid ]]; then
     kill "$(cat .localhost.pid)"
     rm .localhost.pid
     echo "Server killed"
 
+else
+   echo "Unknown mode: ${MODE}"
+   usage
 fi
 

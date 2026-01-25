@@ -7,6 +7,7 @@
  "updated": "2026-01-24 00:38:05 +0900",
  "resource": "1F/F019FC6CEB4E61BC6F07E6EE47F73C",
  "children": [
+  "hf/dd_ds",
   "hf/hf_start",
   "hf/pipeline"
  ]
