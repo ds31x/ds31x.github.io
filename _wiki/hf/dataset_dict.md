@@ -1,14 +1,14 @@
 ---
-layout  : wiki
-title   : 
+layout  : category
+title   : DatasetDict 와 Dataset
 summary : 
 date    : 2026-01-25 15:07:53 +0900
-updated : 2026-01-25 16:06:43 +0900
+updated : 2026-01-25 16:14:39 +0900
 tag     : 
 resource: 24/020FA19AC243A8BE8ECF070EDFD860
 toc     : true
 public  : true
-parent  : 
+parent  : [[/hf]]
 latex   : false
 ---
 * TOC
