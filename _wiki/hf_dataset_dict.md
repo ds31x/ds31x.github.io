@@ -3,7 +3,7 @@ layout  : category
 title   : HF - DatasetDict 와 Dataset
 summary : 
 date    : 2026-01-25 15:07:53 +0900
-updated : 2026-01-25 16:39:20 +0900
+updated : 2026-01-26 20:39:40 +0900
 tag     : 
 resource: 24/020FA19AC243A8BE8ECF070EDFD860
 toc     : true
@@ -32,84 +32,19 @@ latex   : false
 
 ## Index
 
+기본:
+
 * [[/hf_dataset_dict/dd_ds]]{load_dataset으로 Dataset과 DatasetDict 익히기}
 * [[/hf_dataset_dict/dd_csv]]{Text 기반 Dataset 생성}
 * [[/hf_dataset_dict/dd_map]]{map을 이용한 전처리와 학습 데이터 고정}
+* [[/hf_dataset_dict/dd_image]]{Image 기반 Dataset 생성}
+* [[/hf_dataset_dict/dd_api]]
 
+참고:
 
----
+* [[/hf_dataset_dict/dd_conv]]
+* [[/hf_dataset_dict/dd_map_transform_collate]]
 
-## 작업할 내용.
-
-## Unit 4. Image 기반 Dataset을 학습용으로 변환
-
-### 학습 목표
-
-* 이미지 학습을 위한 HF Dataset 구조 이해
-
-### 학습 내용
-
-* image 컬럼과 Image(Image, 이미지 타입) 개념 이해
-* imagefolder 방식 이해
-* 이미지 경로 기반 Dataset 구성 원리 이해
-
-### 실습 핵심
-
-* imagefolder 또는 CSV + image 경로 Dataset 생성
-* cast_column("image", Image()) 적용
-
-### 도달 목표
-
-* “이미지 Dataset도 map과 Trainer에 동일하게 연결 가능함”의 이해
-
----
-
-## Unit 5. PyTorch Dataset에서 HF Dataset으로 전환
-
-### 학습 목표
-
-* 기존 PyTorch Dataset을 HF 학습 파이프라인에 연결하는 방법 이해
-
-### 학습 내용
-
-* torch.utils.data.Dataset의 한계 이해
-* HF Dataset의 column 기반 구조 이해
-* 경로 기반 변환 전략의 필요성 이해
-
-### 실습 핵심
-
-* PyTorch Dataset → list[dict] → Dataset.from_list 변환
-* DatasetDict 구성
-
-### 도달 목표
-
-* “PyTorch Dataset을 버리지 않고 HF Trainer로 연결 가능함”의 이해
-
----
-
-## Unit 6. map vs set_transform vs collate_fn (학습 관점 비교)
-
-### 학습 목표
-
-* 학습 파이프라인에서 전처리 위치 선택 기준 확립
-
-### 학습 내용
-
-* map: 사전 전처리 및 캐싱 중심
-* set_transform: epoch별 동적 전처리 중심
-* collate_fn: 배치 단위 처리 중심
-
-### 학습 정리 규칙
-
-* 고정 전처리 → map
-* 랜덤 증강 → set_transform
-* 가변 길이/멀티모달 → collate_fn
-
-### 도달 목표
-
-* “왜 Trainer에서 data_collator가 필요한지”의 이해
-
----
 
 ## Unit 7. Image + Text 멀티모달 학습 Dataset 구성
 
