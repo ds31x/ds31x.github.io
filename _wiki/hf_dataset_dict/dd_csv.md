@@ -129,11 +129,150 @@ print(dd["train"].features)
 * features는 각 컬럼의 자료형과 의미를 정의하는 데이터 설계도에 해당함.
 * 이 시점에서는 label이 단순한 숫자로만 인식됨.
 
-## 2-4. 영어 혼재 텍스트에 대한 학습 관점 설명
+## 2-4. DatasetDict 객체의 filter와 map 사용법
 
-실제로는 토크나이저 단계에서
+`DatasetDict(데이터셋딕트)`는 `"train"`, `"validation"` 등의 split을 키로 가지며, 각 값이 `Dataset(데이터셋)` 객체인 구조임.
 
-* 모든 텍스트가 숫자 토큰(token ID) 으로 변환됨.
+CSV 기반 데이터셋을 학습에 사용하기 위해서는 이 구조 위에서 `filter`와 `map` 연산을 통해 전처리를 수행하는 것이 기본 흐름임.
+
+### 2-4-1. filter의 역할과 사용법
+
+`filter`는 **조건을 만족하지 않는 샘플을 제거하는 연산**임.
+
+데이터 정제 단계에서 다음과 같은 목적으로 사용됨.
+
+* 빈 문장 제거 목적
+* 너무 짧은 문장 제거 목적
+* 특정 라벨만 선택 목적
+
+아래는 `"text"`가 비어 있지 않고, 최소 길이를 만족하는 샘플만 유지하는 예시임.
+
+```python
+def keep_valid_example(ex):
+    text = ex["text"]
+    return (text is not None) and (len(text.strip()) >= 10)
+
+dd_filtered = dd.filter(keep_valid_example)
+```
+
+특정 라벨만 남기는 경우의 예시는 다음과 같음.
+
+```python
+def keep_positive(ex):
+    return ex["label"] == 1
+
+dd_filtered = dd.filter(keep_positive)
+```
+
+
+### 2-4-2. map의 역할과 사용법
+
+* `map`은 각 샘플을 변환하여 **새로운 컬럼을 생성하거나 기존 컬럼을 가공하는 연산**임.
+* 텍스트 분류 학습에서는 주로 **토크나이징(tokenization)** 단계에서 사용됨.
+
+```python
+from transformers import AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained(
+    "xlm-roberta-base"
+)
+```
+
+각 샘플의 `"text"`를 입력으로 받아 **Token ID** 와 **Attention Mask** 를 생성함.
+
+```python
+def tokenize_example(ex):
+    return tokenizer(
+        ex["text"],
+        truncation=True,
+        max_length=128,
+        padding="max_length",
+    )
+
+dd_tok = dd_filtered.map(tokenize_example)
+```
+
+이 연산 이후 각 샘플은 다음 컬럼을 포함함.
+
+* `text`
+* `label`
+* `input_ids`
+* `attention_mask`
+
+### 2-4-3. batched map 사용법
+
+대량 데이터 처리 시에는 `batched=True` 옵션을 사용하는 것이 일반적임.
+* `batched=True`시 배치로 묶어서 처리하여 함수 호출의 횟수가 줄어듬.
+* 이는 대량 데이터 처리시 성능 향상으로 이어짐.
+* 이 방식은 전처리 속도와 메모리 사용 측면에서 유리함.
+
+> `num_proc=3` 과 같이 멀티프로세스로 동작시킬 경우, 더 빠른 처리가 가능.
+
+```python
+def tokenize_batch(batch):
+    return tokenizer(
+        batch["text"],
+        truncation=True,
+        max_length=128,
+        padding="max_length",
+    )
+
+dd_tok = dd_filtered.map(
+    tokenize_batch,
+    batched=True,
+    batch_size=1000,
+)
+```
+* 참고로, `tokenizer`에서 `padding=False`, `truncation=False`가 기본임.
+
+### 2-4-4. remove_columns 사용법
+
+학습 단계에서 `"text"` 원문 컬럼을 사용하지 않는 경우, 
+`remove_columns` 메서들로 특정 컬럼들을 제거 할 수 있음.
+이는 데이터 크기를 줄여줌.
+
+```python
+dd_tok = dd_tok.remove_columns(["text"])
+```
+
+또는 `map` 단계에서 동시에 제거할 수도 있음.
+
+```python
+dd_tok = dd_filtered.map(
+    tokenize_batch,
+    batched=True,
+    remove_columns=["text"],
+)
+```
+
+
+
+
+### 2-4-5. 예제
+
+CSV 기반 `DatasetDict` 객체의 전처리의 전형적인 예는 다음과 같음:
+
+```python
+dd_filtered = dd.filter(keep_valid_example)
+dd_tok = dd_filtered.map(
+    tokenize_batch,
+    batched=True,
+    remove_columns=["text"],
+)
+```
+* 이후 결과 객체는 `Trainer` 입력으로 바로 사용 가능한 `DatasetDict` 형태를 유지함.
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 2-5. label을 ClassLabel로 명시
 
