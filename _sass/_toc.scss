@@ -3,7 +3,8 @@
         position: fixed;
         top: 0;
         bottom: 0;
-        left: calc( 99vw + 10px);
+        //left: calc( 99vw + 10px);
+        left: {910px};
         width: 380px;
         background-color: white;
         z-index: 1;
