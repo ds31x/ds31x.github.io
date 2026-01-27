@@ -4,18 +4,21 @@ permalink: /search.json
 ---
 [
 {% assign items = site.wiki | concat: site.pages %}
+{% assign first = true %}
 {% for p in items %}
   {% if p.title and p.url and p.search != false %}
-  {
-    "title": {{ p.title | jsonify }},
-    "url": {{ p.url | relative_url | jsonify }},
-    "content": {{ p.content
-      | strip_html
-      | replace: "\n", " "
-      | replace: "\r", " "
-      | replace: "\t", " "
-      | jsonify }}
-  }{% unless forloop.last %},{% endunless %}
+    {% unless first %},{% endunless %}
+    {% assign first = false %}
+    {
+      "title": {{ p.title | jsonify }},
+      "url": {{ p.url | relative_url | jsonify }},
+      "content": {{ p.content
+        | strip_html
+        | replace: "\n", " "
+        | replace: "\r", " "
+        | replace: "\t", " "
+        | jsonify }}
+    }
   {% endif %}
 {% endfor %}
 ]
