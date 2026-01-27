@@ -182,7 +182,8 @@ ruby 기반의 jekyll 프로젝트를 수행하기 위해서 일종의 격리된
 
 ```bash
 conda create -n jekyllmm -c conda-forge -y \
-  ruby=3.3 zlib libffi readline ncurses yaml
+  ruby=3.3 zlib libffi readline ncurses yaml \
+  compilers make pkg-config
 conda activate jekyllmm
 ```
 
