@@ -61,5 +61,5 @@ kramdown:
     smart_quotes: ["apos", "apos", "quot", "quot"]
 
 search:
-    page_size: 30     # 페이지당 결과수.
+    page_size: 10     # 페이지당 결과수.
     debounce_ms: 200  # 검색 입력 debounce (ms)
