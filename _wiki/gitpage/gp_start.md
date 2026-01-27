@@ -429,6 +429,12 @@ git push
 * Settings → Pages에 URL 표시
 * 해당 주소로 접속하면 로컬과 동일한 사이트 확인
 
+현재 Github는 단순 password로는 push등의 저장소를 수정하지 못함:
+* 일반적으로는 공개키 기반의 인증을 통해 push등을 수행하는 게 편함 (ssh이용)
+* https를 이용하려면, PAT(Person Authentication Token) 방식을 사용하면 됨.
+
+PAT로 push를 하려면 다음 URL참고: [PAT를 통한 authentication for GitHub](https://ds31x.tistory.com/603)
+
 
 ## 12. 최종 요약.
 
