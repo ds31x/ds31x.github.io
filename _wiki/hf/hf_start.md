@@ -3,7 +3,7 @@ layout  : wiki
 title   : HF Start
 summary : 
 date    : 2026-01-22 23:12:26 +0900
-updated : 2026-01-27 15:43:39 +0900
+updated : 2026-01-27 16:22:31 +0900
 tag     : hf
 resource: D8/AA2903BCE24DD3B682DC77B0D5EC30
 toc     : true
@@ -167,7 +167,7 @@ conda deactivate
 이후 다음으로 로그아웃 여부 확인할 것:
 ```bash
 $ hf auth whoami
-Not logged in
+Not logged in증
 ```
 
 ## Google Colab 에서 로그인.
@@ -210,7 +210,7 @@ del os.environ["HF_TOKEN"]
 
 * `No model was supplied` : pipeline에 `model`을 지정 안한 경우로 자동 선택될 때 발생.
 * revision 미지정 : 재현성 문제 경고
-* `HF_TOKEN` 없음 : 공개 모델이라도 인증 권장 안내
+* `HF_TOKEN` 없음 : 공개 모델이라도 authentication 권장 안내
 * `torchao` + `triton` 없음 : CPU Colab에서는 정상, 제거 불필요
 
 다음과 같이 하면 warning이 최소화됨
