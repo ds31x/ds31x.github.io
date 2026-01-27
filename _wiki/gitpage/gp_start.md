@@ -285,6 +285,64 @@ bundle install --verbose
 bundle exec jekyll serve
 ```
 
+### 참고: SSL connecton의 CRL 에러 발생시
+
+> 2026.1.28 현재 Jekyll3.10.0에서  
+> 위의 명령어 실행시 Ruby의 OpenSSL 사용하면서 `unable to get certificate CRL`에러가 뜸.  
+> 이는 `remote_theme` 를 사용할 때 일어나는데, Ruby 쪽에서 이를 수정해야할 거 같음.  
+> 우선 장비에서 Jekyll을 돌릴 때는 remote_theme를 쓰지 않도록 우회해야 해결됨.  
+
+에러는 다음과 같음:
+```text
+❯ bundle exec jekyll serve
+To use retry middleware with Faraday v2.0+, install `faraday-retry` gem
+Configuration file: /home/dsaint31/git/CE/_config.yml
+            Source: /home/dsaint31/git/CE
+       Destination: /home/dsaint31/git/CE/_site
+ Incremental build: disabled. Enable with --incremental
+      Generating...
+      Remote Theme: Using theme mmistakes/minimal-mistakes
+jekyll 3.10.0 | Error:  SSL_connect returned=1 errno=0 peeraddr=20.200.245.246:443 state=error: certificate verify failed (unable to get certificate CRL)
+```
+
+해결은 `Gemfile` 에서 `minimal-mistakes-jekyll` gem을 추가하고
+```text
+source "https://rubygems.org"
+
+gem "github-pages", group: :jekyll_plugins
+gem "minimal-mistakes-jekyll" # added
+
+gem "tzinfo-data"
+gem "wdm", "~> 0.1.0" if Gem.win_platform?
+
+# If you have any plugins, put them here!
+group :jekyll_plugins do
+  gem "jekyll-paginate"
+  gem "jekyll-sitemap"
+  gem "jekyll-gist"
+  gem "jekyll-feed"
+  gem "jemoji"
+  gem "jekyll-include-cache"
+  gem "jekyll-algolia"
+end
+```
+이후 `bundle install`을 수행하여 `minimal-mistakes-jekyll` gem을 설치한다.
+
+그리고 `_config.yml`을 복사하여 `_config_local.yml`을 만들고 remote_theme를 theme로 수정한다.
+```yml
+# Build settings
+markdown: kramdown
+theme: minimal-mistakes-jekyll
+```
+그리고, 다음과 같이 bundle로 장비에서 실행시 `_config_local.yml`을 지정하여 수행.
+```
+bundle exec jekyll serve --config _config_local.yml
+```
+
+이 경우 장비와 github.io 페이지 모두에서 제대로 동작하게 됨.
+
+> 버그가 수정되면 이 절은 무시해도 됨.
+
 ### 이 명령이 참고하는 것
 
 * **Gemfile.lock**
