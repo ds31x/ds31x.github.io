@@ -23,7 +23,7 @@ permalink: /search/
   const results = document.getElementById("results");
 
   function render(items) {
-    results.innerHTML = items.slice(0, 20).map(i => {
+    results.innerHTML = items.slice(0, 30).map(i => {
       const d = docs.find(x => x.url === i.ref);
       return `<li><a href="${d.url}">${d.title}</a></li>`;
     }).join("");
@@ -35,8 +35,10 @@ permalink: /search/
     render(idx.search(q));
   }
 
+  // URL 파라미터 searchString 읽기
   const params = new URLSearchParams(window.location.search);
   const query = params.get("searchString");
+
   if (query) {
     box.value = query;
     doSearch(query);
@@ -45,5 +47,4 @@ permalink: /search/
   box.addEventListener("input", () => doSearch(box.value));
 })();
 </script>
-
 
