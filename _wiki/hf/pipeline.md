@@ -1,9 +1,9 @@
 ---
 layout  : wiki
-title   : transformers.pipeline
+title   : HF - Pipeline
 summary : 
 date    : 2026-01-23 23:33:04 +0900
-updated : 2026-01-24 01:04:01 +0900
+updated : 2026-01-27 15:24:06 +0900
 tag     : hf pipeline
 resource: 59/1E4C9B648A4B22AB54B0D2E67CB897
 toc     : true
@@ -18,6 +18,7 @@ latex   : false
 
 `Pipeline` 은 ML 의 여러 단계를 하나로 묶어 한 번에 실행하는 고수준 추론 API 클래스임.
 
+* HF 의 파이프라인이 아닌,
 * 일반적인 pipeline 및 scikit-learn의 pipeline은 다음을 참고: [scikit-learn: Pipeline 사용법](https://dsaint31.tistory.com/829)
 
 일반적으로 다음의 단계가 묶임.
@@ -51,8 +52,8 @@ pipeline은 아래와 같은 class hierachy상 위치를 가짐:
 
 1. High-Level API (User Interface)
 	* `pipeline()`: 
-		* 사용자가 직접 호출하는 지점. 
-		* 입력받은 태스크명에 따라 알맞은 서브 클래스를 인스턴스화함
+		* 사용자가 직접 호출하는 entry point. 
+		* 입력받은 **태스크명** 에 따라 알맞은 서브 클래스를 인스턴스화함
 2. Task-Specific Pipelines (Sub-classes)
 	* ImageClassificationPipeline
 	* TextClassificationPipeline
@@ -72,7 +73,7 @@ pipeline은 아래와 같은 class hierachy상 위치를 가짐:
 
 ### 1. pipeline 생성과 실행.
 
-```
+```python
 from transformers import pipeline
 
 pipe = pipeline("text-classification")
@@ -82,14 +83,14 @@ print(result)
 ```
 * "text-classification"은 파이프라인의 `task` 이름
 
-한 줄의 코드로:
+한 줄(line)의 코드로:
 * tokenizer가 자동으로 준비되고
 * 분류용 모델이 연결되며
 * 출력 후처리 로직까지 세팅됨
 
-출력 예시
+출력 예시는 다음과 같음:
 
-```
+```python
 [{'label': 'POSITIVE', 'score': 0.999}]
 ```
 
@@ -103,14 +104,14 @@ print(result)
 
 다음의 코드를 통해, `pipe`가 사용하는 실제 `model`이 어떤 클래스인지, `tokenizer`가 무슨 타입인지 등을 확인할 수 있음.
 
-```
+```python
 print(type(clf.model))
 print(type(getattr(clf, "tokenizer", None)))
 ```
 
-### 2. 모델을 명시 사용하기
+### 2. 모델을 지정하여 사용하기
 
-```
+```python
 from transformers import pipeline
 
 clf = pipeline(
@@ -120,16 +121,16 @@ clf = pipeline(
 
 print(clf("난 한국어를 선호해."))
 ```
-* 모델 미지정으로 기본 모델이 자동 선택되지 않도록 명시적 지정.
-* `text-classification` 에서 한글을 지원하는 다국어 모델인 XLM-RoBERTa 계열을 사용한 모델을 지정함.
+* 모델 미지정으로 **기본 모델이 자동 선택되지 않도록** 명시적 지정.
+* `text-classification` 에서 한글을 지원하는 다국어 모델인 `XLM-RoBERTa` 계열을 사용한 모델을 지정함.
 
 가능하면 다음도 같이 습관화하는 편이 권장됨.
-* `revision` 설정 : 커밋 해시나 태그를 고정(재현성 강화)
+* `revision` 설정 : *커밋 해시* 나 *태그* 를 지정하여 고정(재현성 강화)
 * `device` 또는 `device_map` 지정(성능/운영 고려)
 
 ### 3. Zero-Shot 텍스트 분류.
 
-label을 런타임에 지정하여 주는 방식.
+`label`을 런타임에 지정하여 주는 방식.
 
 `zero-shot-classification` 은 "후보 라벨을 주면 그중 무엇이 가장 적절한지" 를 추론함.
 
@@ -150,12 +151,14 @@ print(out["labels"])
 print(out["scores"])
 ```
 
-출력 `out`에서 보통 확인하는 키:
+`zero-shot-classification`의 pipe라인의 출력 `out`에서 보통 확인하는 key(키):
 * `sequence`: 입력 문장
 * `labels`: 점수 내림차순 정렬된 라벨
 * `scores`: 라벨별 점수(정렬된 `labels`와 같은 순서)
 
-> 다국어/한국어 중심이라면, label 언어를 다국어/한국어 로 해주고, `hypothesis_template`을 설정하는 것이 보다 나은 성능을 보임.
+> 다국어/한국어 중심이라면,  
+> label 언어를 다국어/한국어 로 해주고,  
+> `hypothesis_template`을 설정하는 것이 보다 나은 성능을 보임.
 
 **여러 parameters**
 
@@ -227,7 +230,7 @@ print(out_multilabel["labels"])
 print(out_multilabel["scores"])
 ```
 
-다음은 batch_size 의 예임.
+다음은 `batch_size` 를 사용하는 예임.
 
 ```python
 texts = [
@@ -248,9 +251,10 @@ outs = zs(texts,
           truncation=True,
           max_length=192,
           batch_size=16,
+	  top_k = 4,     # top 2 선택
 )
 
-# --- top 4 선택 ---
+# top 2 선택 
 for t, o in zip(texts, outs):
     print("\n---")
     print(t)
@@ -277,6 +281,8 @@ for t, o in zip(texts, outs):
 
 ### 4. 이미지 분류 (ViT)
 
+다음은 image를 사용하는 경우임.
+
 ```python
 from transformers import pipeline
 from PIL import Image
@@ -295,7 +301,7 @@ print(results[:5])
 ```
 * `"image-classification"` task는 기본적으로 `google/vit-base-patch16-224` 모델 사용.
 * 이 모델은 ImageNet-1k라는 방대한 이미지 데이터셋으로 학습됨.
-* 1000개의 클래스로 이루어진 라벨!
+* 1,000개의 클래스로 이루어진 라벨!
 
 ### 5. pipeline 살펴보기.
 
@@ -335,9 +341,9 @@ print(f"label2id 개수: {len(classifier.model.config.label2id)}")
 
 다음의 task를 지원함. 적절한 모델은 HuggingFace Hub 의 모델에서 찾을 수 있음 [https://huggingface.co/models](https://huggingface.co/models)
 
-<img src="https://github.com/user-attachments/assets/636675dc-9867-436c-a76a-f534e03d1e64" style="display: block; margin: 0 auto; width: 500px" />
+<img src="/resource/59/1E4C9B648A4B22AB54B0D2E67CB897/636675dc-9867-436c-a76a-f534e03d1e64.png" style="display: block; margin: 0 auto; width: 500px" />
 
-정확한 건 src를 참고하는 것임.
+정말 정확한 건 src를 참고하는 것임.
 
 [`transformers.pipelines.__init__.py`](https://github.com/huggingface/transformers/blob/main/src/transformers/pipelines/__init__.py?utm_source=chatgpt.com)
 * `SUPPORTED_TASKS` 딕셔너리의 키를 참고!

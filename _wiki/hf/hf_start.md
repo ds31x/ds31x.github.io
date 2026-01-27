@@ -3,7 +3,7 @@ layout  : wiki
 title   : HF Start
 summary : 
 date    : 2026-01-22 23:12:26 +0900
-updated : 2026-01-23 00:10:36 +0900
+updated : 2026-01-27 15:43:39 +0900
 tag     : hf
 resource: D8/AA2903BCE24DD3B682DC77B0D5EC30
 toc     : true
@@ -58,24 +58,62 @@ Hugging Face가 제공하는 Library들의 구성을 간단히 살펴본다.
 
 모델 구현, 전처리, 학습, 추론을 담당하는 라이브러리
 
-1. Transformers (Model Layer)
+1. Transformers (Model Layer)  
+   Discriminative / Generative NLP·CV
 	* Transformer 모델이 중심이나,
 	* CNN, RNN, Hybrid 모델들도 포함되어 있음.
+	* 주요 Task
+		* text-classification
+		* seq2seq
+		* vision, multimodal 일부.
 	* Trainder도 포함됨.
+	* Processor Layer와 매우 밀접하게 결합됨.
 2. Processor (Preprocessing Layer)
-	* Tokenizer : text → ids
-	* ImageProcessor : image → tensor 
-	* FeatureExtractor : audio → feature 
-3. Accelerate (Training/Execution Infra layer)
+	* 입력의 modality 에 맞춰 모델에 입력가능한 tensor로 변환하는 계층.
+	* Tokenizer : text => ids
+	* ImageProcessor : image => pixel tensor 
+	* FeatureExtractor : audio => feature tensor
+	* Processor : 위의 3가지를 통합하여 구성됨.
+		* multimodal 통합 Wrapper임.
+		* 예: Tokenizer + ImageProcessor 
+3. Diffusers (Model Layer) 
+   Diffusion-based Generative Model 
+	* Diffusion Model 전용 라이브러리.
+	* 주요 대상.
+		* Text-to-Image
+		* Image-to-Image
+		* Inpainting
+		* Video Diffusion
+	* Pipeline 중심 구조
+	* Scheduler 개념이 핵심 구성요소
+	* Transformers와는 모델 철학과 실행 구조가 다름
+		* logits 분류가 아니라 반복적 샘플링 기반 생성
+	* 내부적으로 Transformers 컴포넌트(UNet, Text Encoder 등)를 활용하지만
+		* 사용자 관점에서는 독립 계층으로 취급하는 것이 정확
+4. Accelerate (Training/Execution Infra layer)
 	* 학습 및 실행 환경 추상화
-	* device, distributed, mixed precision 처리
-	* single GPU / multi GPU / TPU / multi-node 대응
+	* 공통 인프라 계층
+		* device
+		* distributed training (데이터 및 모델 병렬화를 통한 분산학습)
+		* mixed precision 처리
+	* 대응 환경 
+		* single GPU / multi GPU / TPU / multi-node 대응
 	* Transformers의 Trainer 및 사용자 정의 학습 루프에서 공통 사용
 
+```text
+[ Application / Pipeline ]
+        |
+        v
+[ Transformers ]     [ Diffusers ]
+        |                  |
+        +--------+---------+
+                 |
+           [ Accelerate ]
+```
 
 ## WSL 에서 로그인. 
 
-```
+```bash
 conda create -n hf_env python
 conda activate hf_env
 conda install pip
@@ -84,7 +122,7 @@ pip install transformers datasets huggingface_hub torch
 
 `transformers` 는 라이브러리로 백앤드가 필요하므로 다음으로 확인:
 
-```
+```bash
 python - << 'EOF'
 import transformers
 print("torch:", transformers.utils.is_torch_available())
@@ -94,7 +132,7 @@ EOF
 ```
 
 자기 고유 장비라면 `hf auth login` 을 통해 로그인하고 다음으로 실행을 확인.
-```
+```bash
 from transformers import pipeline
 clf = pipeline("sentiment-analysis")
 print(clf("Hugging Face works well on WSL.")
@@ -104,7 +142,7 @@ print(clf("Hugging Face works well on WSL.")
 
 `python` interactive shell을 실행하고 다음과 같이 실행:
 
-```
+```bash
 >>> import os
 >>> os.environ["HF_TOKEN"] = "hf_xxxxxxxxxxxxxxxxx"
 >>> from transformers import pipeline
@@ -119,7 +157,7 @@ print(clf("Hugging Face works well on WSL.")
 
 사실 공용장비라도 `hf auth login`을 해도 되긴 함(끝나고 다음의 처리를 제대로 해준다면...)
 
-```
+```bash
 hf auth logout || true
 rm -rf ~/.huggingface
 rm -rf ~/.cache/huggingface*
@@ -127,14 +165,14 @@ conda deactivate
 ```
 
 이후 다음으로 로그아웃 여부 확인할 것:
-```
+```bash
 $ hf auth whoami
 Not logged in
 ```
 
 ## Google Colab 에서 로그인.
 
-```
+```bash
 !hf auth login
 ```
 * 아니면 ssh로 처리해도 됨: `$ hf auth login`
@@ -146,7 +184,7 @@ Not logged in
 
 백앤드 확인:
 
-```
+```bash
 import transformers
 print("torch:", transformers.utils.is_torch_available())
 print("tf   :", transformers.utils.is_tf_available())
@@ -155,7 +193,7 @@ print("flax :", transformers.utils.is_flax_available())
 
 다음의 코드쉘을 작성하여 실행 (`hf_xxxx`인 Access Token은 공유되선 안됨.)
 
-```
+```bash
 import os
 os.environ["HF_TOKEN"] = "hf_xxxxxxxxxxxxxxxxx"
 
@@ -177,7 +215,7 @@ del os.environ["HF_TOKEN"]
 
 다음과 같이 하면 warning이 최소화됨
 
-```
+```bash
 clf = pipeline(
     task="sentiment-analysis",
     model="distilbert/distilbert-base-uncased-finetuned-sst-2-english",
