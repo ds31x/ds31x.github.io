@@ -160,6 +160,7 @@ bundle exec    ← lock 기준으로 실행
 * “Use this template”로 새 저장소 생성
 * 사용자 사이트면 저장소 이름을 `USERNAME.github.io`
 
+<img src="https://github.com/user-attachments/assets/f23488ba-f621-4153-b1c1-2e0f073268fe" style="display: block; margin: 0 auto; widht:300px" />
 
 ### 3.2 로컬로 clone
 
