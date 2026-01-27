@@ -1,4 +1,5 @@
 [
+ "hf_dataset_dict",
  "hf/hf_start",
  "hf/pipeline"
 ]

@@ -3,7 +3,7 @@ layout  : category
 title   : HF - DatasetDict 와 Dataset
 summary : 
 date    : 2026-01-25 15:07:53 +0900
-updated : 2026-01-27 10:46:08 +0900
+updated : 2026-01-27 13:53:16 +0900
 tag     : dataset hf
 resource: 24/020FA19AC243A8BE8ECF070EDFD860
 toc     : true
@@ -48,6 +48,7 @@ latex   : false
 응용:
 
 * [[/hf_dataset_dict/dd_multimodal]]
+* [[/hf_dataset_dict/dd_dsbuilder]]
 * [[/hf_dataset_dict/dd_hf_hub]]
 
 
