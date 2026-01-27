@@ -3,7 +3,7 @@ layout  : category
 title   : HF - DatasetDict 와 Dataset
 summary : 
 date    : 2026-01-25 15:07:53 +0900
-updated : 2026-01-27 13:53:16 +0900
+updated : 2026-01-27 14:06:57 +0900
 tag     : dataset hf
 resource: 24/020FA19AC243A8BE8ECF070EDFD860
 toc     : true
@@ -79,28 +79,6 @@ latex   : false
 #### 도달 목표
 
 * "왜 detection/segmentation은 Dataset 설계가 중요한지" 이해
-
----
-
-### 2. DatasetBuilder로 재현 가능한 학습 데이터 정의
-
-#### 학습 목표
-
-* 데이터셋을 코드로 정의하는 개념 이해
-
-#### 학습 내용
-
-* DatasetBuilder의 역할 이해
-* Features(Features, 피처) 정의 개념 이해
-* _generate_examples의 의미 이해
-
-#### 실습 핵심
-
-* 간단한 GeneratorBasedBuilder 구조 파악
-
-#### 도달 목표
-
-* "데이터셋도 하나의 소프트웨어 아티팩트"라는 인식 형성
 
 ---
 

@@ -3,7 +3,7 @@ layout  : wiki
 title   : DatasetDict 허브 업로드.
 summary : 
 date    : 2026-01-27 09:38:51 +0900
-updated : 2026-01-27 10:31:24 +0900
+updated : 2026-01-27 14:06:52 +0900
 tag     : 
 resource: AE/6280DD224F4CC5AA16BE73567EF658
 toc     : true
@@ -22,6 +22,7 @@ latex   : false
 * Hugging Face Hub에 업로드된 Dataset을 **DatasetDict** 형태로 재사용하는 흐름 이해
 * `DatasetDict`를 기준으로 학습 파이프라인을 고정하고 반복 실행하는 방법 이해
 
+> HF Hub에 Dataset을 공개할 때도 반드시 필요함.
 
 ## 학습 내용
 
@@ -127,16 +128,35 @@ mm-dataset-exp/
 
 ## 4. Dataset loading script와 DatasetDict 생성 원리
 
-`load_dataset()`은 다음 과정을 수행함.
+**Dataset loading script란** 
 
-1. Hub에서 Dataset repo 다운로드
-2. repo 루트에서 loading script 탐색
-3. loading script 실행
-4. loading script가 정의한 규칙에 따라
-   * `train` split Dataset 생성
-   * `validation` split Dataset 생성
-5. 이들을 묶어 **DatasetDict 반환**
+* Hugging Face에서 데이터를 읽고 구조화하는 파이썬 스크립트 전체를 가리킴.
+* 그 안에는 DatasetBuilder (대부분 GeneratorBasedBuilder) 클래스를 정의하는 코드가 들어 있음.
+* 즉, 로딩 스크립트의 실제 핵심은 DatasetBuilder 클래스임.
 
+> A dataset loading script is a Python file that defines a DatasetBuilder class. 
+> DatasetBuilder specifies metadata, splits, and how to generate examples.
+> 참고: [Writing a dataset loading script](https://huggingface.co/docs/datasets/v1.2.1/add_dataset.html?utm_source=chatgpt.com)
+
+
+
+`load_dataset()`은 다음 과정을 수행함:
+
+> `load_dataset()`은 Hub Dataset repo(또는 로컬 경로)를 받아 **Dataset loading script(DatasetBuilder)**를 찾아 실행하고, 그 결과로 DatasetDict를 생성한다.
+
+1. **source** 를 결정: (Hub repo, 로컬 경로, 내장 로더 중 하나 선택)
+2. **loading script 탐색** - 적용 규칙은 다음과 같음:
+	* Hub repo 루트에 loading script가 있어야 함.
+	* 파일명은 repo 이름과 일치해야 함.
+		* repo의 `-`는 파일명에서 `_`로 변환됨.
+		* 예: `mm-dataset-exp` → `mm_dataset_exp.py`
+3. **loading script 실행** 
+	* script 내부에 정의된 DatasetBuilder를 로드하고 초기화함.
+4. DatasetBuilder 정의에 따라 DatasetDict 생성.
+	* `_info()`로 Features(스키마) 확정함.
+	* `_split_generators()`로 split(`train`/`validation`/`test`) 정의함.
+	* `_generate_examples()`로 각 split의 샘플을 생성.
+5. split별 Dataset을 묶어 DatasetDict 반환을 수행함.
 
 ## 5. Dataset loading script 파일명 규칙
 
