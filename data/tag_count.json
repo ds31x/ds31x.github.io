@@ -4,7 +4,15 @@
   "size": 1
  },
  {
+  "name": "bundle",
+  "size": 1
+ },
+ {
   "name": "dataset",
+  "size": 1
+ },
+ {
+  "name": "gem",
   "size": 1
  },
  {
@@ -17,6 +25,10 @@
  },
  {
   "name": "how-to",
+  "size": 1
+ },
+ {
+  "name": "jekyll",
   "size": 1
  },
  {
