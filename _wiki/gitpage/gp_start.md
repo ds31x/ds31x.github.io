@@ -156,7 +156,7 @@ bundle exec    ← lock 기준으로 실행
 
 ### 3.1 GitHub에서 저장소 생성
 
-* 템플릿: `mmistakes/mm-github-pages-starter`
+* 템플릿: [`mmistakes/mm-github-pages-starter`](https://github.com/mmistakes/mm-github-pages-starter)
 * “Use this template”로 새 저장소 생성
 * 사용자 사이트면 저장소 이름을 `USERNAME.github.io`
 
