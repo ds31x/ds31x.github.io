@@ -4,11 +4,6 @@ search: exclude
 ---
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <url>
-        <loc>{{ site.url }}/tag/</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.5</priority>
-    </url>
 {% assign documents = site.wiki %}
 {% for doc in documents %}
     {% if doc.public == true and doc.title != 'wiki index'%}
@@ -18,15 +13,11 @@ search: exclude
             <lastmod>{{ doc.date | date_to_xmlschema }}</lastmod>
         {% else %}
             <lastmod>{{ doc.updated | date_to_xmlschema }}</lastmod>
-        {% endif %}
-        {% if doc.sitemap.changefreq == null %}
-            <changefreq>daily</changefreq>
-        {% else %}
-            <changefreq>{{ doc.sitemap.changefreq }}</changefreq>
-        {% endif %}
+	{% endif %}
+	<changefreq>{{ doc.sitemap.changefreq | default: "daily" }}</changefreq>
         {% if doc.sitemap.priority != null %}
             <priority>{{ doc.sitemap.priority }}</priority>
-        {% endif %}
+	{% endif %}
     </url>
     {% endif %}
 {% endfor %}
