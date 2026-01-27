@@ -27,7 +27,14 @@ permalink: /search/
       this.ref("url");
       this.field("title");
       this.field("content");
-      docs.forEach(d => this.add(d));
+      docs.forEach(d => {
+        this.add({
+          url: d.url,
+          title: (d.title || "").toLowerCase(),
+          content: (d.content || "").toLowerCase()
+        });
+      });
+
     });
     results.innerHTML += "<li>lunr index built</li>";
 
@@ -43,12 +50,14 @@ permalink: /search/
           return `<li><a href="${d.url}">${d.title}</a></li>`;
         }).join("");
     }
-
+    
     function doSearch(q) {
-      q = (q || "").trim();
-      if (!q) { results.innerHTML = "<li>type a query</li>"; return; }
-      render(idx.search(q), q);
+      const q_raw = (q || "").trim();
+      const q_norm = q_raw.toLowerCase();
+      if (!q_norm) { results.innerHTML = "<li>type a query</li>"; return; }
+      render(idx.search(q_norm), q_raw);
     }
+
 
     const params = new URLSearchParams(window.location.search);
     const query = params.get("searchString");
