@@ -289,8 +289,13 @@ bundle exec jekyll serve
 
 > 2026.1.28 현재 Jekyll3.10.0에서  
 > 위의 명령어 실행시 Ruby의 OpenSSL 사용하면서 `unable to get certificate CRL`에러가 뜸.  
-> 이는 `remote_theme` 를 사용할 때 일어나는데, Ruby 쪽에서 이를 수정해야할 거 같음.  
-> 우선 장비에서 Jekyll을 돌릴 때는 remote_theme를 쓰지 않도록 우회해야 해결됨.  
+> 원인:
+> remote_theme 기능을 사용할 때 Jekyll은 외부(GitHub) 서버에 접속하여 테마 파일을 다운로드함.
+> 이때 시스템의 OpenSSL 설정이 엄격하거나,
+> 특정 네트워크 환경(방화벽, 프록시)에서 CRL 서버에 접근하지 못할 경우
+> certificate verify failed 오류를 뿜으며 중단됨.
+> 현재 curl로는 되는데 conda환경의 Ruby 내에선 안 됨.
+> 우선 장비에서 Jekyll을 돌릴 때는 remote_theme를 쓰지 않도록 우회해서 해결됨.  
 
 에러는 다음과 같음:
 ```text
@@ -340,6 +345,15 @@ bundle exec jekyll serve --config _config_local.yml
 ```
 
 이 경우 장비와 github.io 페이지 모두에서 제대로 동작하게 됨.
+
+아니면, 다음처럼 시스템의 Cert를 사용하는 시도를 해볼 수 있음 (테스트 환경에선 실패)
+```bash
+# Ubuntu/Debian 기준
+export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+
+# 그 후 다시 실행
+bundle exec jekyll serve
+```
 
 > 버그가 수정되면 이 절은 무시해도 됨.
 
