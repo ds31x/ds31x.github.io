@@ -3,7 +3,7 @@ layout  : wiki
 title   : GPG 에서의 primal keys와 sub keys 
 summary : 
 date    : 2026-01-17 21:37:51 +0900
-updated : 2026-01-18 08:36:30 +0900
+updated : 2026-01-29 16:20:36 +0900
 tag     : gpg
 resource: 34/5126287A1C4E9A8B0874BFDE1CA262
 toc     : true
@@ -42,6 +42,8 @@ gpg --sign hello.txt
 # 공개키로 서명 검증: 검증 결과가 출력됨.
 gpg --verify hello.txt.gpg
 ```
+
+* 뒤에 나오지만, 여기서 사용된 키들은 서명용 subkey임.
 
 ## 2. GPG(OpenPGP) 의 경우엔 한 단계 더 나눔.
 
@@ -87,12 +89,12 @@ gpg --list-keys --keyid-format=long
 
 출력 예:
 
-![](/resource/34/5126287A1C4E9A8B0874BFDE1CA262/0b8f074b-e4b2-4a65-84a8-76043e7d1d9e.png){style="display: block; width:500px"}
+<img src="/resource/34/5126287A1C4E9A8B0874BFDE1CA262/0b8f074b-e4b2-4a65-84a8-76043e7d1d9e.png" style="display: block; width:500px" />
 
 * `pub` → primary key
 * `sub` → subkey
 * `[SC]`, `[E]`, `[S]` : 역할 플래그
-* `[expieres: 2029-01-16] : 유효기간.
+* `[expieres: 2029-01-16]` : 유효기간.
 
 
 ## 4. primary key의 의미와 역할
@@ -195,6 +197,7 @@ gpg --encrypt -r user@example.com secret.txt
 ```bash
 gpg --export --armor user@example.com > pubkey.asc
 ```
+* 생성된 `pubkey.asc` 자체를 배포.
 
 subkey 만에 대한 public key 를 따로 추출하여 사용하는 경우는 별로 없음.
 
@@ -244,8 +247,10 @@ gpg> save
 ### 9.1 remove (제거)
 
 subkey를 목록에서 제거하는 작업이다.
-공개적으로 “무효”를 선언하지는 않고, 
-이미 공개된 경우에 문제를 일으키니 사용하지 않는게 나음.
+
+* 이는 장비의 목록에서만 제거하는 것이라, 
+* 공개적으로 "무효"를 선언하지는 않음에 유의할 것.  
+* 이미 공개된 경우에 문제를 일으키니 사용하지 않는 걸 권함: 뒤의 `revoke`를 권장함.
 
 ```text
 gpg --edit-key <KEY-ID>
@@ -253,7 +258,6 @@ gpg> key 1
 gpg> delkey
 gpg> save
 ```
-
 
 ### 9.2 revocation (폐기)
 
@@ -279,16 +283,22 @@ gpg> save
 
 ## 10. 변경 후 공개키 재배포
 
-subkey 추가,교체,폐기 후에는
-해당 공개키를 저장하여 배포하거나
+subkey 추가,교체,폐기 후에는  
+해당 공개키를 저장하여 배포하거나  
 다시 key server에 배포해야 한다.
 
 ```bash
 gpg --export --armor <KEY-ID> pubkey.asc
 ```
 
-아래는 key server 업로드:
+**아래는 key server 업로드하는 방법임:&&
 
+[[/gpg/gpg_ks_setting]]{dirmngr} 을 우회하는 방법 (`keys.openpgp.org`만 가능)
 ```bash
 gpg --export --armor <KEY-ID> | curl -T - https://keys.openpgp.org
+```
+
+정식 방법.
+```bash
+gpg --keyserver hkps://keys.openpgp.org --send-keys <KEY-ID>
 ```
