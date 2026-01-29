@@ -44,7 +44,6 @@ latex   : false
 * armored 출력에는 반드시 `.asc`
 * private key는 기본적으로 binary 보관
 
-
 ## 3. Fingerprint 기반 파일명 규칙
 
 ### 3.1 Fingerprint 사용 이유
@@ -52,6 +51,8 @@ latex   : false
 * Key ID(8 or 16 hex)는 충돌 가능성 존재
 * Fingerprint(40 hex)는 전 세계적으로 유일 (SHA-1 기반)
 * 파일 혼동 및 오배포 방지
+
+SHA-1은 Hash algorithm의 하나임: [Hash Algorithm](https://ds31x.tistory.com/283)
 
 ### 3.2 파일명 규칙
 
