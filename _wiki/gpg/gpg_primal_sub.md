@@ -195,7 +195,7 @@ gpg --encrypt -r user@example.com secret.txt
 이때 사용되는 key는
 `[E]` 역할을 가진 encryption subkey 임.
 
-> 일반적으로 OpenPGP 메시지는 서명(`--sign`)과 암호화(`--encrypt`)를 함께 수행한다.
+> 일반적으로 OpenPGP 메시지는 서명(`--sign`)과 암호화(`--encrypt`)를 함께 수행한다.  
 > 메시지는 수신자의 공개키(encryption subkey)로 암호화되며,  
 > 동시에 송신자의 비밀키(signing subkey)를 사용하여 서명된다
 
