@@ -47,6 +47,7 @@ latex   : false
 
 **우리는 글을 Markdown으로 쓰고, 이를 Jekyll 이 웹에서 서비스 가능한 HTML 로 만든다.**
 
+**참고** : [Markdown 이란](https://dsaint31.me/mkdocs_site/CE/markdown_latex/markdown)
 
 ### 1.2 GitHub Pages (github.io)란?
 
@@ -101,6 +102,8 @@ gem install jekyll
 > **gem은 일종의 package manager라고 보다는 단순 설치 툴임.
 > "설치" 를 위해 의존성 메타 데이터를 읽을 수 있으나,
 > 프로젝트 단위의 의존성 충돌 해결 기능이나, 버전 충돌 검사, 환경격리 기능등은 제공하지 않음.
+
+**참고:** [package manager란?](https://ds31x.tistory.com/335)
 
 
 ### 1.5 Bundler란?
@@ -178,7 +181,6 @@ ruby 기반의 jekyll 프로젝트를 수행하기 위해서 일종의 격리된
 * 시스템의 다른 S/W에도 영향을 주므로 격리된 환경에서 동작하게 하는게 좋음.
 
 이를 위해 `conda`라는 툴을 사용.
-
 
 ```bash
 conda create -n jekyllmm -c conda-forge -y \
@@ -289,14 +291,14 @@ bundle exec jekyll serve
 ### 참고: SSL connecton의 CRL 에러 발생시
 
 > 2026.1.28 현재 Jekyll3.10.0에서  
-> 위의 명령어 실행시 Ruby의 OpenSSL 사용하면서 `unable to get certificate CRL`에러가 뜸.  
-> 원인:
+> 위의 명령어 실행시 Ruby의 OpenSSL (Secure Socket Layer) 사용하면서 `unable to get certificate CRL`에러가 뜸.  
+> **원인:**
 > remote_theme 기능을 사용할 때 Jekyll은 외부(GitHub) 서버에 접속하여 테마 파일을 다운로드함.
-> 이때 시스템의 OpenSSL 설정이 엄격하거나,
-> 특정 네트워크 환경(방화벽, 프록시)에서 CRL 서버에 접근하지 못할 경우
-> certificate verify failed 오류를 뿜으며 중단됨.
-> 현재 curl로는 되는데 conda환경의 Ruby 내에선 안 됨.
-> 우선 장비에서 Jekyll을 돌릴 때는 remote_theme를 쓰지 않도록 우회해서 해결됨.  
+> * 이때 시스템의 OpenSSL 설정이 엄격하거나,
+> * 특정 네트워크 환경(방화벽, 프록시)에서 CRL 서버에 접근하지 못할 경우
+> * certificate verify failed 오류를 뿜으며 중단됨.
+> 현재 `curl`로는 되는데 conda환경의 Ruby 내에선 안 됨.
+> 우선 장비에서 Jekyll을 돌릴 때는 remote_theme를 쓰지 않도록 우회해서 해결.  
 
 에러는 다음과 같음:
 ```text
@@ -383,13 +385,13 @@ bundle exec jekyll -v
 
 ## 9. Markdown 실습: 글 하나 추가
 
-
 다음은 `bash` 환경 기준임.
 
 > 일반 에디터로  
 > `_posts/2026-01-28-first-note.md` 파일을 생성해서  
 > `cat ..` 아래 부터 `EOF`전까지의 내용을 입력하고 저장해도 됨  
 
+참고: [bash 및 shell에 대한 글](https://ds31x.tistory.com/page/Shell-%EC%9A%94%EC%95%BD-%EC%A0%95%EB%A6%AC-bash-%EA%B8%B0%EC%A4%80)
 
 ```bash
 mkdir -p _posts
@@ -411,6 +413,8 @@ EOF
 
 
 ## 10. GitHub Pages 배포 (브랜치 기반)
+
+[git이란](https://ds31x.tistory.com/271)
 
 ### 10.1 GitHub 설정
 
@@ -454,27 +458,20 @@ PAT로 push를 하려면 다음 URL참고: [PAT를 통한 authentication for Git
 ## 12. 최종 요약.
 
 * **gem**
-
   * 패키지 설치 도구
   * 프로젝트 개념 없음
 * **Bundler**
-
   * 프로젝트 단위 의존성 관리자
 * **Gemfile**
-
   * 사람이 적는 요구사항
   * Bundler 가 읽는 지시사항임.
 * **Gemfile.lock**
-
   * Bundler가 만든 확정된 답안
 * **bundle install**
-
   * Gemfile을 읽고 lock을 만들며 설치
 * **bundle exec**
-
   * lock 기준으로 실행 강제
 * **GitHub Pages (브랜치 배포)**
-
   * 저장소 소스를 읽어 Jekyll 빌드 후 배포
 
 
