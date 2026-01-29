@@ -41,14 +41,21 @@ gpg --sign hello.txt
 
 # 공개키로 서명 검증: 검증 결과가 출력됨.
 gpg --verify hello.txt.gpg
+
+# 검증과 파일의 내용을 확인.
+gpg --decrypt hello.txt.gpg
 ```
 
 * 뒤에 나오지만, 여기서 사용된 키들은 서명용 subkey임.
+* `--sign`의 결과물은 원래의 파일의 내용과 함께 서명정보가 들어감.
+* 서명과 내용을 분리한 형태로 처리할 수도 있음: `gpg --detach-sign hello.txt`
+* 이 경우엔 검증하려면 `hello.txt`도 같이 필요: `gpg --verify hello.txt.sig hello.txt`
+	* 서명이 attach된 경우와 달리, `hello.txt`의 내용이 바뀌면 검증시 `BAD signature ...`라고 뜸.
 
 ## 2. GPG(OpenPGP) 의 경우엔 한 단계 더 나눔.
 
 GPG(OpenPGP)는 위의 공개키 / 비밀키 구조를 그대로 유지하면서,
-각각을 다시 다음과 같이 **구조적으로 분해**한다.
+각각을 다시 다음과 같이 **구조적으로 구분함**.
 
 * **primary key**
 * **subkey**
