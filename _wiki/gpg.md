@@ -3,7 +3,7 @@ layout  : category
 title   : GNU Privacy Guard (GPG)
 summary : 
 date    : 2026-01-17 15:34:40 +0900
-updated : 2026-01-29 10:17:02 +0900
+updated : 2026-01-29 12:59:30 +0900
 tag     : gpg
 resource: d9c1b8be-a52e-4dc0-9a1d-c2f64e54d9eb
 toc     : true
@@ -26,6 +26,10 @@ GPG는 키 생성뿐 아니라 **서명·암호화·신뢰 모델 관리** 까�
 
 > ssh가 훨씬 더 많이 사용된다...  
 > GPG는 패키지 관리자가 되지 않는 한은 그리...
+
+
+* [[/gpg/gpg_backup]]
+* [[/gpg/gpg_revoke_key]]
 
 ## 외부 참고 문서:
 
