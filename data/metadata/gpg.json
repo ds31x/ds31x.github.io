@@ -4,11 +4,15 @@
  "summary": "",
  "parent": "index",
  "url": "/wiki/gpg",
- "updated": "2026-01-29 10:17:02 +0900",
+ "updated": "2026-01-29 12:59:30 +0900",
  "resource": "d9c1b8be-a52e-4dc0-9a1d-c2f64e54d9eb",
  "children": [
+  "gpg/gpg_addsub",
+  "gpg/gpg_backup",
+  "gpg/gpg_expire",
   "gpg/gpg_keyserver",
   "gpg/gpg_primal_sub",
+  "gpg/gpg_revoke_key",
   "gpg/gpg_term"
  ]
 }
