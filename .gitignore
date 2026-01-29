@@ -12,4 +12,4 @@ package-lock.json
 .localhost.pid
 .quickfix-bookmark
 .bundle/
-vender/
+vendor/
