@@ -3,7 +3,7 @@ layout  : wiki
 title   : How to add new signing subkey
 summary : 
 date    : 2026-01-29 14:10:43 +0900
-updated : 2026-01-29 14:22:12 +0900
+updated : 2026-01-29 14:25:51 +0900
 tag     : 
 resource: 94/E921DB95714274976F0DDB71D4603F
 toc     : true
@@ -87,14 +87,13 @@ gpg --armor --export <primary_key>
 
 ## 6단계. GitHub에 반영
 
-1. GitHub → **Settings → SSH and GPG keys**
-2. **GPG keys**
-3. 기존 키 유지
-4. **갱신된 public key 추가**
+1. 로컬에서 새 subkey가 포함된 public key 생성 (5단계 참고)
+2. GitHub → Settings → SSH and GPG keys
+3. GPG key기존에 등록된 동일 primary key(fingerprint 기준)를 삭제(Delete)
+4. New GPG key에서 <public_key.asc> 내용을 붙여넣어 재등록(Add)
 
 * GitHub는 public key 안의 **모든 signing subkey를 자동 인식**
 * 어떤 subkey를 쓸지는 **로컬 Git 설정**이 결정
-
 
 ## 7단계. keyserver(keys.openpgp.org)에 반영
 
