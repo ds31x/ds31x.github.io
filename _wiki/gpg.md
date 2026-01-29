@@ -3,7 +3,7 @@ layout  : category
 title   : GNU Privacy Guard (GPG)
 summary : 
 date    : 2026-01-17 15:34:40 +0900
-updated : 2026-01-29 12:59:30 +0900
+updated : 2026-01-29 19:39:51 +0900
 tag     : gpg
 resource: d9c1b8be-a52e-4dc0-9a1d-c2f64e54d9eb
 toc     : true
@@ -27,8 +27,17 @@ GPG는 키 생성뿐 아니라 **서명·암호화·신뢰 모델 관리** 까�
 > ssh가 훨씬 더 많이 사용된다...  
 > GPG는 패키지 관리자가 되지 않는 한은 그리...
 
+* [Public Key Cryptograpy, PGP, GPG 소개](https://ds31x.tistory.com/613#2.-public-key-cryptography-%EA%B3%B5%EA%B0%9C%ED%82%A4-%EC%95%94%ED%98%B8)
+* [[/gpg/gpg_term]]
+* [[/gpg/gpg_tutorial]]
 
+* [[/gpg/gpg_primal_sub]]
 * [[/gpg/gpg_backup]]
+* [[/gpg/gpg_keyserver]]
+* [[/gpg/gpg_ks_setting]]
+
+* [[/gpg/gpg_expire]]
+* [[/gpg/gpg_addsub]]
 * [[/gpg/gpg_revoke_key]]
 
 ## 외부 참고 문서:

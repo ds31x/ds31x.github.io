@@ -17,7 +17,7 @@
  },
  {
   "name": "gpg",
-  "size": 7
+  "size": 8
  },
  {
   "name": "hf",
@@ -61,6 +61,10 @@
  },
  {
   "name": "token",
+  "size": 1
+ },
+ {
+  "name": "tutorial",
   "size": 1
  },
  {

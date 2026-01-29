@@ -5,5 +5,6 @@
  "gpg/gpg_keyserver",
  "gpg/gpg_ks_setting",
  "gpg/gpg_primal_sub",
- "gpg/gpg_term"
+ "gpg/gpg_term",
+ "gpg/gpg_tutorial"
 ]
