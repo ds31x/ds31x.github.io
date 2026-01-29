@@ -3,7 +3,7 @@ layout  : wiki
 title   : Key Server - keys.openpgp.org 
 summary : 
 date    : 2026-01-17 15:37:50 +0900
-updated : 2026-01-29 10:13:12 +0900
+updated : 2026-01-29 15:55:43 +0900
 tag     : gpg
 resource: 69/c864d7f69b47efade39f594306bddb
 toc     : true
@@ -18,6 +18,8 @@ latex   : false
 
 # OpenPGP key-server와 keys.openpgp.org
 
+`gpg`로 `keys.openpgp.org`를 사용하려면 다음을 참고:
+[Usage:GnuPG](https://keys.openpgp.org/about/usage-gnupg/)
 
 ## 1. key-server의 목적
 
@@ -109,10 +111,21 @@ key-server에 public key를 upload한다는 것은 다음을 의미:
 
 > "현재 public key의 상태를 서버에 **등록(register)** 하거나 **갱신(update)** 한다"
 
-이는 key 를 생성하는 행위가 아님.
+* 이는 key 를 생성하는 행위가 아님.
+* 만든 key 를 upload.
 
-만든 key 를 upload.
+gpg로 키서버에 키 업로드하기
+```
+gpg --keyserver hkps://keys.openpgp.org --send-keys <LONG_KEYID>
+```
+* `--keyserver`를 지정하지 않으면 기본 키서버로 전송됨: 주의할 것.
+* [[/gpg/gpg_ks_setting]] 참고
 
+`keys.openpgp.org`는 HTTPS를 통한 웹전송도 허용하므로 다음도 가능:
+```
+gpg --armor --export <KEYID> | \
+  curl -T - https://keys.openpgp.org
+```
 
 ### 4.2 Upload되는 정보의 범위
 
@@ -212,6 +225,25 @@ update를 통해 갱신되는 정보는 다음과 같음:
 key-server는 “과거 상태”로 되돌리는 기능(revert)을 제공하지 않는다.
 
 
+### 예제 
+
+subkey추가.
+
+```
+gpg --edit-key <primary_key>
+gpg> addkey
+gpg> save
+```
+
+subkey가 수정된 후 public key를 업로드
+
+```
+gpg --keyserver hkps://keys.openpgp.org --send-keys <primary_key>
+```
+* 기존 key에 subkey 추가
+* UID, fingerprint 유지
+* 서버 상태 갱신
+
 ## 9. revert(되돌리기)가 불가능한 이유
 
 OpenPGP key-server는 **누적 모델(append-only model)** 을 따른다.
@@ -230,7 +262,7 @@ key-server에서 가능한 조작은 다음으로 제한됨:
 
 Revocation 은 key-server에서 매우 중요한 정보이다.
 
-* 폐기된 key는 서버에서 “무효”로 표시된다.
+* 폐기된 key는 서버에서 "무효"로 표시된다.
 * key는 여전히 다운로드 가능하지만, 제대로 된 클라이언트에서 이의 사용을 거부하는 방식임.
 * 이는 삭제가 아니라 **영구적인 신뢰 중단 선언** 에 해당함.
 
@@ -244,6 +276,13 @@ Revocation 은 key-server에서 매우 중요한 정보이다.
 * 클라이언트가 이를 해석하여 사용 여부를 결정하는 방식임.
 * 만료일 변경은 업데이트를 통해 반영 가능함 (key-server 에 업데이트를 안하면 갱신 안 됨).
 
+만료된 키를 받고 나서 다음으로 검증해볼 것:
+
+```
+gpg --recv-keys <LONG_KEYID>
+```
+* key-server는 만료 여부와 무관하게 배포
+* 사용 가능 여부 판단은 클라이언트(gpg) 가 수행
 
 ## 12. key-server 관점에서의 최종 정리
 

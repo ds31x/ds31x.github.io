@@ -3,7 +3,7 @@ layout  : wiki
 title   : How to revoke GPG Key
 summary : 
 date    : 2026-01-29 12:50:17 +0900
-updated : 2026-01-29 12:55:49 +0900
+updated : 2026-01-29 15:58:39 +0900
 tag     : 
 resource: 81/1ADD009DDD47C7B71193930DD120D2
 toc     : true
@@ -35,7 +35,7 @@ gpg --import revoke-3456MNOP7890QRST.asc
 ### 1) 키서버로 revoked key 업로드
 
 ```bash
-gpg --send-keys ABCD1234EFGH5678
+gpg --keyserver hkps://keys.openpgp.org --send-keys ABCD1234EFGH5678
 ```
 
 * 기존 public key + revoke 정보가 함께 전송됨
@@ -55,7 +55,7 @@ GnuPG 기본 설정 기준으로 다음이 대상이 됨.
 **확인**
 
 ```bash
-gpg --keyserver keys.openpgp.org --send-keys ABCD1234EFGH5678
+gpg --keyserver hkps://keys.openpgp.org --send-keys ABCD1234EFGH5678
 ```
 
 
@@ -113,7 +113,7 @@ gpg --armor --export NEWKEYID > publickey-new.asc
 
 
 ```bash
-gpg --send-keys NEWKEYID
+gpg --keyserver hkps://keys.openpgp.org --send-keys NEWKEYID
 ```
 * 키서버 업로드
 
