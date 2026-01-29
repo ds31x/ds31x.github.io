@@ -41,14 +41,21 @@ gpg --sign hello.txt
 
 # 공개키로 서명 검증: 검증 결과가 출력됨.
 gpg --verify hello.txt.gpg
+
+# 검증과 파일의 내용을 확인.
+gpg --decrypt hello.txt.gpg
 ```
 
 * 뒤에 나오지만, 여기서 사용된 키들은 서명용 subkey임.
+* `--sign`의 결과물은 원래의 파일의 내용과 함께 서명정보가 들어감.
+* 서명과 내용을 분리한 형태로 처리할 수도 있음: `gpg --detach-sign hello.txt`
+* 이 경우엔 검증하려면 `hello.txt`도 같이 필요: `gpg --verify hello.txt.sig hello.txt`
+	* 서명이 attach된 경우와 달리, `hello.txt`의 내용이 바뀌면 검증시 `BAD signature ...`라고 뜸.
 
 ## 2. GPG(OpenPGP) 의 경우엔 한 단계 더 나눔.
 
 GPG(OpenPGP)는 위의 공개키 / 비밀키 구조를 그대로 유지하면서,
-각각을 다시 다음과 같이 **구조적으로 분해**한다.
+각각을 다시 다음과 같이 **구조적으로 구분함**.
 
 * **primary key**
 * **subkey**
@@ -137,15 +144,19 @@ primary key에 의해 자동으로 certification된다.
 
 ### 4.3 Signing (S, 서명)
 
-primary key는 **signing(서명)** 도 수행 가능함.
-
+primary key는 이론적으로 signing(S) capability를 가질 수 있으나,
+실제로는 identity(UID) 및 subkey에 대한 **certify(C) 서명에만 사용된다.
+데이터 서명(signing)은 signing subkey가 담당하는 것이 OpenPGP 및 GnuPG의 표준 운영 모델이다.
+* 즉, primary key는 signing 권한을 가질 수 있으나 ,
+* GnuPG에서는 실제 데이터 서명 시 signing subkey가 자동으로 사용됨.
+    * 사용자가 primary key를 명시하더라도, 이는 identity 선택에 가깝고 실제 서명 연산은 subkey에서 수행.
+ 
 ```bash
-gpg --local-user 9F3A7C2D8B4E1A90 --sign message.txt
+gpg --local-user <KEYID> --sign message.txt
 ```
 
-* 이는 **identity-level signing** 임.
-* 가능은 하지만,
-* 실제로 사용되는 경우는 드물다.
+* 이는 **identity-level signing** 임: 연결된 email주소도 가능.
+* 여전히 서명용 subkey 사용됨.
 
 
 ## 5. subkey의 의미와 실제 사용
@@ -169,6 +180,8 @@ subkey는 항상 **구체적인 다음의 역할**을 가짐.
 ```bash
 gpg --sign commit.txt
 ```
+* `commit.txt` 의 내용에 서명이 첨부된 `commit.txt.gpg`가 생성됨.
+* `cat commit.txt.gpg`로 수행시 파일 내용은 보임 (`--encrypt`와 `--sign`의 차이).
 
 이 경우 GnuPG는 자동으로
 `[S]` 역할을 가진 signing subkey를 선택하여 사용.
@@ -182,6 +195,18 @@ gpg --encrypt -r user@example.com secret.txt
 이때 사용되는 key는
 `[E]` 역할을 가진 encryption subkey 임.
 
+> 일반적으로 OpenPGP 메시지는 서명(`--sign`)과 암호화(`--encrypt`)를 함께 수행한다.  
+> 메시지는 수신자의 공개키(encryption subkey)로 암호화되며,  
+> 동시에 송신자의 비밀키(signing subkey)를 사용하여 서명된다
+
+```bash
+gpg --encrypt --sign -r dsaint31@naver.com hello.txt
+```
+
+명시적인 버전은 다음과 같음:
+```bash
+gpg --encrypt --sign -u <KEYID> -r dsaint31@naver.com secret.txt
+```
 
 ## 6. public key 는 보통 “통째로” 배포되고 사용됨
 
@@ -209,7 +234,6 @@ OpenPGP 설계의 핵심은 다음 문장이다.
 > primary key는 identity로 유지되고,
 > subkey는 이후에 추가·교체·제거·폐기될 수 있음.
 
-
 기존 키에 subkey를 추가할 수 있음.
 
 ### 예제: subkey 추가
@@ -227,7 +251,7 @@ subkey 교체는 다음 두 단계의 조합이다.
 1. 새 subkey 추가
 2. 기존 subkey를 더 이상 사용하지 않도록 처리
 
-이는 **정상적인 운용 절차**이다.
+이는 **정상적인 운용 절차** 임.
 
 ### 예제: 교체 흐름
 
@@ -244,13 +268,24 @@ gpg> save
 
 ## 9. subkey remove(제거)와 revocation(폐기)
 
+`delkey` : "없었던 것처럼 치우기" (remove)
+* 로컬 관리 목적
+* 테스트용 subkey 정리 등에 사용됨.
+* 아직 배포하지 않은 subkey 제거
+
+`revkey` : "사용하면 안 된다고 알리기" (revocation)
+* 공개적 무효화 선언
+* 이미 배포된 subkey 폐기
+* 타인이 명시적으로 invalid로 인식
+
 ### 9.1 remove (제거)
 
 subkey를 목록에서 제거하는 작업이다.
 
-* 이는 장비의 목록에서만 제거하는 것이라, 
-* 공개적으로 "무효"를 선언하지는 않음에 유의할 것.  
-* 이미 공개된 경우에 문제를 일으키니 사용하지 않는 걸 권함: 뒤의 `revoke`를 권장함.
+* 이는 로컬 keyring에서 subkey를 제거하는 작업.
+* 공개적으로 해당 subkey의 무효를 선언하지 않음,
+* 다른 사용자의 keyring이나 keyserver에는 전혀 영향을 주지 않음 (여전히 외부에선 유효함).
+* 이미 배포된 subkey를 더 이상 사용하지 않도록 알릴 필요가 있는 경우에는 `revoke`를 사용하는 것이 적절함
 
 ```text
 gpg --edit-key <KEY-ID>
@@ -276,8 +311,8 @@ gpg> save
 
 사유(reason) 를 선택해야 함:
 
-* compromised
-* superseded
+* compromised (손상됨·유출됨)
+* superseded (대체됨)
 * no longer used
 
 
