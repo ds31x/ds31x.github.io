@@ -3,7 +3,7 @@ layout  : wiki
 title   : Key Server - keys.openpgp.org 
 summary : 
 date    : 2026-01-17 15:37:50 +0900
-updated : 2026-01-18 16:04:08 +0900
+updated : 2026-01-29 10:13:12 +0900
 tag     : gpg
 resource: 69/c864d7f69b47efade39f594306bddb
 toc     : true
@@ -38,6 +38,10 @@ key-server의 존재 목적은 다음과 같다.
 > key-server는 **public keys 만을 다루며**,
 > private key(개인키)는 어떠한 경우에도 저장하거나 처리하지 않음.
 
+OpenPGP key-server의 경우 e-mail과 public key의 binding 만을 보장.
+
+* public key를 trust하기 위한 binding에 대한 보다 자세한 건 다음을 참고:
+* [Comparison of Public Key–Owner Binding Models: WoT, email-key binding, CA/Certificate](https://ds31x.tistory.com/612#2.-keys.openpgp.org-%EB%B0%A9%EC%8B%9D)
 
 ## 2. OpenPGP key-server의 기본 특성
 
@@ -86,7 +90,7 @@ key-server는 사용자 계정(account)을 기준으로 동작하지 않음.
 
 ### 3.2 keys.openpgp.org의 접근 방식
 
-이를 개선하기 위해 keys.openpgp.org는 다음과 같은 정책을 채택:
+이를 개선하기 위해 **keys.openpgp.org** 는 다음과 같은 정책을 채택:
 
 1. **email 검증(email verification)** 을 통해 UID를 제한.
 2. **Web of Trust 서명**을 서버에서 제거함.
@@ -230,7 +234,7 @@ Revocation 은 key-server에서 매우 중요한 정보이다.
 * key는 여전히 다운로드 가능하지만, 제대로 된 클라이언트에서 이의 사용을 거부하는 방식임.
 * 이는 삭제가 아니라 **영구적인 신뢰 중단 선언** 에 해당함.
 
-참고: [[gpg_term#11-revoation--revoke-폐기]]
+참고: [[/gpg/gpg_term#11-revoation--revoke-폐기]]
 
 ## 11. key-server에서의 만료(expire)
 
@@ -253,4 +257,8 @@ Revocation 은 key-server에서 매우 중요한 정보이다.
 * 폐기는 revoke(폐기 선언)로 표현된다.
 * key-server는 신뢰를 판단하지 않고, 업데이트된 정보를 전달할 뿐임.
 
+## 같이 보면 좋은 자료
 
+* [[/gpg/gpg_term]]
+* [Comparison of Public Key–Owner Binding Models: WoT, email-key binding, CA/Certificate](https://ds31x.tistory.com/612)
+* [[/gpg/gpg_primal_sub]]

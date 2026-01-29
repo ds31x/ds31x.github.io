@@ -10,7 +10,7 @@ usage() {
 # 인자 없으면 안내 후 종료
 [[ $# -ge 1 ]] || usage
 
-MODE="${MODE}"
+MODE="$1"
 
 if [[ ${MODE} = "docker" ]]; then
     ./generateData.js
