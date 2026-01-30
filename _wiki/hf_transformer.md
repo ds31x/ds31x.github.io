@@ -3,12 +3,12 @@ layout  : wiki
 title   : Language Model Taxonomy: Pretraining Paradigms and Encoder-Decoder Architectures
 summary : 
 date    : 2026-01-30 15:50:18 +0900
-updated : 2026-01-30 16:31:31 +0900
+updated : 2026-01-30 23:34:55 +0900
 tag     : 
 resource: 7F/408E6E724C430BA5A84F387A28B40A
 toc     : true
 public  : true
-parent  : [[/hf]]
+parent  : [[/index]]
 latex   : false
 ---
 * TOC

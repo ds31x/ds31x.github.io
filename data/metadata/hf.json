@@ -9,7 +9,6 @@
  "children": [
   "hf_label_align",
   "hf/hf_start",
-  "hf/hf_transformer",
   "hf/pipeline"
  ]
 }
