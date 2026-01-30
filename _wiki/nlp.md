@@ -3,7 +3,7 @@ layout  : category
 title   : Natural Language Processing
 summary : 
 date    : 2026-01-20 20:27:15 +0900
-updated : 2026-01-20 20:32:23 +0900
+updated : 2026-01-30 15:48:18 +0900
 tag     : 
 resource: 6B/BBADB83D674326B3290D7CF320A2F0
 toc     : true
@@ -29,3 +29,8 @@ latex   : false
 * 질의응답(Question Answering): 질문에 대해 문서나 지식으로부터 정답을 찾는 작업
 * 문서 요약(Text Summarization): 긴 문서를 핵심 내용만 간결하게 요약하는 작업
 * 언어 생성(Text Generation): 주어진 문맥을 바탕으로 자연스러운 문장을 생성하는 작업
+
+## 주요 구성요소
+
+* [[/nlp/tokenization]]
+## Related Documents

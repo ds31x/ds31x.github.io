@@ -6,7 +6,7 @@ toc     : true
 resource: bd/eb2bbf-8972-4a62-92ec-5587c29bfc9d
 public  : true
 comment : false
-updated : 2026-01-27 16:48:21 +0900
+updated : 2026-01-30 23:09:26 +0900
 regenerate: true
 ---
 
@@ -16,5 +16,11 @@ regenerate: true
 여긴 내가 넣은 urls
 
 * [[first-log]]
-* [[gpg]]
 
+* [[/gitpage]]
+* [[/gpg]]
+
+* [[/nlp]]
+* [[/hf]]
+
+* [[/review]]

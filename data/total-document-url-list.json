@@ -28,6 +28,8 @@
  "/wiki/hf_dataset_dict/dd_map",
  "/wiki/hf_dataset_dict/dd_map_transform_collate",
  "/wiki/hf_dataset_dict/dd_multimodal",
+ "/wiki/hf_label_align",
+ "/wiki/hf_transformer",
  "/wiki/hf/hf_start",
  "/wiki/hf/pipeline",
  "/wiki/how-to",

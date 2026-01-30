@@ -3,7 +3,7 @@ layout  : wiki
 title   : Tokenizer 
 summary : 
 date    : 2026-01-20 14:09:40 +0900
-updated : 2026-01-20 20:26:56 +0900
+updated : 2026-01-30 15:48:18 +0900
 tag     : token BPE WordPiece UnigramLM 
 resource: 6E/305305E7CE447E926358B6D98F19C9
 toc     : true
@@ -194,12 +194,12 @@ embedding lookup 단계 자체가 context를 반영한다고 오해해선 안됨
 3. 여러 layer를 거치면서 주변 토큰 정보를 통합
 4. 최종 출력 embedding이 contextual embedding
 
-## 3.3 Contextual Embedding과 Subword Tokenization의 관계
+### 3.3 Contextual Embedding과 Subword Tokenization의 관계
 
 **중요한 사실:**
 
 > 현대의 contextual embedding 모델은  
-> 사실상 모두 subword tokenization을 전제로 설계되어 있습니다.
+> 사실상 모두 subword tokenization을 전제로 설계되어 있음.
 
 Contextual embedding이 아무리 강력해도:
 
@@ -379,7 +379,8 @@ Extremely noisy text
 * OOV
 * 매우 큰 Embedding matrix
 * 희귀 단어 처리 어려움.
-* 
+
+
 #### 1. Data Sparsity (데이터 희소성)
 
 실제 언어는 단어가 무한정 생성될 수 있음:
@@ -433,6 +434,7 @@ Embedding matrix = |V| × d
                  = 1,000,000 × 768
                  = 768M parameters (embedding만)
 ```
+
 * BERT-base 전체가 110M parameters인 것과 비교할 경우,
 * 위의 경우, embedding만으로 7배 더 큰 모델이 됨.
 
