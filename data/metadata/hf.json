@@ -8,8 +8,8 @@
  "resource": "1F/F019FC6CEB4E61BC6F07E6EE47F73C",
  "children": [
   "hf_label_align",
-  "hf_transformer",
   "hf/hf_start",
+  "hf/hf_transformer",
   "hf/pipeline"
  ]
 }
