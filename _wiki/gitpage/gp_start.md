@@ -3,7 +3,7 @@ layout  : wiki
 title   : Github.io 페이지 만들기
 summary : 
 date    : 2026-01-28 00:46:25 +0900
-updated : 2026-01-28 01:27:15 +0900
+updated : 2026-01-30 12:22:48 +0900
 tag     : bundle gem jekyll bundler ruby github.io
 resource: 2B/373DAF98724D3EA52998B0DBEFD534
 toc     : true
@@ -159,11 +159,13 @@ bundle exec    ← lock 기준으로 실행
 
 ### 3.1 GitHub에서 저장소 생성
 
-* 템플릿: [`mmistakes/mm-github-pages-starter`](https://github.com/mmistakes/mm-github-pages-starter)
+* 템플릿(두번째 것이 초보자 입장에선 쉽고 활용도도 높음): 
+	* [`mmistakes/mm-github-pages-starter`](https://github.com/mmistakes/mm-github-pages-starter)
+	* [`weniv/weniv_blog`](https://github.com/weniv/weniv_blog)
 * “Use this template”로 새 저장소 생성
 * 사용자 사이트면 저장소 이름을 `USERNAME.github.io`
 
-<img src="https://github.com/user-attachments/assets/f23488ba-f621-4153-b1c1-2e0f073268fe" style="display: block; margin: 0 auto; width:300px" />
+<img src="/resource/2B/373DAF98724D3EA52998B0DBEFD534/f23488ba-f621-4153-b1c1-2e0f073268fe.png" style="display: block; margin: 0 auto; width:300px" />
 
 ### 3.2 로컬로 clone
 
