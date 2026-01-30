@@ -4,11 +4,11 @@ title   : 사람의 글이 웹 페이지가 되기까지 - GitHub Pages, Jekyll,
 summary : 
 date    : 2026-01-30 10:29:38 +0900
 updated : 2026-01-30 10:59:10 +0900
-tag     : 
+tag     : git text
 resource: 07/21362DC0524E498C61897979440870
 toc     : true
 public  : true
-parent  : 
+parent  : [[/gitpage]]
 latex   : false
 ---
 * TOC
@@ -39,19 +39,24 @@ GigHub Pages는 Jekyll라는 S/W를 통해 이 [text file](https://ds31x.tistory
 
 > 참고: [Markup Language](https://ds31x.blogspot.com/2023/07/ce-markup-languages.html)
 
-이후 생성된 HTML과 기존에 사람의 설정 text파일(`_conifg.yml`)에 기반해 만들어지 CSS, JavaScript 파일(이들도 text file임)이 웹 브라우저(이 역시 S/W)로 전달되면, 브라우저는 다음과 같은 순서로 이를 처리한다.
+이후, 생성된 HTML과 기존에 사람이 설정한 내용을 담은 text파일(`_conifg.yml`)에 기반해 만들어진 CSS, JavaScript 파일(이들도 text file임)이  
+웹 브라우저(이 역시 S/W)로 전달되면, 브라우저는 다음과 같은 순서로 이를 처리한다.
 
-* HTML text를 읽어 문서의 구조를 표현하는 트리(DOM) 생성
+* HTML text를 읽어 문서의 구조를 표현하는 트리(DOM, Document Object Model) 생성
 * CSS text를 해석하여 각 요소의 색상, 크기, 위치 규칙 계산
 * DOM과 CSS 규칙을 결합하여 화면 배치(layout) 결정
 * 결정된 배치를 바탕으로 픽셀 단위의 화면 렌더링 수행
 
-이 단계가 끝나면, 사용자는 더 이상 소스 text를 보는 것이 아니라 **완성된 시각적 화면**을 보게 된다.
+참고: [Web Browser의 Rendering Engine](https://dsaint31.me/mkdocs_site/CE/ch09/ce09_web_browser/#engine-or-layout-engine-rendering-engine)
 
-참고로, JavaScript text는 별도로 실행되어, 
+이 단계가 끝나면, 사용자는 더 이상 [소스 코드(=text)](https://dsaint31.me/mkdocs_site/CE/ch08/ce08_compiler_interpreter/?h=bytecode#source-code)를 보는 것이 아니라 **완성된 시각적 화면**을 보게 된다.
+
+참고로, JavaScript text는 별도로 실행(처리하는 엔진이 다름)되어, 
 * 버튼 클릭이나 입력과 같은 사용자 행동에 반응하여 
 * 브라우저에서 해당 페이지의 DOM 상태를 변경한다.
 * 이 변경은 다시 위의 배치 계산과 렌더링 과정을 거쳐 즉시 화면에 반영된다.
+
+참고: [JavaScript 엔진](https://ds31x.tistory.com/434)
 
 정리하면,
 * text 파일은 사람이 의도를 기록하는 입력이며,
@@ -69,8 +74,10 @@ GigHub Pages는 Jekyll라는 S/W를 통해 이 [text file](https://ds31x.tistory
 
 ## Text 파일의 역할.
 
-사람과 컴퓨터의 일은 결국 사람이 이해할 수 있는 데이터를 컴퓨터가 이해할 수 있는 데이터로 바꾸는 것이고, 이는 text file에서 출발한다고 할 수 있음.
-GUI와 같은 interface를 제공한다면, 사람의 특정 행동(e.g. 버튼을 클릭)에 따라 정해진 반응을 하는 방식이라 text file이 직접 관여하진 않으나, GUI를 만드는 행위 자체도 text file 을 통해 이루어진다.
+사람과 컴퓨터의 일은 결국 사람이 이해할 수 있는 데이터를 컴퓨터가 이해할 수 있는 데이터로 바꾸는 것이고, 이는 text file에서 출발한다고 할 수 있음.  
+GUI와 같은 interface를 제공한다면,  
+사람의 특정 행동(e.g. 버튼을 클릭)에 따라 정해진 반응을 하는 방식이라  
+text file이 직접 관여하진 않으나, GUI를 만드는 행위 자체도 text file 을 통해 이루어진다.
 
 ## Text file vs. Binary file
 
@@ -86,7 +93,7 @@ GUI와 같은 interface를 제공한다면, 사람의 특정 행동(e.g. 버튼�
 | 대표 예시     | `.html`, `.css`, `.js`              | `.exe`, ELF, Mach-O, 라이브러리 파일 |
 
 * 웹에서는 사람이 작성한 text를 브라우저가 해석하는 구조가 중심임
-* 일반 프로그램(S/W)에서는 text로 작성된 코드가 binary로 변환되어 실행됨
+* 일반 프로그램(S/W)에서는 text로 작성된 코드가 [binary code](https://dsaint31.me/mkdocs_site/CE/ch08/ce08_compiler_interpreter/?h=bytecode#binary-code)로 변환되어 실행됨
 
 
 text file이라고 해서 모두 같은 수준의 의미를 가지는 것은 아니다.
@@ -102,4 +109,6 @@ Markdown이나 markup 언어는 사람이 읽기 쉬우면서도 기계가 해�
 
 ## 같이 보면 좋은 자료들
 
-* [[/gitpage/gp_start.md]]
+* [[/gitpage/gp_start]]
+* [Web Browser](https://dsaint31.me/mkdocs_site/CE/ch09/ce09_web_browser/)
+* [Compiler Language and Interpreter Language](https://dsaint31.me/mkdocs_site/CE/ch08/ce08_compiler_interpreter/)
