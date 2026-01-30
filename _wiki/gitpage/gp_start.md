@@ -4,7 +4,7 @@ title   : Github.io 페이지 만들기
 summary : 
 date    : 2026-01-28 00:46:25 +0900
 updated : 2026-01-28 01:27:15 +0900
-tag     : bundle gem jekyll
+tag     : bundle gem jekyll bundler ruby github.io
 resource: 2B/373DAF98724D3EA52998B0DBEFD534
 toc     : true
 public  : true
@@ -98,10 +98,10 @@ gem install jekyll
 * jekyll 패키지를 다운로드하고
 * 이를 현재 장비의 Ruby 환경에 설치
 
-> 주의할 점은 
-> **gem은 일종의 package manager라고 보다는 단순 설치 툴임.
-> "설치" 를 위해 의존성 메타 데이터를 읽을 수 있으나,
-> 프로젝트 단위의 의존성 충돌 해결 기능이나, 버전 충돌 검사, 환경격리 기능등은 제공하지 않음.
+> 주의할 점은  
+> **gem** 은 일종의 package manager라고 보다는 단순 설치 툴임.  
+> "설치" 를 위해 의존성 메타 데이터를 읽을 수 있으나,  
+> 프로젝트 단위의 의존성 충돌 해결 기능이나, 버전 충돌 검사, 환경격리 기능 등은 제공하지 않음.
 
 **참고:** [package manager란?](https://ds31x.tistory.com/335)
 
