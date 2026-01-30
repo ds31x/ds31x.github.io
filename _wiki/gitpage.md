@@ -3,7 +3,7 @@ layout  : category
 title   : github.io 페이지 관련 자료
 summary : 
 date    : 2026-01-28 01:27:33 +0900
-updated : 2026-01-28 01:28:35 +0900
+updated : 2026-01-30 11:44:52 +0900
 tag     : github.io git 
 resource: 22/366770C63047ABB219FE67668EC797
 toc     : true
@@ -13,6 +13,11 @@ latex   : false
 ---
 * TOC
 {:toc}
+
+# 시작하기 전에 
+
+github pages 로 text파일이 정적웹페이지로 만들어지는 점을 정리한 글
+* [[/gitpage/gp_about_page]]
 
 # 정리 자료
 
@@ -24,7 +29,8 @@ github.io 의 페이지를 가장 최소한으로 구축하는 방법 (로컬은
 **gem**, **budler** 와 같은 Ruby의 package manaer의 개념을 익히도록 구성.
 * [[gp_start]]
 
-> 로컬에 Jekyll 환경이 있어야, 편집이 좀 더 용이함. 매번 html이 빌드되는 것을 기다리기 어려운 터라...
+> 로컬에 Jekyll 환경이 있어야 사용이 좀 더 용이함.  
+> 매번 html이 빌드되는 것을 기다리기 어려운 터라...
 
 # 참고자료0-이호준 선생님
 

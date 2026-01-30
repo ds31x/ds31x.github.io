@@ -8,12 +8,24 @@
   "size": 1
  },
  {
+  "name": "bundler",
+  "size": 1
+ },
+ {
   "name": "dataset",
   "size": 1
  },
  {
   "name": "gem",
   "size": 1
+ },
+ {
+  "name": "git",
+  "size": 1
+ },
+ {
+  "name": "github.io",
+  "size": 2
  },
  {
   "name": "gpg",
@@ -53,6 +65,10 @@
  },
  {
   "name": "pipeline",
+  "size": 1
+ },
+ {
+  "name": "ruby",
   "size": 1
  },
  {
