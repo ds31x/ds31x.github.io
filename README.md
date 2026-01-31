@@ -2,7 +2,7 @@
 
 ## 시작하기
 
-블로그 스켈레톤을 fork 하세요!
+블로그 스켈레톤을 fork 하세요!!
 
 https://github.com/johngrib/johngrib-jekyll-skeleton
 
