@@ -9,7 +9,7 @@ resource: 7F/408E6E724C430BA5A84F387A28B40A
 toc     : true
 public  : true
 parent  : [[/index]]
-latex   : false
+latex   : true
 ---
 * TOC
 {:toc}
@@ -238,6 +238,7 @@ Encoder–Decoder 모델은
 * **핵심**: **cross-attention(교차 어텐션)**을 통해 encoder 표현을 decoder가 참조
 
 수식:
+
 $$\mathcal{L} = -\log P(x \mid \tilde{x}) = -\sum_{t=1}^{T} \log P(x_t \mid \tilde{x}, x_{<t})$$
 
 여기서 $\tilde{x} = C(x)$는 손상 함수(corruption function)를 적용한 입력.
