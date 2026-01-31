@@ -4,11 +4,11 @@ title   : Language Model Taxonomy - Pretraining Paradigms and Encoder-Decoder Ar
 summary : 
 date    : 2026-01-30 15:50:18 +0900
 updated : 2026-01-30 23:37:46 +0900
-tag     : 
+tag     : AR transformer
 resource: 7F/408E6E724C430BA5A84F387A28B40A
 toc     : true
 public  : true
-parent  : [[/index]]
+parent  : [[/hf_transformer]]
 latex   : true
 ---
 * TOC
@@ -41,6 +41,8 @@ Transformer 이후의 언어모델은
 
 * **왜 특정 태스크에 강한지**, 그리고 
 * **어떤 inductive bias(귀납적 편향)**를 가지는지를 설명함.
+
+[참고: Auto-regressive Model](https://dsaint31.tistory.com/861#2-2.%20%EC%9E%90%EA%B8%B0%ED%9A%8C%EA%B7%80(AR)%20%EB%AA%A8%EB%8D%B8-1-6)
 
 ---
 
