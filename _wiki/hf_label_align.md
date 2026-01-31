@@ -168,7 +168,7 @@ def tokenize_and_align_labels_wordlevel(example, tokenizer):
 참고: [https://huggingface.co/learn/llm-course/en/chapter7/2](https://huggingface.co/learn/llm-course/en/chapter7/2)
 
 
-### 4.3 전치리 결과 확인
+### 4.3 전처리 결과 확인
 
 다음은 전처리 결과를 보기 위한 코드
 
