@@ -1,10 +1,12 @@
 {
  "type": "wiki",
- "title": "HF - Transformers",
+ "title": "HF-Transformers",
  "summary": "",
- "parent": "",
+ "parent": "index",
  "url": "/wiki/hf_transformer",
  "updated": "2026-01-30 23:39:57 +0900",
  "resource": "81/90F64CA002455984DEB54FE3C5ECFD",
- "children": []
+ "children": [
+  "hf_transformer/hf_post_transformer"
+ ]
 }

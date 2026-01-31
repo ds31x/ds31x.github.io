@@ -2,7 +2,7 @@
  "type": "wiki",
  "title": "Language Model Taxonomy - Pretraining Paradigms and Encoder-Decoder Architectures",
  "summary": "",
- "parent": "index",
+ "parent": "hf_transformer",
  "url": "/wiki/hf_transformer/hf_post_transformer",
  "updated": "2026-01-30 23:37:46 +0900",
  "resource": "7F/408E6E724C430BA5A84F387A28B40A",
