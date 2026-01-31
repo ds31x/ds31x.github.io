@@ -37,7 +37,7 @@ latex   : false
 
 ### 다른 urls
 
-*[DFDRDODM95's blog - 같은 wiki를 사용하시는 분.]https://dfdrdodm95.github.io/)
+* [DFDRDODM95's blog - 같은 wiki를 사용하시는 분.](https://dfdrdodm95.github.io/)
 
 ### 이 블로그 설정 문서
 
