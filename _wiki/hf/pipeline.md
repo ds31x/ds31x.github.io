@@ -3,7 +3,7 @@ layout  : wiki
 title   : HF - Pipeline
 summary : 
 date    : 2026-01-23 23:33:04 +0900
-updated : 2026-01-27 15:24:06 +0900
+updated : 2026-02-02 18:03:37 +0900
 tag     : hf pipeline
 resource: 59/1E4C9B648A4B22AB54B0D2E67CB897
 toc     : true
@@ -335,6 +335,56 @@ Pipeline이 사용하는 모델의 명세는 `pipe.model.config`를 통해 확�
 ```python
 print(f"id2label 개수: {len(classifier.model.config.id2label)}")
 print(f"label2id 개수: {len(classifier.model.config.label2id)}")
+```
+
+## 로컬에 저장 경로 
+
+Pipeline으로 특정 task 에 관련된 모델과 컴포넌트들을 HF Hub로부터 가져오면 다음의 cache directory 에 저장된다.
+
+**Linux/macOS**
+
+```
+~/.cache/huggingface/
+```
+
+**Windows**
+
+```
+C:\Users\<USERNAME>\.cache\huggingface\
+```
+
+내부의 실제 저장 구조는 대략 다음과 같음:
+
+```text
+~/.cache/huggingface/ # Windows는 경로가 조금 다름.
+ └─ hub/
+    └─ models--{org}--{repo_name}/
+       ├─ refs/
+       │  └─ main
+       ├─ snapshots/
+       │  └─ <commit_hash>/
+       │     ├─ config.json
+       │     ├─ model.safetensors
+       │     ├─ tokenizer.json
+       │     ├─ preprocessor_config.json
+       │     └─ README.md
+       └─ blobs/
+```
+* Hub의 Git commit 기반 버전 관리를 그대로 반영
+* 동일 repo라도
+	* 다른 commit
+	* 다른 revisi0on(tag, branch)
+	* 의 경우, 서로 다른 snapshot으로 공존 가능
+* `<commit_hash>` 밑의 파일들에 대해 좀 더 자세히 살펴보려면 [[/hf/pipeline_repo]] 를 참고.
+
+참고로, 다른 cache directory (root)를 지정할 수도 있음:
+
+```python
+pipeline(
+    task,
+    model="repo_id",
+    cache_dir="/my/local/cache"
+)
 ```
 
 ## 주요 Pipeline taks list
