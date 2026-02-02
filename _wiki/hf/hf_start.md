@@ -131,23 +131,36 @@ print("flax :", transformers.utils.is_flax_available())
 EOF
 ```
 
-자기 고유 장비라면 `hf auth login` 을 통해 로그인하고 다음으로 실행을 확인.
-```bash
-from transformers import pipeline
-clf = pipeline("sentiment-analysis")
-print(clf("Hugging Face works well on WSL.")
+* `torch` 를 권함.
+* `tf` 와 `flax` 보다 `torch` 가 보다 현재로선 더 많이 이용됨.
+
+자기 장비라면 `hf auth login` 을 통해 로그인하고 다음으로 실행을 확인.
+
+```
+hf auth login
+```
+
+* 이 경우도, AccessToken 이 필요함.
+* HF 웹사이트에서 AccessToken을 만들고 나서 수행할 것.
+
+이후 다음 python code를 실행하면 warning은 뜨지 않음 (모델 선택 관련해서 여전히 뜸)
+
+```python
+>>> from transformers import pipeline
+>>> clf = pipeline("sentiment-analysis")
+>>> print(clf("Hugging Face works well on WSL."))
 ```
 
 공용장비라면, 잠시 사용할 AccessToken을 생성하고 다음으로 처리하는 것을 권장
 
 `python` interactive shell을 실행하고 다음과 같이 실행:
 
-```bash
+```python
 >>> import os
 >>> os.environ["HF_TOKEN"] = "hf_xxxxxxxxxxxxxxxxx"
 >>> from transformers import pipeline
 >>> clf = pipeline("sentiment-analysis")
->>> print(clf("Hugging Face works well on WSL.")
+>>> print(clf("Hugging Face works well on WSL."))
 >>> exit()
 ```
 
