@@ -25,11 +25,16 @@ Self-attention은
 각 token은 `query`, `key`, `value`로 변환(linear transform)되며,  
 * token 간의 관련성은 scaled dot-product 방식으로 
 * $q \cdot k / \sqrt{d_k}$를 계산한 뒤 softmax로 정규화.
-	* scaled ($1/\sqrt{d_k}$) 는 embedding의 크기 $d_k$가 커질 경우, dot product의 값이 커지게 되어
-	* softmax 처리시 특정 token에 지나치게 큰 attention이 집중되고
-	* 이로 인해 학습시 gradient 가 불안정해지는 것을 방지해줌.
+	* scaled ($1/\sqrt{d_k}$) 는
+        *  embedding의 크기 $d_k$가 커질 경우, dot product의 값이 커지게 되어
+	    * softmax 처리시 특정 token에 지나치게 큰 attention이 집중되고
+	    * 이로 인해 학습시 gradient 가 불안정해지는 것을 방지해줌
+        * 이 것이 **scaled** dot-product 라는 이름에서 **scaled** 에 해당함.
+    * Normal distribution 을 따르는 component 로 구성된 벡터 2개의 dot-product는 평균이 0, 분산이 **차원수** 임: 때문에 std 는 차원수의 square root이며, 이를 scale 로 삼음. 
 
-이 과정을 통해 sequence 내에서 중요한 token에는 더 큰 가중치(attention weight)가 부여되고, context(문맥)을 반영한 token representation이 생성
+이 과정을 통해 sequence 내에서 중요한 token에는 더 큰 가중치(attention weight)가 부여되고, **context(문맥)을 반영한 token representation** 이 생성됨.
+
+* attention weight는 attention score를 softmax 처리하여 확률로 만든 것임.
 
 <img src="https://github.com/user-attachments/assets/d23f92d2-3492-498b-b793-b8d763025912" sytle="display:block; margin:0 auto; max-width:50%" />
 * [Hanus Kim's blog](https://cpm0722.github.io/pytorch-implementation/transformer)
