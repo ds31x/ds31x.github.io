@@ -55,18 +55,19 @@ $$\mathrm{Attention}(Q, K, V)
 - $V =X W^V $
 
 입력 $X \in \mathbb{R}^{T \times d_{\text{model}}} $는  
-* $ W^Q, W^K, W^V $를 통해 각각  
-* $Q \in \mathbb{R}^{T \times d_k}$ ("이 토큰이 무엇을 찾는가"를 표현하는 공간),  
-* $K \in \mathbb{R}^{T \times d_k}$ ("이 토큰이 어떤 기준으로 참조되는가"를 표현하는 공간,  
-* $V \in \mathbb{R}^{T \times d_v}$ ("실제로 전달할 정보 내용")로 사상(projection)되며,  
-* 이 분리를 통해 Transformer는 토큰 간 관계를 학습 가능한 방식으로 모델링.
-* 이는 주로 multi-head attention에서 사용됨:
+* $ W^Q, W^K, W^V $를 통해 각각 다음의 공간으로 사상(projection)시킴 
+    * $Q \in \mathbb{R}^{T \times d_k}$ ("이 토큰이 무엇을 찾는가"를 표현하는 공간),  
+    * $K \in \mathbb{R}^{T \times d_k}$ ("이 토큰이 어떤 기준으로 참조되는가"를 표현하는 공간,  
+    * $V \in \mathbb{R}^{T \times d_v}$ ("실제로 전달할 정보 내용")  
+* 이 분리를 통해 Transformer는 token 간 관계를 학습 가능한 방식으로 모델링.
+* 이는 여러 관계를 학습하기 위해 보고자 하는 관계의 숫자만큼 head ($h$개)를 도입한 multi-head attention에서 사용됨:
 	* $d_q = d_k = d_k = d_{model}/h$ 가 성립.
-	* $d_q$ 는 $d_k$ 와 inner product를 하므로 거의 같은게 관례임. 
+	* $d_q$ 는 $d_k$ 와 inner product를 하므로 같아야 함 (다르면 linear transform으로 같도록 처리). 
 	* $h$ : head의 수.
 
+> Scaled Dot-Product Attention의 경우와 Multi-Head Attention의 차이는 token의 embedding을 모두 다 사용하여 하나의 관계에 대한 attention을 만드느냐, embedding을 head의 갯수로 나누어 이 작은 token의 일부로 하나씩의 관계에 대한 attention을 만드느냐의 차이임.
 
-또한 $\mathrm{softmax}(\cdot)$ 함수는 각 쿼리에 대해 키 차원 방향으로 적용되어, 어텐션 가중치의 합이 1이 되도록 정규화한다.
+또한 $\mathrm{softmax}(\cdot)$ 함수는 각 Query에 대해 Key 차원 방향으로 적용되어, 어텐션 가중치의 합이 1이 되도록 정규화한다.
 
 <img src="/resource/FF/667E6983EE4427B2095D84BEFB87C1/43855de8-ab28-450a-8e6a-e6034d8dbc85.png" sytle="display:block; margin:0 auto; max-width:30%" />
 
