@@ -4,7 +4,7 @@ title   : Image와 Text를 동시 사용하는 Multi-modal Dataset
 summary : 
 date    : 2026-01-27 08:36:23 +0900
 updated : 2026-01-27 09:27:28 +0900
-tag     : 
+tag     : collate collate_fn collator processor hf
 resource: 59/6104258BE041D4B4D893AA91370365
 toc     : true
 public  : true
@@ -19,28 +19,23 @@ latex   : false
 
 ## 학습 목표
 
-* Image + Text 멀티모달 학습에서의 **표준 Dataset 컬럼 설계 원칙 이해**
-* Trainer가 기대하는 **멀티모달 입력 구조 명확화**
-* collate_fn / collator / map(batched) 방식의 차이와 역할 이해
+* Image + Text 멀티모달 학습에서의 **표준 Dataset 열(column) 구성 이해**
+* Trainer가 기대하는 **멀티모달 입력 구조** 이해
+* `collate_fn` / `collator` / `map(batched)` 방식의 차이와 역할 이해
 * **실제 Hugging Face Hub 모델로 학습까지 수행**
 
 
 ## 1. 멀티모달 학습에서 가장 중요한 관점
 
-멀티모달 학습에서 초보자가 가장 많이 헷갈리는 지점은 다음 하나로 요약됨.
+학습(특히 multi-modal)에서 `Dataset` 객체에 model이 요구하는 column 이 반드시 있어야 하는 건 아님.
 
-> Dataset에 모델 입력 컬럼이 꼭 있어야 하는가?
+멀티모달 학습에서는 반드시 다음 세 단계를 **분리해서** 처리할 것:
 
-정답은 **아니오**임.
-멀티모달 학습에서는 반드시 다음 세 단계를 **분리해서** 사고해야 함.
+1. **원본 데이터 보관 단계 (`Dataset`)**
+2. **모델 입력 변환 단계 (`collate_fn` / `collator` / `map`)**
+3. **학습 실행 단계 (`Trainer` + `Model`)**
 
-1. **원본 데이터 보관 단계 (Dataset)**
-2. **모델 입력 변환 단계 (collate_fn / collator / map)**
-3. **학습 실행 단계 (Trainer + Model)**
-
-이 분리가 이해되지 않으면,
-image + text가 섞인 순간부터 구조가 무너지기 시작함.
-
+각 단계에서 처리를 정확히 이해할 필요가 있음
 
 ## 2. 표준 멀티모달 Dataset 컬럼 설계
 
@@ -48,24 +43,23 @@ image + text가 섞인 순간부터 구조가 무너지기 시작함.
 
 멀티모달 Dataset의 원본 컬럼은 반드시 다음처럼 단순해야 함.
 
-| 컬럼    | 의미                   |
+| column| 의미                   |
 | ----- | -------------------- |
-| image | 이미지(PIL.Image 또는 경로) |
-| text  | 텍스트(string)          |
-| label | 정답(int)              |
+| image | 이미지(`PIL.Image` 또는 경로) |
+| text  | 텍스트(`str`)                |
+| label | 정답은 흔히 정수형(`int`)     |
 
 최소 형태는 다음과 같음.
 
-```text
+```python
 {"image": PIL.Image, "text": "some description", "label": 0}
 ```
+### 2.2 Dataset 에서 명심할 점
 
 중요한 점은 다음임.
 
-* `input_ids`, `pixel_values` 같은 **모델 입력 컬럼은 Dataset에 있을 필요가 없음**
-* Dataset은 “원본 저장소” 역할만 수행함
-
----
+* `input_ids`, `pixel_values` 같은 **모델이 직접 요구하는 입력 column 은 Dataset에 없어도 상관 없음**
+* 사실 Dataset은 “원본 저장소” 역할만 수행해도 충분함.
 
 ## 3. 더미 멀티모달 Dataset 생성
 
@@ -88,19 +82,23 @@ examples = [
 ds = Dataset.from_list(examples)
 ```
 
-* 위의 Dataset에는 **모델 입력에 해당하는 정보가 전혀 없음**.
-* 그럼에도 이후 학습은 문제없이 가능함.
+* 위의 Dataset에는 **모델이 요구하는 입력 column이 없음**.
+* 그럼에도 이후 학습은 문제없이 가능함: `collate_fn`, `collator` 등이 이를 생성.
 
-Dataset 에는 전처리가 이루어져서 모델의 입력이 될 column이 없어도 됨.
+Dataset 에는 모델이 요구하는 column을 추가하는 전처리가 이루어지기 때문에  
+반드시 직접 모델의 입력이 될 column을 가지지 않아도 됨.
 
-이후, collator 혹은 collate_fn 에 의해 이들이 추가됨.
+이후, `collator` 혹은 `collate_fn` 에 의해 이들이 추가됨.
 
 
 ## 4. Trainer가 기대하는 멀티모달 입력 구조
 
-멀티모달 분류 모델이 Trainer에서 실제로 받는 입력은 다음과 같음.
+간단한 예로,  
 
-```text
+* 멀티모달 분류 모델의 경우, 
+* Trainer에서 실제로 받는 입력은 다음과 같음.
+
+```python
 {
   "input_ids": (B, T),
   "attention_mask": (B, T),
@@ -111,24 +109,24 @@ Dataset 에는 전처리가 이루어져서 모델의 입력이 될 column이 �
 
 여기서 핵심은 다음 두 가지임.
 
-* `T`는 텍스트 길이에 따라 가변적임 : **배치 단위 padding 필요**
+* `T`는 텍스트 길이 (token의 수)에 따라 가변적임 : **배치 단위 padding 필요**
 * 이 변환은 Dataset이 아니라 **배치 단계**에서 수행되어야 함
 
-이 역할을 수행하는 것이 바로 **collate_fn / collator**임.
+이 배치 단위 처리를 수행하는 것이 바로 **`collate_fn` / `collator`**임.
 
 ## 5. 배치 전처리 방식 1: collate_fn 함수형 방식
 
 ### 5.1 map보다 선호되는 collate_fn 함수형 방식.
 
-collate_fn 이 (`map`을 이용한 처리보다) 많이 사용되는 이유는 다음과 같음:
+`collate_fn` 이 (`map`을 이용한 처리보다) 많이 사용되는 이유는 다음과 같음:
 
-* 텍스트 길이가 샘플마다 다른데, `collate_fn`에서는 **배치 단위로 동적 패딩(dynamic padding)**을 적용하기 쉬운 구조임.
-* 이미지 변환(리사이즈/정규화)도 배치에서 묶어서 일관되게 처리 가능함.
-* dataset 자체에는 원본만 유지하므로 저장 공간이 절약되는 장점이 있음.
+* 텍스트 길이가 sample(~setence)마다 다른데, `collate_fn` 은 **배치 단위로 동적 패딩(dynamic padding)**을 적용하기 쉬운 구조를 가짐.
+* 이미지 변환(리사이즈/정규화)도 배치에서 묶어서 일관되게 처리 가능함: `collate_fn`은 batch 에 직접 접근 가능!
+* dataset 자체에는 원본만 유지하므로 저장 공간이 절약되는 장점이 있음: trade-off 로 학습 단계에서 요구되는 처리량이 늘어난다.
 
-전처리가 collate_fn에서 이루어지는데, 일반적으로는 `AutoProcessor`를 사용하는 방식이 가장 편리함.
+전처리가 `collate_fn`에서 이루어지는데, 이는 일반적으로는 `AutoProcessor`를 사용하는 방식이 HF에선 가장 편리함.
 
-여기선 `AutoProcessor` 과 같은 Processor를 통한 전처리는 다음과 같이 간단히만 설명하고 collate_fn 등의 이해에만 집중한다.
+여기선 `AutoProcessor` 과 같은 Processor를 통한 전처리는 다음과 같이 간단히만 설명하고 `collate_fn` 등의 이해에만 집중한다.
 
 아래의 예제에선 다음과 같이 전처리를 분리해서 처리한다고 생각하자.
 
@@ -137,11 +135,15 @@ collate_fn 이 (`map`을 이용한 처리보다) 많이 사용되는 이유는 �
 
 ### 5.2 예제
 
-BLIP 계열은 `processor(images=..., text=...)` 와 같이 한 번에 처리하는 통합 호출이 가장 단순하며 일반적으로 사용됨 (BLIP을 사용하는 예제에서 보일 예정임)
+Bootstrapping Language-Image Pre-traing (BLIP) 계열은  
 
-단, 지금은 이해를 돕기 위해 **"tokenizer와 image processor를 분리해서 쓰는 패턴"** 으로 구현함.
+* `processor(images=..., text=...)` 와 같이
+* 이미지와 텍스트를 한 번에 처리하는 통합 호출이 가장 단순하며
+* 일반적으로 권장됨 (BLIP을 사용하는 예제에서 보일 예정임)
 
-```
+통합이라도 많은 경우, **"tokenizer와 image processor를 같이 사용하는 패턴"** 임:
+
+```python
 # 7-2. BLIP AutoProcessor에서 tokenizer / image_processor 분리 사용
 import torch
 from transformers import AutoProcessor
@@ -150,13 +152,13 @@ mm_ckpt = "Salesforce/blip-itm-base-coco"
 processor = AutoProcessor.from_pretrained(mm_ckpt)
 
 # BLIP에서는 아래 두 줄이 정답
-tokenizer = processor.tokenizer
+tokenizer       = processor.tokenizer
 image_processor = processor.image_processor
 
 def multimodal_collate_fn(batch):
     # batch: List[dict] where dict has {"image", "text", "label"}
 
-    texts = [x["text"] for x in batch]
+    texts  = [x["text"]  for x in batch]
     images = [x["image"] for x in batch]
     labels = [x["label"] for x in batch]
 
@@ -167,6 +169,12 @@ def multimodal_collate_fn(batch):
         truncation=True,
         return_tensors="pt",
     )
+    # text_input 는 다음임.
+    # BatchEncoding({
+    #  'input_ids': tensor(...),
+    #  'attention_mask': tensor(...),
+    # })
+
 
     # 2) 이미지: resize / normalize
     image_inputs = image_processor(
@@ -178,9 +186,10 @@ def multimodal_collate_fn(batch):
     labels = torch.tensor(labels, dtype=torch.long)
 
     # 4) Trainer 입력 형태로 병합
-    batch_out = dict(text_inputs)
+    batch_out                 = dict(text_inputs) # BatchEncoding객체를 dict객체로 변환이 호환성 높음.
     batch_out["pixel_values"] = image_inputs["pixel_values"]
-    batch_out["labels"] = labels
+    batch_out["labels"]       = labels
+
     return batch_out
 
 # 동작 확인
@@ -189,7 +198,7 @@ for k, v in b.items():
     print(k, tuple(v.shape))
 ```
 
-collate_fn이 다음을 반환하는지 확인할 것:
+`collate_fn`이 다음을 반환하는지 확인할 것:
 
 * `input_ids`, `attention_mask`의 shape가 `(B, T)`인지 확인할 것.
 * `pixel_values`의 shape가 `(B, 3, H, W)` 형태인지 확인할 것.
@@ -200,9 +209,9 @@ collate_fn이 다음을 반환하는지 확인할 것:
 
 ## 6. 배치 전처리 방식 1: collator(DataCollator) 방식
 
-collator는 다음을 책임짐.
+`collator`는 다음을 책임짐.
 
-* Dataset의 원본 샘플 목록(`List[dict]`)을 입력으로 받음
+* Dataset의 원본 샘플 목록(`List[dict]`)을 입력으로 받음: batch를 입력으로 받음.
 * text : tokenizer 적용
 * image : image processor 적용
 * label : labels 텐서 생성
@@ -210,15 +219,16 @@ collator는 다음을 책임짐.
 
 즉,
 
-> collator는 Dataset과 Model 사이의 "번역기" 역할임.
+> collator는 Dataset과 Model 사이의 "변환기" 역할임.
 
 ### collate_fn과 collator의 관계
 
 * Trainer 관점에서 `data_collator`는 “배치 구성기”라는 의미로, 내부적으로는 호출 가능한(callable) 객체를 받는 구조임.
 * `collate_fn`은 함수형 구현이고, `collator`는 클래스로 구현한 callable 객체라는 차이만 있는 경우가 많음.
-* `collator` 클래스는 설정값을 생성자에 담아두기 쉬워 재사용성이 좋아지는 장점이 있음.
+* `collator` 클래스는 **설정값을 생성자에 담아두기 쉬워 재사용성이 좋아지는 장점** 이 있음.
 
 즉, 아래 두 방식은 Trainer에 들어가는 역할이 동일해질 수 있음.
+
 * `multimodal_collate_fn(batch) -> dict` 형태의 함수형 구현임.
 * `MultimodalDataCollator(...).__call__(batch) -> dict` 형태의 클래스형 구현
 
@@ -280,17 +290,21 @@ for k, v in b2.items():
     print(k, tuple(v.shape))
 ```
 
-Trainer 입장에서는 `data_collator` 에 collate_fn 이든지 collator 의 객체를 할당하면 됨.
+Trainer 입장에서는 `data_collator` 에 `collate_fn` 또는 `collator` 의 객체를 할당하면 됨.
 
-해당 객체는 callable 객체로 batch를 인자로 받아서 모델이 원하는 tensor 로 구성된 batch (`dict`형)를 넘겨주기만 하면 됨.
+해당 객체는 
+
+* callable 객체로
+* batch를 인자로 받아서
+* 모델이 원하는 tensor 로 구성된 batch (`dict`형)를 넘겨주기만 하면 됨.
 
 ## 7. Dataset 자체를 바꾸기: map 방식
 
 ### 7.1 map(batched=True)의 의미
 
-* dataset을 미리 순회하면서 "새 컬럼"을 만들어 저장하는 방식임.
-* `batched=True`를 사용할 경우, 배치 단위로 처리하므로 tokenizer의 padding 등을 사용할 수 있음.
-* 단, padding을 미리 고정해버리면(예: max_length=128) 데이터 크기가 늘어날 수 있음.
+* dataset을 **미리 순회** 하면서 "새 컬럼"을 만들어 저장하는 방식임.
+* `batched=True`를 사용할 경우, 배치 단위로 처리하므로 tokenizer의 padding 등을 사용할 수 있음: 단 지정하는 함수가 인자를 batch로 받을 수 있어야 함.
+* 단, padding을 미리 고정해버리면(예: `max_length=128`) 데이터 크기가 늘어날 수 있음.
 
 ### 7.2 예제
 
@@ -319,19 +333,16 @@ print(ds2)
 print(ds2[0].keys())
 ```
 
-
 ## 8. 실제 모델을 이용한 실습: `Salesforce/blip-itm-base-coco`
 
 **`Salesforce/blip-itm-base-coco`**는 다음 목적의 모델임.
 
 * task: **Image-Text Matching (ITM)**
 * 문제 정의:
-
   * 주어진 image와 text가 **서로 의미적으로 맞는 쌍인지 여부를 분류**
 * 출력:
-
-  * label = 1 : image와 text가 잘 매칭됨
-  * label = 0 : 매칭되지 않음
+  * `label = 1` : image와 text가 잘 매칭됨
+  * `label = 0` : 매칭되지 않음
 
 즉, 이 모델은 다음 질문에 답하는 모델임.
 
@@ -339,7 +350,7 @@ print(ds2[0].keys())
 
 이 구조는 **멀티모달 분류 학습의 가장 전형적인 형태** 중 하나임.
 
-이 모델의 `forward()`에서는 다음의 키들을 요구함.
+이 모델의 `forward()`에서는 다음의 키들을 가진 `dict`객체를 요구함.
 
 ```text
 input_ids
@@ -382,6 +393,7 @@ class BLIPDataCollator:
         images = [x["image"] for x in batch]
         labels = [x["label"] for x in batch]
 
+        # 앞서의 예제와 달리 한번에 Processor객체로 처리!
         inputs = self.processor(
             images  = images,
             text    = texts,
@@ -395,7 +407,7 @@ class BLIPDataCollator:
 * 많은 경우, 모델에 맞는 `processor` 만을 교체하여 범용적 사용이 가능함.
 
 
-이 `collator`의 출력은 다음과 같음:
+이 `collator`의 출력은 다음과 키를 가진 `dict 객체임:
 
 ```text
 input_ids
@@ -480,15 +492,15 @@ remove_unused_columns=False
 
 다음의 선택 기준을 참고:
 
-* collate_fn이 유리한 경우
+* `collate_fn`이 유리한 경우
 	* 텍스트 길이가 다양해서 동적 패딩이 효율적인 경우임.
 	* 데이터 저장 공간을 아끼고 싶은 경우임.
 	* 이미지 augmentation을 epoch마다 바꾸고 싶은 경우임(예: random crop).
-* collator(DataCollator)가 유리한 경우
+* `collator(DataCollator)`가 유리한 경우
 	* collate_fn과 같은 동작을 하되, 설정값을 객체에 보관하여 재사용성을 높이고 싶은 경우임.
 	* 실험별로 collator 인스턴스를 바꿔가며 관리하고 싶은 경우임.
 	* 코드 구조상 "전처리 로직을 하나의 컴포넌트로 캡슐화"하고 싶은 경우임.
-* map(batched)가 유리한 경우
+* `map(batched)`가 유리한 경우
 	* 전처리 비용이 크고, 매 epoch 반복하고 싶지 않은 경우임.
 	* 전처리 결과를 고정해 재현성을 강하게 확보하고 싶은 경우임.
 	* 학습 전처리 파이프라인을 dataset에 "고정" 해두고 싶은 경우임.
@@ -501,7 +513,7 @@ remove_unused_columns=False
 	* `text` => `input_ids`, `attention_mask`
 	* `image` => `pixel_values`
 	* `label` => `labels`
-* Trainer는 collator 결과만 모델에 전달함.
+* Trainer는 `collator` 결과만 모델에 전달함.
 * 모델은 멀티모달 입력을 받아 loss를 계산함.
 
 ## 응용
