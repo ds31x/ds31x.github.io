@@ -270,8 +270,201 @@ mm-dataset-exp/
   * Dataset repo는 정적 데이터 구조 제공에 집중
   * 처리 로직은 학습 파이프라인으로 분리됨
 
+# Dataset 4.x 기준 그외 내용들
 
-## 4. Dataset loading script와 DatasetDict 생성 원리
+## 1. Dataset과 Data Pipeline의 역할 분리
+
+datasets **4.0 이후**를 기준으로,
+Hugging Face 생태계에서는 **Dataset과 Data Pipeline의 역할이 명확히 분리**됨.
+
+> datasets 4.0 이후의 Hugging Face Dataset은
+> 데이터를 “실행하는 코드”가 아니라
+> “정의된 구조”로 취급하며,
+> 데이터 처리 로직은 전적으로 Data Pipeline의 책임으로 분리됨.
+
+이는 단순한 구현 변경이 아니라,
+Dataset을 바라보는 **개념적 정의 자체의 변화**에 가까움.
+
+### 1-1. Dataset의 역할 (What)
+
+Dataset은 다음을 책임짐.
+
+* **데이터의 정적 정의**
+* 어떤 sample이 존재하는지
+* 각 sample이 어떤 필드(feature)를 가지는지
+* split(`train / validation / test`)의 구성
+* schema, dtype, shape 등의 명세
+* 재현 가능한 데이터 상태 보장
+
+즉, Dataset은
+
+> **“무엇이 데이터인가”를 정의하는 단위**
+
+이며,
+
+* 실행 시점의 로직
+* 환경 의존 처리
+* 랜덤성
+* 상태 변화
+
+를 포함하지 않음.
+
+datasets 4.0 기준에서
+Dataset repo는 **데이터 구조의 스냅샷**에 가깝게 취급됨.
+
+### 1-2. Data Pipeline의 역할 (How)
+
+Data Pipeline은 Dataset을 **어떻게 사용하는가**를 책임짐.
+
+여기에 포함되는 것은 다음과 같음.
+
+* 전처리(preprocessing)
+* 데이터 변환(transform)
+* augmentation
+* tokenization
+* normalization
+* batching
+* padding
+* collation
+* 학습 시점의 stochastic 처리
+
+이러한 로직은 다음 위치로 이동됨.
+
+* `Dataset.map()`
+* `Dataset.set_transform()`
+* Data collator
+* Trainer / DataLoader
+* training loop 내부
+
+> Data Pipeline은  
+> **“이 데이터를 어떻게 모델 입력으로 만들 것인가”를 정의하는 단위**
+
+### 1-3. 왜 역할 분리가 필요했는가
+
+이 분리는 다음 문제들을 해결하기 위해 도입됨.
+
+* Dataset loading 단계에서의 비결정성 문제
+* Hub Dataset Viewer / Parquet export와의 충돌
+* caching 불가능한 Python 로직
+* streaming / distributed 환경에서의 불안정성
+* 재현성 없는 데이터 생성
+
+datasets 4.0 이후의 기본 전제는 다음과 같음.
+
+> Dataset은 **누가 언제 로드해도 동일해야 한다**
+
+따라서 실행 로직은 Dataset에서 제거되고,
+Pipeline 단계로 이동함.
+
+### 1-4. 과거 구조와의 대비
+
+| 구분             | 과거 (≤ datasets 3.x)    | 현재 (datasets 4.x) |
+| -------------- | ---------------------- | ----------------- |
+| Dataset        | 데이터 + 로직 혼합            | 정적 데이터 정의         |
+| loading script | 생성·전처리 포함              | 정적 파싱만            |
+| 전처리 위치         | `_generate_examples()` | map / transform   |
+| 랜덤성            | Dataset 내부 허용          | Pipeline으로 이동     |
+| 재현성            | 보장 어려움                 | 구조적으로 보장          |
+
+### 1-5. 실무 관점에서의 해석
+
+현재 기준에서의 권장 해석은 다음과 같음.
+
+* Dataset repo: **공유 가능한 데이터 명세**
+* Dataset loading: **데이터를 읽는 행위**
+* Data Pipeline: **모델 학습을 위한 조립 과정**
+
+이 둘을 분리함으로써,
+
+* Dataset은 안정적으로 공유 가능해지고
+* Pipeline은 실험 목적에 따라 자유롭게 변경 가능해짐
+
+## 2. 최신 기준에서 Hugging Face Hub로 Dataset 업로드 방법
+
+datasets **4.x 이후** 기준에서
+Hugging Face Hub로 Dataset을 업로드하는 표준적인 방법은
+**DatasetDict를 로컬에서 완성한 뒤 업로드**하는 방식임.
+
+핵심 원칙은 다음과 같음.
+
+> **Hub에는 “실행 로직”이 아니라
+> “완성된 데이터 구조”를 업로드한다**
+
+### 2-1. 기본 흐름
+
+최신 권장 업로드 흐름은 다음과 같음.
+
+1. 로컬에서 `Dataset` 또는 `DatasetDict` 구성
+2. 필요 시 `map()` 등을 통해 정적 전처리 수행
+3. `save_to_disk()` 또는 `push_to_hub()` 사용
+4. Hub에 Arrow 기반 Dataset repo 생성
+
+### 2-2. `push_to_hub()`을 사용하는 경우 (가장 간단한 방식)
+
+Dataset 또는 DatasetDict 객체에서 직접 업로드하는 방식임.
+
+```python
+from datasets import DatasetDict
+
+dataset_dict.push_to_hub("username/mm-dataset-exp")
+```
+
+이 경우:
+
+* 내부적으로 Arrow 포맷으로 직렬화됨
+* `dataset_dict.json`, split 디렉토리 등이 자동 생성됨
+* Dataset loading script 없이도 `load_dataset()` 가능
+* Hub에 즉시 DatasetDict 구조로 등록됨
+
+### 2-3. `save_to_disk()` 후 업로드하는 경우
+
+로컬에 DatasetDict를 저장한 뒤,
+해당 디렉토리를 그대로 Hub에 업로드하는 방식임.
+
+```python
+dataset_dict.save_to_disk("./mm-dataset-exp")
+```
+
+이후:
+
+* Git 또는 `huggingface_hub` CLI를 통해 업로드
+* 로컬 구조가 Hub Dataset repo 구조와 1:1 대응됨
+* 대용량 Dataset이나 중간 검증이 필요한 경우에 유리함
+
+이 방식 역시
+`load_dataset("username/mm-dataset-exp")` 호출이 바로 가능함.
+
+### 2-4. 업로드 시 주의사항 (최신 기준)
+
+* Dataset repo에는 **실행 코드가 없어도 됨**
+* Dataset loading script는 필수가 아님
+* split은 디렉토리 구조 또는 `dataset_dict.json`으로 명시되어야 함
+* 동적 전처리, 랜덤 생성 로직은 업로드 대상이 아님
+* 전처리 로직은 학습 파이프라인으로 분리하는 것이 전제임
+
+### 2-5. 정리 문장
+
+> datasets 4.x 기준에서 Hugging Face Hub로의 Dataset 업로드는
+> DatasetDict를 로컬에서 완성한 뒤
+> Arrow 기반 구조 그대로 공유하는 방식으로 단순화됨.
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+
+# Dataset 3.x 기준 내용들
+
+## 1. Dataset loading script와 DatasetDict 생성 원리
 
 **Dataset loading script란** 
 
@@ -301,7 +494,7 @@ mm-dataset-exp/
 	* `_generate_examples()`로 각 split의 샘플을 생성.
 5. split별 Dataset을 묶어 DatasetDict 반환을 수행함.
 
-## 5. Dataset loading script 파일명 규칙
+## 2. Dataset loading script 파일명 규칙
 
 Dataset loading script는 다음 규칙을 반드시 만족해야 함.
 
@@ -318,7 +511,7 @@ Dataset loading script는 다음 규칙을 반드시 만족해야 함.
 이 규칙이 어긋나면 `load_dataset()`은 DatasetDict를 생성할 수 없음.
 
 
-## 6. Dataset loading script 예시 (DatasetDict 생성)
+## 3. Dataset loading script 예시 (DatasetDict 생성)
 
 ```python
 import json
@@ -365,7 +558,7 @@ DatasetDict(
 )
 ```
 
-## 7. Hub 업로드와 DatasetDict 고정
+## 4. Hub 업로드와 DatasetDict 고정
 
 이 repo를 Hub에 업로드하면,
 Hub에는 **DatasetDict를 생성할 수 있는 규칙 전체**가 저장됨.
@@ -378,8 +571,13 @@ git push origin main
 
 이 commit 하나가 **DatasetDict의 특정 상태**를 의미함.
 
+> 최신 버전에선, `DatasetDict` 객체의 `.push_to_hub()` 사용이 보다 편함.
 
-## 8. DatasetDict 로드 확인
+---
+
+# 저장된 DatasetDict 로드 확인
+
+## 1. 다음의 코드로 간단하게 로딩가능함.
 
 ```python
 from datasets import load_dataset
@@ -397,7 +595,7 @@ print(dataset_dict["train"][0])
 * 각 샘플에 `image`, `text`, `label` 존재 여부 확인
 
 
-## 9. DatasetDict와 Trainer의 연결 구조
+## 2. DatasetDict와 Trainer의 연결 구조
 
 Trainer는 DatasetDict를 다음 방식으로 사용함.
 
@@ -408,13 +606,13 @@ trainer = Trainer(
 )
 ```
 
-즉, **Trainer는 DatasetDict를 직접 받지 않고**,
-DatasetDict의 각 split을 받음.
+즉, **Trainer는 `DatasetDict` 객체를 직접 받지 않고**,
+DatasetDict의 **각 split을 받음**.
 
 DatasetDict는 Trainer 연결을 위한 **전제 구조**임.
 
 
-## 10. DatasetDict => collate_fn => batch tensor
+## 3. DatasetDict => collate_fn => batch tensor
 
 DatasetDict의 각 Dataset은 여전히
 `{"image": PIL.Image, "text": str, "label": int}` 형태임.
@@ -422,10 +620,10 @@ DatasetDict의 각 Dataset은 여전히
 이를 batch tensor로 바꾸는 역할이 **collate_fn**임.
 
 > 이같은 멀티 모달의 경우,  
-> BLIP processor 기반 collate_fn 사용을 예제로 삼아 이해하면 쉬움.
+> BLIP processor 기반 `collate_fn` 사용을 예제로 삼아 이해하면 쉬움.
 
 
-## 11. Dataset 변경 후 DatasetDict 재생성 (revision)
+## 4. Dataset 변경 후 DatasetDict 재생성 (revision)
 
 Dataset 파일을 수정하고 Hub에 다시 push하면,
 
@@ -439,7 +637,7 @@ dataset_dict = load_dataset(
 )
 ```
 
-## 12. DatasetDict 상태에 tag 부여
+## 5. DatasetDict 상태에 tag 부여
 
 tag는 DatasetDict 상태에 이름을 붙이는 행위임.
 
@@ -455,7 +653,7 @@ dataset_dict = load_dataset(
 )
 ```
 
-## 13. 핵심 정리 (DatasetDict 관점)
+## 6. 핵심 정리 (DatasetDict 관점)
 
 * Hub Dataset의 실체는 **DatasetDict**
 * `load_dataset()`의 반환값은 DatasetDict
