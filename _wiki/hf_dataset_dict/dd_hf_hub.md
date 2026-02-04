@@ -86,24 +86,138 @@ Trainer는 이 split 단위로 학습과 평가를 수행함.
 
 ## 2. DatasetDict로 로드되기 위한 조건
 
-다음 호출이 성공하려면,
+> `load_dataset("username/mm-dataset-exp")` 호출이 성공하려면,  
+> Hub Dataset repo는
+>   
+> **(1) DatasetDict가 Arrow 기반으로 이미 직렬화되어 있거나**,
+> **(2) 또는 raw 데이터를 해석하는 Dataset loading script를 제공해야 한다.**
+
+
+다음 호출이 일반적으로 HF Hub로부터 `DatasetDict` 객체를 local로 가져옴.
 
 ```python
 dataset_dict = load_dataset("username/mm-dataset-exp")
 ```
 
-Hub Dataset repo는 다음 조건을 만족해야 함.
+이를 위해선 Hub Dataset repo는 **아래 조건 중 하나를 만족** 해야 함.
 
-1. Dataset의 구조를 해석할 수 있는 **Dataset loading script**가 존재
-2. loading script가 train / validation split을 생성
-3. 각 split이 `Dataset`으로 구성됨
+### 2-1. Case-1. DatasetDict가 이미 직렬화되어 있는 경우 (권장, 최신 방식)
 
-파일만 올린 repo는 이 조건을 자동으로 만족하지 않음.
+다음 조건을 만족하면 **Dataset loading script 없이도** 자동으로 `DatasetDict`로 로드됨.
 
+* repo 루트에 `dataset_dict.json` 이 존재
+* 각 split 디렉토리(`train/`, `validation/`, `test/` 등)가 존재
+* 각 split 디렉토리가 다음을 포함
+
+  * Arrow 데이터 파일 (`data-xxxxx-of-yyyyy.arrow`)
+  * `dataset_info.json`
+  * `state.json`
+* 각 split은 이미 `Dataset`으로 직렬화된 상태
+
+이 경우:
+
+* Hugging Face Datasets는 **loading script를 사용하지 않음**
+* Hub는 `dataset_dict.json`을 기준으로 split을 복원
+* `load_dataset()` 호출 시 즉시 `DatasetDict` 반환
+
+이 같은 구조는 `DatasetDict` 객체의 
+
+* `save_to_disk()` 를 통해 local에 저장한 결과(directory)를 그대로 업로드 한 경우에 해당.
+* `push_to_hub()` 를 통해 직접 업로드도 가능함.
+
+> `save_to_disk()` 결과를 그대로 업로드한 repo는
+> **그 자체로 완전한 DatasetDict 정의임**
+
+### 2-2. Case-2 Raw 데이터만 존재하는 경우 (이전 방식, loading script 필요)
+
+다음과 같은 repo 구조의 경우에는 **Dataset loading script가 반드시 필요함**.
+
+* 이미지, json, csv, jsonl 등 raw 파일만 존재
+* split 정보가 파일 구조나 메타데이터로 명시되지 않음
+* Dataset schema가 정의되지 않음
+
+이 경우 repo는 다음 조건을 만족해야 함.
+
+* Dataset의 구조를 해석할 수 있는 Dataset loading script가 존재
+* loading script가 `train / validation / test` split을 생성
+* 각 split이 `Dataset` 객체로 구성됨
+
+> 2026년 현재,
+> 
+> `save_to_disk()` 호출 이후 만들어진 디렉토리를 그대로 올리는 경우엔
+> loading script가 필요없음.
+> 단, raw파일만 올린 repo의 경우엔 loading script가 필요함.
 
 ## 3. Dataset repo의 최종 파일 구조
 
-DatasetDict 생성을 전제로 한 Dataset repo 구조는 다음과 같음.
+Hugging Face Dataset repo의 최종 파일 구조는
+
+* **어떤 시점의 datasets 라이브러리 기준을 따르느냐**와
+* **DatasetDict를 어디에서 구성하느냐**에 따라 달라짐.
+
+특히 datasets **4.0 이후**를 기준으로는
+Dataset loading 단계의 역할과 허용 범위가 과거와 명확히 달라졌음.
+
+이에 따라 Dataset repo 구조는 다음 두 가지 방식으로 구분됨.
+
+### 3-1. DatasetDict를 `save_to_disk()`로 직렬화하여 업로드하는 경우
+
+*(datasets 3.x 후반 ~ 4.x 이후, 최신 권장 방식)*
+
+Dataset을 로컬 환경에서 `DatasetDict` 형태로 완전히 구성한 뒤,
+`save_to_disk()` 결과를 그대로 Hub에 업로드하는 방식임.
+
+이 방식은 datasets **3.x 이후 점진적으로 도입**되었고,
+datasets **4.0 이후에는 사실상의 표준 방식**으로 사용됨.
+
+이 경우 Dataset repo의 구조는 다음과 같음.
+
+```text
+mm-dataset-exp/
+ ├─ README.md
+ ├─ dataset_dict.json          # DatasetDict split 정의
+ ├─ train/
+ │   ├─ data-00000-of-00001.arrow
+ │   ├─ dataset_info.json
+ │   └─ state.json
+ ├─ validation/
+ │   ├─ data-00000-of-00001.arrow
+ │   ├─ dataset_info.json
+ │   └─ state.json
+ ├─ test/
+ │   ├─ data-00000-of-00001.arrow
+ │   ├─ dataset_info.json
+ │   └─ state.json
+ └─ .gitattributes
+```
+
+이 구조의 핵심은 다음임.
+
+* 각 split(`train`, `validation`, `test`)은 이미 **Dataset 객체로 직렬화됨**
+* split 간의 관계는 `dataset_dict.json`에 명시됨
+* 실제 데이터는 Apache Arrow 포맷으로 저장됨
+* feature, schema, column 정보는 `dataset_info.json`에 포함됨
+* Dataset loading script가 필요 없음
+* `load_dataset()` 호출 시 Hub가 이 구조를 그대로 복원하여 `DatasetDict` 반환
+
+즉,
+
+> datasets 4.0 기준에서
+> Dataset repo는 **실행 로직이 아닌, 완성된 데이터 구조**를 제공하는 것이 기본 전제임
+
+멀티모달 `Dataset`(image, text, label 등)에서도
+이 방식이 동일하게 적용됨.
+
+### 3-2. Raw 데이터 + Dataset loading script를 사용하는 경우
+
+*(datasets 2.x ~ 3.x 초반 기준의 전통적 방식)*
+
+Raw 데이터 파일을 업로드하고,
+Dataset loading script를 통해 DatasetDict를 구성하는 방식임.
+
+이 방식은 datasets **2.x 및 3.x 초반까지는 일반적으로 사용**되었음.
+
+이 경우 Dataset repo의 구조는 다음과 같음.
 
 ```text
 mm-dataset-exp/
@@ -122,8 +236,39 @@ mm-dataset-exp/
 이 구조의 핵심은 다음임.
 
 * 이미지 파일은 **파일 그대로 보관**
-* 텍스트와 라벨은 흔하게 JSONL 메타데이터로 관리
-* loading script가 이들을 **DatasetDict 구조로 묶음**
+* 텍스트와 라벨은 **JSONL** 등의 메타데이터로 관리
+* Dataset loading script가 raw 데이터를 파싱하여 DatasetDict를 구성
+* split(`train / validation / test`) 정의가 script에 포함됨
+
+다만, datasets **4.0 이후 기준에서는**  
+이 방식에서 허용되는 역할이 명확히 제한됨.
+
+* loading script는 **정적 파싱과 split 정의**까지만 담당
+* 실행 시점의 동적 전처리, 랜덤 변환, 데이터 생성은 **Dataset loading 단계의 책임에서 제외됨**
+
+이러한 처리들은 현재 기준으로
+
+* `map`,
+* `set_transform`,
+* collator,
+* Trainer 단계로 이동됨.
+
+즉, 이 구조 자체가 “금지”된 것은 아니지만, 
+
+> **datasets 4.0 이후에는
+> loading script의 역할이 크게 축소되었다** 는 점을 주의할 것.
+
+### 3-3. 기준 시점에 따른 정리
+
+* datasets **2.x ~ 3.x 초반**
+
+  * Raw 데이터 + loading script 방식이 일반적
+  * loading 단계에서 전처리 로직을 포함하는 경우도 많았음
+* datasets **3.x 후반 ~ 4.x 이후**
+
+  * DatasetDict 직렬화(`save_to_disk`) 방식이 표준
+  * Dataset repo는 정적 데이터 구조 제공에 집중
+  * 처리 로직은 학습 파이프라인으로 분리됨
 
 
 ## 4. Dataset loading script와 DatasetDict 생성 원리
@@ -137,8 +282,6 @@ mm-dataset-exp/
 > A dataset loading script is a Python file that defines a DatasetBuilder class. 
 > DatasetBuilder specifies metadata, splits, and how to generate examples.
 > 참고: [Writing a dataset loading script](https://huggingface.co/docs/datasets/v1.2.1/add_dataset.html?utm_source=chatgpt.com)
-
-
 
 `load_dataset()`은 다음 과정을 수행함:
 
