@@ -16,6 +16,26 @@
   "size": 1
  },
  {
+  "name": "classification",
+  "size": 1
+ },
+ {
+  "name": "collate",
+  "size": 1
+ },
+ {
+  "name": "collate_fn",
+  "size": 1
+ },
+ {
+  "name": "collator",
+  "size": 1
+ },
+ {
+  "name": "config",
+  "size": 1
+ },
+ {
   "name": "dataset",
   "size": 1
  },
@@ -37,10 +57,14 @@
  },
  {
   "name": "hf",
-  "size": 4
+  "size": 9
  },
  {
   "name": "how-to",
+  "size": 1
+ },
+ {
+  "name": "image",
   "size": 1
  },
  {
@@ -69,10 +93,22 @@
  },
  {
   "name": "pipeline",
+  "size": 2
+ },
+ {
+  "name": "processor",
+  "size": 1
+ },
+ {
+  "name": "repo",
   "size": 1
  },
  {
   "name": "ruby",
+  "size": 1
+ },
+ {
+  "name": "snapshot",
   "size": 1
  },
  {

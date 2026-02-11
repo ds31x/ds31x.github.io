@@ -1,6 +1,11 @@
 [
  "hf",
  "hf_dataset_dict",
+ "hf_dataset_dict/dd_multimodal",
+ "hf_hub_snapshot_download",
+ "hf/hf_config",
  "hf/hf_start",
- "hf/pipeline"
+ "hf/pipeline",
+ "hf/pipeline_repo",
+ "hf/pl_model_proc"
 ]

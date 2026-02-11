@@ -1,10 +1,10 @@
 ---
 layout  : wiki
-title   : pipeline을 HF Repo 로 업로드 
+title   : HF - Pipeline을 HF Repo 로 업로드 
 summary : 
 date    : 2026-02-02 16:47:28 +0900
-updated : 2026-02-02 18:01:22 +0900
-tag     : 
+updated : 2026-02-02 19:12:10 +0900
+tag     : hf pipeline repo
 resource: 57/48E6A5A80146F48B0FDD78ADA3766B
 toc     : true
 public  : true
@@ -28,6 +28,10 @@ Pipeline의 실제 구성 방식은 `config.json`과 같은 설정 파일에 정
 
 
 이 문서에서는 pipeline 객체를 HF Repo.에 업로드 하는 것을 다룸.
+
+다음은 이 문서의 과정으로 만들어놓은 HF Model Repo.임:
+
+* [dsaint31/tmp-pl-image-classification](https://huggingface.co/dsaint31/tmp-pl-image-classification)
 
 ## HF Repository 에 업로드하기
 
