@@ -3,7 +3,7 @@ layout  : wiki
 title   : HF-Model
 summary : 
 date    : 2026-02-11 23:54:23 +0900
-updated : 2026-02-12 00:35:53 +0900
+updated : 2026-02-12 09:45:52 +0900
 tag     : 
 resource: 96/D94CEC777847F2A858477156E4D7BD
 toc     : true
@@ -18,20 +18,19 @@ latex   : false
 
 Text / Image 의 경우를 나누어서 간단히 소개
 
----
 
 # 0. `PreTrainedModel` 이란?
 
 `PreTrainedModel`은 **Hugging Face Transformers에서 “모델 본체”의 공통 기능을 제공하는 기반 클래스**임.
 
 > 여기서 “모델 본체”란,  
-> 곧 **신경망 모듈 + 가중치 로딩/세이브 규약 + Hub 호환 인터페이스**를 의미함.
+> 곧, **신경망 module(=layers) + 가중치 로딩/세이브 규약 + HF Hub 호환 인터페이스**를 의미함.
 
-`PretrainedConfig`가 “구조 정의(설계도)”라면,
+`PretrainedConfig`가 “구조 정의(설계도)”라면,  
 `PreTrainedModel`은 
 
 * 그 설계도(`config`)를 받아서 
-* **실제 레이어를 만들고(`__init__`)
+* **실제 레이어들을 만들고** (`__init__`)
 * 연결하고 (`forward`), 
 * 가중치를 붙여서 동작 가능한 모델로 만드는 구현체**임.
 
@@ -45,9 +44,8 @@ Text / Image 의 경우를 나누어서 간단히 소개
 * `save_pretrained()`로 저장하고
 * `from_pretrained()`로 로드하는
 
-규약을 제공하는 쪽이 `PreTrainedModel`임.
+기능을 제공하는 쪽이 `PreTrainedModel`임.
 
----
 
 ## Config / Model / 입력 객체의 역할 분리
 
@@ -56,34 +54,31 @@ Text / Image 의 경우를 나누어서 간단히 소개
 * **Config (`PretrainedConfig`)**: 모델 구조를 재현하기 위한 메타데이터(하이퍼파라미터)
 * **Model (`PreTrainedModel`)**: 레이어 구현, forward, 저장/로드 규약(가중치 포함)
 * **입력 전처리 객체**:
-
   * Text: `Tokenizer`
   * Image: `ImageProcessor`
   * Multimodal: `Processor`
 
-즉,
+즉, 다음을 기억할 것:
 
-* `config`는 “모델이 어떻게 생겼는가”
-* `processor/tokenizer`는 “입력이 어떻게 들어와야 하는가”
-* `model`은 “실제로 계산을 수행하는 본체”
+* `config`는 **모델이 어떻게 생겼는가**
+* `processor/tokenizer`는 **입력이 어떻게 들어와야 하는가**
+* `model`은 **실제로 계산을 수행하는 본체**
 
-에 해당함.
+이 역할 분리를 정확히 지키는 것이 HF 생태계에서 재현성과 HF Hub 호환성의 핵심임.
 
-이 역할 분리를 정확히 지키는 것이 HF 생태계에서 재현성과 Hub 호환성의 핵심임.
-
----
 
 ## 0.1 `PreTrainedModel`이 실제로 제공하는 기능
 
-`PreTrainedModel`은 단순한 `nn.Module`이 아니라, 다음의 기능제공하는 고수준 추상화 제공 모델임.
+`PreTrainedModel`은 단순한 `nn.Module`이 아니라,  
+다음의 기능들을 제공하는 고수준 추상화 모델임.
 
 * **Hub 로부터 복원 contract**
 * **Config와 결합 구조**
 * Auto클래스와 연동   
 
-주요 기능은 다음과 같음.
+주요 기능은 다음과 같음:
 
-### 1) Config와의 강결합
+### 1) Config와의 결합
 
 다음과 같이 `PreTrainedModel`의 자식 클래스는 `config_class`를 가짐:
 
@@ -98,6 +93,9 @@ class MyModel(PreTrainedModel):
 * `from_pretrained()`가 config 기반으로 올바른 모델 클래스를 선택할 수 있게 함
 
 ### 2) `from_pretrained()`의 내부 복원 절차
+
+보통은 PreTrainedModel 이 제공하는 메서드를 그냥 사용하면 되지만,  
+특별한 기능 등이 필요하다면 overridding 가능함.
 
 ```python
 model = MyModel.from_pretrained("repo_id")
@@ -115,7 +113,8 @@ model = MyModel.from_pretrained("repo_id")
 8. `tie_weights()` 및 내부 초기화 정리
 9. 기본적으로 `eval()` 모드 설정
 
-즉, `from_pretrained()`는 단순한 `load_state_dict` 호출이 아니라 **Hub 의 contract 전체를 복원하는 고수준의 복합 복원 루틴**임.
+즉, `from_pretrained()`는 단순한 `load_state_dict` 이 아니라  
+**Hub 의 contract 전체를 복원하는 고수준의 복합 복원 메서드** 에 해당함.
 
 ### 3) state_dict 로딩 전략
 
@@ -133,7 +132,7 @@ HF는 일반 PyTorch의 경우와 달리 다음을 처리함:
 
 ### 4) `post_init()`의 역할
 
-Custom 모델 작성 시 생성자에서 다음의 hook호출이 필요.:
+Custom 모델 작성 시 생성자(`__init__`)에서 다음의 hook 호출이 필요.:
 
 ```python
 self.post_init()
@@ -162,24 +161,16 @@ out/
  └── (필요 시 shard 파일들)
 ```
 
-즉 저장 항목은 다음과 같음:
-
-* `config.json`
-* `model.safetensors`
-* 필요 시 shard 파일들
-* auto 관련 메타데이터
-
 Config와 Weight는 항상 분리 저장됨.
 
----
 
 ## 0.2 `PretrainedConfig`와의 구조적 관계
 
 구조-구현 분리 관점에서:
 
 ```
-PretrainedConfig  →  구조 메타데이터
-PreTrainedModel   →  실제 레이어 구현
+PretrainedConfig  :  구조 메타데이터
+PreTrainedModel   :  실제 레이어 구현
 ```
 
 * Config: 
@@ -199,22 +190,23 @@ PreTrainedModel   →  실제 레이어 구현
 > Config는 “설계도”,
 > Model은 “설계도를 구현한 실행 객체”.
 
----
 
 ## 0.3 `nn.Module`과의 차이
 
-| 항목                 | nn.Module | PreTrainedModel     |
-| ------------------ | --------- | ------------------- |
-| config 결합          | 없음        | 강제 결합               |
-| Hub 저장             | 수동 구현     | `save_pretrained()` |
-| Hub 복원             | 수동 구현     | `from_pretrained()` |
-| AutoModel 연동       | 불가        | 가능                  |
-| sharded loading    | 없음        | 지원                  |
-| dtype/device 자동 처리 | 제한적       | 지원                  |
+| 항목                   | nn.Module | PreTrainedModel     |
+| :---:                  | :---:     | ------------------- |
+| config 결합            | 없음      | 강제 결합           |
+| Hub 저장               | 수동 구현 | `save_pretrained()` |
+| Hub 복원               | 수동 구현 | `from_pretrained()` |
+| AutoModel 연동         | 불가      | 가능                |
+| sharded loading        | 없음      | 지원                |
+| dtype/device 자동 처리 | 제한적    | 지원                |
 
-따라서 HF 생태계에서 모델을 배포하거나 재현 가능하게 만들려면 `PreTrainedModel` 상속이 필수적임.
+따라서,
 
----
+* HF 생태계에서 모델을 배포하거나 재현 가능하게 만들려면 
+* `PreTrainedModel` 상속이 필수적임.
+
 
 ## 0.4 Hub 복원 전체 흐름
 
@@ -248,7 +240,6 @@ Processor는 별도의 경로로 복원되며, 모델 내부에 포함되지 않
 
 형태를 가짐.
 
----
 
 ## 1.1 텍스트에서 Tokenizer의 역할
 
@@ -276,14 +267,12 @@ tokens = tokenizer("Hello world", return_tensors="pt")
 
 즉,
 
-* Tokenizer는 **입력 규격 정의 및 변환 수행 객체"이고
+* Tokenizer는 **입력 규격 정의 및 변환 수행 객체** 이고
 * Model은 "계산 객체"임.
 
----
 
 ## 1.2 최소 예제: 커스텀 텍스트 분류 모델
 
-(기존 코드 설명 완전 유지)
 
 ```python
 import torch
@@ -316,21 +305,22 @@ class MyTextForSequenceClassification(PreTrainedModel):
         return SequenceClassifierOutput(loss=loss, logits=logits)
 ```
 
-여기서 중요한 점은 아래임.
+여기서 중요한 점은 다음과 같음: 
 
-* `config_class = MyTextConfig`로 “이 모델은 이 Config를 받는다”를 명시
+* `config_class = MyTextConfig`로 "이 모델은 이 Config를 받는다"를 명시
 * `super().__init__(config)` 호출로 HF 내부 규약 초기화
 * `post_init()` 호출로 HF가 기대하는 초기화 루틴 정리
 
-Tokenizer는 모델 내부에 포함되지 않음.
+Tokenizer는 모델 내부에 포함되지 않음.  
 전처리는 항상 외부에서 수행됨.
 
 ## 1.3 텍스트 모델에서 ModelOutput 사용 이유
 
 위 예제에서:
 
+```Python
 return SequenceClassifierOutput(loss=loss, logits=logits)
-
+```
 
 을 사용한 이유는:
 
@@ -362,7 +352,6 @@ ModelOutput은 다음의 특징을 가짐:
 
 형태를 가짐.
 
----
 
 ## 2.1 ImageProcessor의 역할
 
@@ -389,12 +378,11 @@ inputs = processor(image, return_tensors="pt")
 
 이미지의 경우도 Model은 이미지 원본을 직접 처리하지 않음.
 
----
 
 ## 2.2 최소 예제: 커스텀 이미지 분류 모델
 
 
-```python
+```Python
 from transformers.modeling_outputs import ImageClassifierOutput
 
 class MyImageForImageClassification(PreTrainedModel):
@@ -425,7 +413,6 @@ class MyImageForImageClassification(PreTrainedModel):
         return ImageClassifierOutput(loss=loss, logits=logits)
 ```
 
----
 
 ## 2.3 이미지 모델에서 Backbone 설계 시 고려사항
 
@@ -452,27 +439,25 @@ CNN의 경우:
 
 이는 Text 모델보다 구현 난이도가 높음.
 
-
-
 ---
 
 # 3. Tokenizer와 ImageProcessor를 Processor로 추상화할 수 있는가?
 
-### 개념적으로
+## 3.1 개념적 구조
 
-공통 구조:
+**공통 구조:**
 
 ```
 Raw Input → Processor → Tensor → Model
 ```
 
-Text:
+**Text:**
 
 ```
 문자열 → Tokenizer → input_ids → Model
 ```
 
-Image:
+**Image:**
 
 ```
 이미지 → ImageProcessor → pixel_values → Model
@@ -481,9 +466,10 @@ Image:
 * Tokenzier와 ImageProcessor 둘은 모두 "전처리 객체"라는 동일한 개념적 역할을 수행함.
 * 이는 Processor 라는 클래스로 추상화됨.
 
----
 
-### 구현 계층에서는 다름
+## 3.2 실제 구현 클래스들
+
+구현 계층에서는 차이점이 존재함:
 
 | 항목          | Tokenizer                 | ImageProcessor         |
 | :---:         | :---:                     | :---:                  |
@@ -494,9 +480,9 @@ Image:
 따라서:
 
 * 추상 개념으로는 Processor로 묶을 수 있음
-* 구현 레벨에서는 완전히 다른 클래스 계층
+* 구현 레벨에서는 완전히 다른 클래스 사용. 
 
-## 3.1 Processor와 Model은 절대 결합하면 안 되는 이유
+## 3.3 Processor와 Model은 절대 결합하면 안 되는 이유
 
 중요 설계 원칙:
 
@@ -520,15 +506,12 @@ Model 내부에 Tokenizer나 ImageProcessor를 넣으면:
 * CLIP (Contrastive Language-Image Pretraining)
 * `"openai/clip-vit-base-patch32"`
 
-CLIP은
+CLIP은 다음으로 구성됨:
 
 * Text encoder
 * Vision encoder
 * 통합 Processor
 
-구조를 가짐.
-
----
 
 ## 4.1 CLIPProcessor 내부 구조
 
@@ -541,10 +524,9 @@ class CLIPProcessor(ProcessorMixin):
 
 즉,
 
-> Processor는 실제 전처리를 구현한다기보다
+> Processor는 실제 전처리를 구현한다기보다  
 > 여러 전처리 객체를 보유하는 wrapper임.
 
----
 
 ## 4.2 Hub 저장 구조
 
@@ -559,15 +541,12 @@ repo/
  ├── processor_config.json
 ```
 
-processor_config.json은:
+processor_config.json은 다음의 정보를 가짐:
 
 * 어떤 tokenizer
 * 어떤 image_processor
 * 어떤 auto_map
 
-정보를 저장함.
-
----
 
 ## 4.3 AutoProcessor 동작
 
@@ -593,24 +572,20 @@ from transformers import AutoModel
 model = AutoModel.from_pretrained("bert-base-uncased")
 ```
 
-동작:
+동작은 다음과 같은 순서로 진행됨:
 
 1. config.json 로드
-2. model_type 확인
+2. `model_type` 확인
 3. 대응되는 모델 클래스 선택
-4. 해당 클래스의 from_pretrained 호출
+4. 해당 클래스의 `from_pretrained` 호출
 
-Custom 모델도:
+Custom 모델도 다음과 같이 `AutoModel` 에 등록 가능함:
 
 ```python
 MyModel.register_for_auto_class("AutoModel")
 ```
 
-을 통해 등록 가능함.
-
-즉,
-
-> AutoModel은 모델을 구현하지 않음.
+> AutoModel은 모델을 구현하지 않음.  
 > Config 기반으로 적절한 PreTrainedModel 클래스를 선택하는 dispatcher임.
 
 ---
@@ -636,7 +611,7 @@ model.safetensors 로딩
 ```
 * Processor는 별도로 복원됨.
 
-# 최종 구조 요약
+# 요약
 
 ## 단일 모달(Text)
 
@@ -678,7 +653,7 @@ Tokenizer   ImageProcessor
    PreTrainedModel
 ```
 
-# 요약
+## 기억하기
 
 1. PreTrainedModel은 Hub 규약을 구현한 `nn.Module` 확장 클래스
 2. Config는 구조 정의

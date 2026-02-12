@@ -34,6 +34,7 @@
  "/wiki/hf_transformer/hf_post_transformer",
  "/wiki/hf/hf_config",
  "/wiki/hf/hf_model",
+ "/wiki/hf/hf_processor",
  "/wiki/hf/hf_start",
  "/wiki/hf/pipeline",
  "/wiki/hf/pipeline_repo",
