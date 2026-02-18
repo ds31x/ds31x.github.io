@@ -98,7 +98,7 @@ Tokenizer는
 Tokenizer를 저장하면 보통 출력 디렉토리에 
 * `tokenizer_config.json`, 
 * `special_tokens_map.json`, 
-* vocab 파일 등이 생성
+* **vocab** 파일 등이 생성
 * 이는 모델/토크나이저 종류에 따라 구성은 다름.
 
 ```python
@@ -213,14 +213,14 @@ print(out.keys())
 
 ### 4.2 AutoTokenizer / AutoImageProcessor / AutoProcessor는 무엇을 기준으로 클래스를 고르나
 
-* Auto 계열은 저장된 리포지토리/폴더의 메타데이터를 읽고, 
-* 그에 맞는 구체 클래스를 선택해 로드.
+* Auto 계열은 저장된 repository/directory 의 메타데이터를 읽고, 
+* 그에 맞는 **실제 클래스** 를 선택해 로드.
 * Processor 등록/연동도 AutoClass 체계 안에서 이뤄짐.
 
 ### 4.3 AutoModel은 어떤 입력을 기대하나
 
 * `AutoModel`(또는 `AutoModelForXxx`)은 config에 맞는 모델 클래스를 로드 
-* `forward(...)`에서 특정 입력 키를 기대
+* `forward(...)`에서 특정 입력 key(키)를 기대
 * 실무적으로는 
 	* AutoModel을 로드한 뒤, 
 	* 해당 모델에 맞는 AutoTokenizer/AutoImageProcessor/AutoProcessor를 같이 로드 하는 패턴이 일반적.
@@ -378,9 +378,12 @@ class SimpleVisionImageProcessor(ImageProcessingMixin):
 * 해당 properties 가 JSON 직렬화가 가능한 경우(`int`, `float`, `bool`, `str`, `list`, `dict`) 에는
 * 굳이 `to_dict`를 오버라이드 안해도, 부모 클래스의 기본 `to_dict()`가 `self.__dict__`기반으로 직렬화를 수행함.
 
-앞서의 예에선 `cfg` 안에 실제 필요한 속성들이 놓이는 구조였기 때문에 명시적으로 `to_dict`ㄹ르 구현해 주는 것이 좋으나, 다음과 같이 구현하면 굳이 필요하지 않음.
+앞서의 예에선 root property에 직렬화할 속성들이 놓이는 대신에,  
+하나의 root property `cfg` 가 존재하고
+해당 `cfg` 안에 실제 필요한 속성들이 놓이는 구조였기 때문에  
+명시적으로 `to_dict` 를 구현해 주는 것이 좋으나, 다음과 같이 구현하면 굳이 필요하지 않음.
 
-```Python
+```python
 # image_processing_simple_vision.py
 
 from __future__ import annotations
@@ -480,7 +483,7 @@ SimpleVisionImageProcessor.register_for_auto_class("AutoImageProcessor")
 위의 코드를 다음과 같이 저장하면 이후 Auto 클래스를 통해 로드가 가능해짐: `auto_map`의 저장 json파일에 생김
 
 아래와 같이 `.save_pretrained` 수행시 지정된 디렉토리에 `preprocessor_config.json`이 저장됨.
-```Python
+```python
 from image_processing_simple_vision import SimpleVisionImageProcessor
 
 
