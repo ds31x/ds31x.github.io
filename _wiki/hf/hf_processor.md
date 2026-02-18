@@ -68,9 +68,9 @@ Processor는 "새로운 기능"이라기보다,
 
 ---
 
-## 1. 텍스트(Text) - Tokenizer 사용법
+## 1. 텍스트(Text) - Tokenizer사용법
 
-### 1.1 최소 예제: AutoTokenizer로 인코딩
+### 1.1 예제: AutoTokenizer
 
 ```python
 from transformers import AutoTokenizer
@@ -113,7 +113,7 @@ tok2 = AutoTokenizer.from_pretrained(save_dir)
 print(type(tok2), tok2.vocab_size)
 ```
 
-### 1.3 실전 팁: special tokens / padding / truncation
+### 1.3 주의사항
 
 * `padding=True`는 배치 텐서화를 위해 사실상 필수 (batch내에 가장 긴 샘플에 맞추어짐.)
 * `truncation=True`는 최대 길이 초과 시 안전장치
@@ -123,7 +123,7 @@ print(type(tok2), tok2.vocab_size)
 
 ## 2. 이미지(Image) - ImageProcessor 사용법
 
-### 2.1 최소 예제: AutoImageProcessor로 pixel_values 만들기
+### 2.1 예제: AutoImageProcessor로 pixel_values 만들기
 
 ```python
 from transformers import AutoImageProcessor
@@ -160,9 +160,9 @@ print(type(proc2))
 
 ### 2.3 실전 팁: numpy로 변환, use_fast, resize/normalize
 
-* `datasets.map()`과 결합할 때는 `pixel_values`를 **numpy로 변환**해 
-* 저장 안정성을 확보하는 패턴을 많이 사용함.
-* 환경에 따라 torch 텐서 저장이 꼬이는 경우가 있음.
+* `datasets.map()`과 결합할 때는 `pixel_values`를 **numpy로 변환** 하여 
+* 저장 안정성을 확보하는 방식이 많이 사용함.
+* 이는 일부 환경에서 torch 텐서 저장 을 사용하는 경우보다 보다 높은 호환성을 보이기 때문임.
 * 일부 모델은 `use_fast=True` 옵션으로 빠른 이미지 프로세서를 지원
 
 ---
