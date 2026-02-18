@@ -1,6 +1,6 @@
 ---
 layout  : wiki
-title   : Lable Alignment in NER
+title   : Label Alignment in NER
 summary : 
 date    : 2026-01-30 21:41:20 +0900
 updated : 2026-01-30 23:23:20 +0900
