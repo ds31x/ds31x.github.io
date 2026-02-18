@@ -17,7 +17,7 @@ latex   : false
 # Processor
 
 입력 전처리(preprocessing) 객체를 다음으로 나누어 정리.
-* **텍스트(Tokenization)**, 
+* **텍스트([Tokenization](/nlp/tokenization))**, 
 * **이미지(Image preprocessing)**, 
 * **멀티모달 통합(Processor)** 
  
