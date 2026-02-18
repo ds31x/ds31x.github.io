@@ -3,7 +3,7 @@ layout  : category
 title   : Natural Language Processing
 summary : 
 date    : 2026-01-20 20:27:15 +0900
-updated : 2026-01-30 15:48:18 +0900
+updated : 2026-02-19 08:47:45 +0900
 tag     : 
 resource: 6B/BBADB83D674326B3290D7CF320A2F0
 toc     : true
@@ -33,4 +33,5 @@ latex   : false
 ## 주요 구성요소
 
 * [[/nlp/tokenization]]
+
 ## Related Documents

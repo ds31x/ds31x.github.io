@@ -3,7 +3,7 @@ layout  : wiki
 title   : Tokenizer 
 summary : 
 date    : 2026-01-20 14:09:40 +0900
-updated : 2026-01-30 15:48:18 +0900
+updated : 2026-02-19 08:47:42 +0900
 tag     : token BPE WordPiece UnigramLM 
 resource: 6E/305305E7CE447E926358B6D98F19C9
 toc     : true
@@ -22,9 +22,13 @@ Tokenization은 자연어 처리(NLP)에서 텍스트를 모델이 처리 가능
 
 tokenization을 단순한 전처리 단계로 오인되기도하지만, 실제로는 이후 기계학습 모델의 비용 구조, 연산 복잡도, 학습 난이도, 표현력 전반에 매우 큰 영향을 주는 핵심 단계임.
 
+일반적인 token과 tokenizer에 대한 간단한 내용은 다음의 url을 참고:  
+
+* [Token and Tokenizer](https://ds31x.tistory.com/140)
+
 ### Q1: 오늘날 Tokenization의 기본 단위는 왜 character나 word가 아닌 subword 단위를 사용할까?
 
-* Character tokenization은 sequence length 증가로 O(L²) 연산 비용이 폭증하고 단어 경계나 형태소 등 언어 구조가 완전히 소실되어 이후 layer 등의 학습 부담이 큼.
+* Character tokenization은 sequence length 증가로 연산 비용(= $O(L^2)$ )이 폭증하고 단어 경계나 형태소 등 언어 구조가 완전히 소실되어 이후 layer 등의 학습 부담이 큼.
 * Word tokenization은 data sparsity와 OOV (Out Of Vocabulary) 문제가 심각함.
 * 적절한 vocabulary 크기(30K-50K)로 의미 단위를 보존하면서 OOV를 구조적으로 해결하는 subword가 최적의 균형점임.
 
@@ -527,6 +531,9 @@ Subword tokenization은 character와 word 사이의 최적의 균형점을 찾�
 
 ### 8.1 BPE (Byte Pair Encoding, 1994/2016)
 
+Byte Pair Encoding (BPE)는 빈도 기반의 데이터 압축 알고리즘으로 개발되었으나, 
+오늘날에는 Tokenization에서도 유용하게 사용됨. 
+
 **역사:**
 
 * 1994: 데이터 압축 알고리즘으로 개발
@@ -540,7 +547,7 @@ Subword tokenization은 character와 word 사이의 최적의 균형점을 찾�
 * 해당 쌍을 하나의 새 토큰으로 병합
 * 원하는 vocabulary 크기에 도달할 때까지 반복
 
-## 8.2 WordPiece (2016)
+### 8.2 WordPiece (2016)
 
 * Wu et al. (2016)
 * Google에서 개발
@@ -562,6 +569,7 @@ Score = freq(pair) / (freq(first) × freq(second))
 
 * 분자는 BPE와 유사.
 * 분모를 통해 개선.
+
 가장 높은 점수의 쌍을 병합
 
 **특징:**
