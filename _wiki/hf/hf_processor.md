@@ -63,7 +63,8 @@ latex   : false
 	* "텍스트만" 또는 "이미지만" 받는 순수 단일모달 모델
 	* 이 경우 `AutoTokenizer` 또는 `AutoImageProcessor`만으로 충분
 
-Processor는 "새로운 기능"이라기보다, **(Tokenizer, ImageProcessor)를 한 객체로 묶어 호출/저장/로드를 일관되게 하는 래퍼** 임.
+Processor는 "새로운 기능"이라기보다,  
+**(Tokenizer, ImageProcessor)를 한 객체로 묶어 호출/저장/로드를 일관되게 하는 래퍼** 임.
 
 ---
 
@@ -75,6 +76,8 @@ Processor는 "새로운 기능"이라기보다, **(Tokenizer, ImageProcessor)를
 from transformers import AutoTokenizer
 
 tok = AutoTokenizer.from_pretrained("bert-base-uncased")
+# tokenizer.json, tokenizer_config.json, vocab.txt 등이
+# ~/.cache/huggingface 밑에 서브디렉토리에 캐싱됨.
 
 batch = tok(
     ["hello world", "this is a test"],
@@ -96,9 +99,10 @@ Tokenizer는
 ### 1.2 저장/로드: tokenizer 아티팩트
 
 Tokenizer를 저장하면 보통 출력 디렉토리에 
+
 * `tokenizer_config.json`, 
 * `special_tokens_map.json`, 
-* **vocab** 파일 등이 생성
+* **vocab** 파일 등이 생성 (Transformer 5.x에선 `tokenizer.json` 이 vocabrary 정보를 같이 가지는 형태를 취함) 
 * 이는 모델/토크나이저 종류에 따라 구성은 다름.
 
 ```python
@@ -111,7 +115,7 @@ print(type(tok2), tok2.vocab_size)
 
 ### 1.3 실전 팁: special tokens / padding / truncation
 
-* `padding=True`는 배치 텐서화를 위해 사실상 필수
+* `padding=True`는 배치 텐서화를 위해 사실상 필수 (batch내에 가장 긴 샘플에 맞추어짐.)
 * `truncation=True`는 최대 길이 초과 시 안전장치
 * 특수 토큰 추가 후에는 `save_pretrained()`로 결과를 고정해두는 습관이 필요함
 
@@ -131,7 +135,7 @@ img = Image.open("cat.jpg").convert("RGB")
 
 batch = proc(images=[img], return_tensors="pt")
 print(batch.keys())
-# dict_keys(['pixel_values'])  (모델에 따라 추가 키가 있을 수 있음)
+# dict_keys(['pixel_values'])  (모델에 따라 추가 key가 있을 수 있음)
 print(batch["pixel_values"].shape)
 # (1, 3, 224, 224) 같은 형태
 ```
