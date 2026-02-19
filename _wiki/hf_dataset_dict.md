@@ -1,14 +1,14 @@
 ---
 layout  : category
-title   : HF - DatasetDict 와 Dataset
+title   : HF-DatasetDict 와 Dataset
 summary : 
 date    : 2026-01-25 15:07:53 +0900
-updated : 2026-01-27 14:06:57 +0900
+updated : 2026-02-19 12:52:06 +0900
 tag     : dataset hf
 resource: 24/020FA19AC243A8BE8ECF070EDFD860
 toc     : true
 public  : true
-parent  : [[/index]]
+parent  : [[/hf]]
 latex   : false
 ---
 * TOC
@@ -24,10 +24,10 @@ latex   : false
 
 ## 핵심 개념
 
-* `Dataset`(데이터셋): 학습 데이터의 표준 컨테이너
-* `DatasetDict`(데이터셋딕트): `train`/`validation`/`test` 분할 컨테이너
-* `Processor`(프로세서): 모델 입력 전처리 표준 인터페이스
-* `Trainer`(트레이너): 학습 루프 표준 구현체
+* `Dataset`: 학습 데이터의 표준 컨테이너
+* `DatasetDict`: `train`/`validation`/`test` 분할 컨테이너
+* `Processor`: 모델 입력 전처리 표준 인터페이스
+* `Trainer`: 학습 루프 표준 구현체
 
 
 ## Index

@@ -1,9 +1,9 @@
 ---
 layout  : wiki
-title   : HF - Pipeline을 HF Repo 로 업로드 
+title   : HF-Pipeline Upload
 summary : 
 date    : 2026-02-02 16:47:28 +0900
-updated : 2026-02-02 19:12:10 +0900
+updated : 2026-02-19 12:18:26 +0900
 tag     : hf pipeline repo
 resource: 57/48E6A5A80146F48B0FDD78ADA3766B
 toc     : true
@@ -18,9 +18,11 @@ latex   : false
 
 Pipeline은 `task`, `config.json`, `processor`, `model` 의 조합으로 구성된다.
 
-HF Repo에 업로드되는 것은 pipeline 객체 자체가 아니라,
-model을 중심으로 한 config 및 processor를 포함한 아티팩트 집합이며,
-이는 Model Repo 형태로 저장된다.
+HF Repo.에 업로드되는 것은 pipeline 객체 자체가 아니라,
+model을 중심으로 한 config 및 processor를 포함한 artifacts의 집합이며,
+이는 Model Repo. 형태로 저장된다.
+
+> Repo. = Repository (저장소)
 
 Pipeline의 실제 구성 방식은 `config.json`과 같은 설정 파일에 정의되어 있고,
 `AutoConfig`, `AutoProcessor`, `AutoModel` 계열의 **AutoClass** 들이 이를 로딩하여
@@ -45,7 +47,7 @@ Pipeline 객체 `img_clf`가 있다면 다음의 코드로 업로드.
 ```python
 img_clf.push_to_hub("dsaint31/tmp-pl-image-classification")
 ```
-* repo가 없으면 자동 생성
+* repo가 없으면 **자동 생성**
 * 있으면 overwrite
 * model + config + processor + pipeline metadata까지 같이 업로드
 
@@ -64,7 +66,7 @@ Traceback (most recent call last):
        ^^^^^^^^^^^^^^
 AttributeError: 'ImageClassificationPipeline' object has no attribute 'modelcard'
 ```
-다음의 코드를 통해 비어있는 `modelcard`  attrigute 처리를 해주고 나서 `push_tohub`를 호출
+다음의 코드를 통해 비어있는 `modelcard`  attribute 처리(추가하고 값은 `None`으로 설정)를 해주고 나서 `push_to_hub`를 호출
 
 ```python
 setattr(img_clf, "modelcard", None)
@@ -121,8 +123,13 @@ repo/
 Hugging Face(HF)에서  
 **repository의 config.json** 은 다음을 위한 핵심 meta-data임.
 
-* **modle 의 구조적 정의 **와 
+* **modle 의 구조적 정의** 와 
 * 재현 가능한 로딩을 보장.
+
+HF는 기본 모델 각각에 Config 클래스 (`BertConfig`, `ViTConfig` 등) 를 제공하며, 이들은 대응되는 `config.json` 으로 serialization됨.
+
+> Custom Model의 경우엔 `PretrainedConifg` 클래스를 상속받아서 대응하는 Config클래스를 만들 수 있음:  
+> 자세한 건 [[/hf/hf_config]] 를 참고.
 
 다음이 `config.json`의 핵심요소임:
 

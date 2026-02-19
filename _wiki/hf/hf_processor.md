@@ -1,10 +1,10 @@
 ---
 layout  : wiki
-title   : HF - Processor (전처리)
-summary : 
+title   : HF-Processor
+summary : 전처리를 수행하는 Processor를 설명. Tokenizer와 ImageProcessor 도 같이 다룸.
 date    : 2026-02-12 13:59:26 +0900
-updated : 2026-02-19 11:27:56 +0900
-tag     : 
+updated : 2026-02-19 12:48:11 +0900
+tag     : hf
 resource: 87/038A66A07D49FF9052E19D71612C98
 toc     : true
 public  : true
@@ -358,14 +358,14 @@ class SimpleVisionImageProcessor(ImageProcessingMixin):
     # 직렬화
     # ---------
     def to_dict(self) -> Dict[str, Any]:
-        # ImageProcessingMixin이 save_pretrained()할 때 to_dict()를 사용합니다. :contentReference[oaicite:5]{index=5}
+        # ImageProcessingMixin이 save_pretrained()할 때 to_dict()를 사용. 
         d = asdict(self.cfg)
         d["processor_class"] = self.__class__.__name__  # 관례적 메타
         return d
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any], **kwargs) -> "SimpleVisionImageProcessor":
-        # from_pretrained() 경로에서 내부적으로 사용될 수 있어 제공해두면 안전합니다.
+        # from_pretrained() 경로에서 내부적으로 사용될 수 있어 제공해두면 안전.
         data = dict(data)
         data.pop("processor_class", None)
         data.update(kwargs)
@@ -587,7 +587,7 @@ out = p(img, return_tensors="pt")
 print(out["pixel_values"].shape)  # (1, 3, 224, 224)
 
 save_dir = "./tmp_custom_imgproc"
-p.save_pretrained(save_dir)  # preprocessor_config.json 생성 :contentReference[oaicite:7]{index=7}
+p.save_pretrained(save_dir)  # preprocessor_config.json 생성 
 
 p2 = SimpleVisionImageProcessor.from_pretrained(save_dir)
 out2 = p2(img, return_tensors="pt")
@@ -679,7 +679,7 @@ print(x["pixel_values"].shape)
 
 ```python
 save_dir = "./tmp_imgproc"
-ip.save_pretrained(save_dir)  # preprocessor_config.json 생성 :contentReference[oaicite:11]{index=11}
+ip.save_pretrained(save_dir)  # preprocessor_config.json 생성
 
 ip2 = AutoImageProcessor.from_pretrained(save_dir)
 x2 = ip2(images=[img], return_tensors="pt")
@@ -715,7 +715,7 @@ out = proc(
     return_tensors="pt",
 )
 print(out.keys())
-# input_ids, attention_mask, pixel_values ... (모델/프로세서에 따라 변형) :contentReference[oaicite:14]{index=14}
+# input_ids, attention_mask, pixel_values ... (모델/프로세서에 따라 변형) 
 ```
 
 #### C-3. 저장/복원

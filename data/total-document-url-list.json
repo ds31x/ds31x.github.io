@@ -32,6 +32,7 @@
  "/wiki/hf_label_align",
  "/wiki/hf_transformer",
  "/wiki/hf_transformer/hf_post_transformer",
+ "/wiki/hf/hf_auto",
  "/wiki/hf/hf_config",
  "/wiki/hf/hf_model",
  "/wiki/hf/hf_processor",

@@ -3,7 +3,7 @@ layout  : wiki
 title   : HF-Config
 summary : 
 date    : 2026-02-11 22:56:59 +0900
-updated : 2026-02-12 09:21:19 +0900
+updated : 2026-02-19 12:44:43 +0900
 tag     : hf config
 resource: 31/709D1251394DFBA0DBF7E440BE0A97
 toc     : true
@@ -34,7 +34,7 @@ Text / Image 의 경우를 나누어서 간단히 소개.
 
 ### 일반 모델 Config와의 관계
 
-`BertConfig`, `ViTConfig`와 같은 일반 모델의 설정 클래스는 모두 `PretrainedConfig`를 상속한 구체 구현체임.
+`BertConfig`, `ViTConfig`와 같은 일반 모델의 설정 클래스는 모두 `PretrainedConfig`를 상속한 구현체임.
 사용자가 직접 정의하는 Custom Config 클래스 역시 동일하게 `PretrainedConfig`를 상속하여 작성하는 구조임.
 
 즉, 관계는 다음과 같음.
@@ -136,6 +136,9 @@ class MyTextConfig(PretrainedConfig):
 * **type_vocab_size**
 	* segment embedding의 종류 수 
 	* 문장 쌍 입력 등에서 구분 정보를 표현하기 위한 차원 설정 값임.
+	* BERT에서 사용한 pretraining task 중 하나인 NSP (Next Sentence Prediction) 에서 사용됨.
+	* 두 개의 sentence가 이어지는 문장인지를 판단하는 task로 0,1의 2 종류의 segment embedding을 가짐.
+	* RoBERTa 에서는 NSP가 제거된 상태로 segment embedding이 의미가 없어짐.
 * **pad_token_id**
 	* 패딩 토큰에 해당하는 정수 ID 
 	* attention mask 및 손실 계산 시 무시할 위치를 식별하는 기준 값임.
@@ -185,7 +188,7 @@ class MyTextConfig(PretrainedConfig):
 
 > 과거의 `.bin` 파일은 pickle 기반으로 실행가능 코드를 포함할 수 있었음.  
 > 이는 보안에 매우 위험한 요소임.  
-> 현재는 `.safetensors` 파일을 사용하며, 순수한 텐서 데이터만 저장됨.
+> 현재는 `.safetensors` 파일을 사용하며, 순수한 텐서 데이터만 저장됨.  
 > 추가적으로 zero-copy 로딩 등이 가능해서 로딩 속도가 매우 개선되었음.
 
 
@@ -377,8 +380,6 @@ class MyImageConfig(PretrainedConfig):
 구조는 둘 다 Transformer 기반이지만
 입력 토큰 생성 방식에서 차이가 있음.
 
-### 2.4 
-
 
 ## 3. 참고 - AutoClass 에 등록하기
 
@@ -401,9 +402,9 @@ Custom config의 python 소스 코드 파일 마지막에 다음을 추가:
 MyTextConfig.register_for_auto_class("AutoConfig")
 ```
 
-이렇게 하면 `config.json`에 `_auto_map` 필드가 추가됨.
+이렇게 하면 `config.json`에 `auto_map` 필드가 추가됨.
 
-이는 Hub에서 다음을 통해 config를 로드할 수 있게 해 줌:
+이 `auto_map`필드는 Hub에서 다음을 통해 config를 로드할 수 있게 해 줌:
 
 ```python
 AutoConfig.from_pretrained("repo", trust_remote_code=True)

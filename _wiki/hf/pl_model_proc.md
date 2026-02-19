@@ -1,9 +1,9 @@
 ---
 layout  : wiki
-title   : Pipeline 만들기 - image classifier
+title   : Pipeline만들기-image classifier
 summary : 
 date    : 2026-02-11 22:07:47 +0900
-updated : 2026-02-11 22:46:08 +0900
+updated : 2026-02-19 12:46:39 +0900
 tag     : hf classification image
 resource: DE/F203CAB610435B899DB44433747561
 toc     : true
@@ -18,7 +18,7 @@ latex   : false
 
 다음이 가능한 `custom_model` 과 `custom_processor` 의 조건을 살펴본다.
 
-```
+```python
 pipeline(
     task="image-classification",
     model=custom_model,
@@ -35,7 +35,7 @@ pipeline(
 
 즉, forward가 다음과 같은 contract를 만족해야 함:
 
-```Python
+```python
 def forward(self, pixel_values=None, labels=None, **kwargs):
     ...
     return ImageClassifierOutput(
@@ -48,7 +48,7 @@ def forward(self, pixel_values=None, labels=None, **kwargs):
 
 `ImageClassifierOutput`은 다음의 구조를 가짐:
 
-```Python
+```python
 ImageClassifierOutput(
     loss: Optional[Tensor] = None,
     logits: Tensor = None,
@@ -62,7 +62,7 @@ ImageClassifierOutput(
 
 모델의 `.config`에 다음의 속성이 필요함:
 
-```Python
+```python
 config.id2label
 config.label2id
 config.num_labels
@@ -72,13 +72,13 @@ config.num_labels
 
 `processor` 다음과 같은 호출이 가능한 callable 객체여야함:
 
-```Python
+```python
 processor(images, return_tensors="pt")
 ```
 
 위와 같은 호출의 return value는 다음의 형태의 `dict`객체여야 함:
 
-```Python
+```python
 {"pixel_values": tensor}
 ```
 * `pixel_values` 키가 반드시 있어야 함.
@@ -88,7 +88,7 @@ processor(images, return_tensors="pt")
 
 위의 조건을 만족하는 `model`, `processor` 가 있다면 다음으로 만들 수 있음:
 
-```Python
+```python
 from transformers import pipeline
 
 pipe = pipeline(
@@ -103,7 +103,7 @@ out = pipe(image)
 
 ## Example
 
-```Python
+```python
 from PIL import Image
 import requests
 
