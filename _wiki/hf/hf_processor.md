@@ -1,9 +1,9 @@
 ---
 layout  : wiki
-title   : Processor - 전처리 
+title   : HF - Processor (전처리)
 summary : 
 date    : 2026-02-12 13:59:26 +0900
-updated : 2026-02-12 17:47:30 +0900
+updated : 2026-02-19 11:03:03 +0900
 tag     : 
 resource: 87/038A66A07D49FF9052E19D71612C98
 toc     : true
@@ -19,7 +19,7 @@ latex   : false
 입력 전처리(preprocessing) 객체를 다음으로 나누어 정리.
 * **텍스트([[/nlp/tokenization]]{tokenization})**, 
 * **이미지(Image preprocessing)**, 
-* **멀티모달 통합(Processor)** 
+* **Multi-modal 통합(Processor)** 
  
 추가적으로 `save_pretrained()` 과  `from_pretrained()` 을 이용한 실습을 추가함.
 
@@ -44,9 +44,9 @@ latex   : false
 * 이미지 로딩(옵션), resize/center-crop/normalize 같은 변환을 수행.
 * 최종적으로 **pixel_values**(보통 `(B, C, H, W)`) 텐서를 생성. 
 
-### 0.3 Processor (멀티모달 통합)
+### 0.3 Processor (Multi-modal 통합)
 
-* 멀티모달 모델은 보통 “텍스트 전처리”와 “이미지 전처리”가 동시에 필요.
+* Multi-modal 모델은 보통 “텍스트 전처리”와 “이미지 전처리”가 동시에 필요.
 * 그래서 `ProcessorMixin` 기반의 **단일 객체**가 내부적으로 다음을 가짐:
   * Tokenizer
   * ImageProcessor (또는 feature extractor)
@@ -57,7 +57,7 @@ latex   : false
 결론부터 말하면:
 
 * **가능**: 
-	* 하나의 모델이 여러 모달리티 입력을 동시에 받는 경우
+	* 하나의 모델이 여러 modality 입력을 동시에 받는 경우
 	* 예: CLIP(텍스트+이미지), PaliGemma(텍스트+이미지) 등
 * **불필요** 한 경우: 
 	* "텍스트만" 또는 "이미지만" 받는 순수 단일모달 모델
@@ -102,7 +102,9 @@ Tokenizer를 저장하면 보통 출력 디렉토리에
 
 * `tokenizer_config.json`, 
 * `special_tokens_map.json`, 
-* **vocab** 파일 등이 생성 (Transformer 5.x에선 `tokenizer.json` 이 vocabrary 정보를 같이 가지는 형태를 취함) 
+* **vocab** 파일 등이 생성 
+	* Transformer 5.x에선 `tokenizer.json` 이 vocabrary 정보를 같이 가지는 형태를 취함 
+	* `vocab.txt` 는 `.save_pretrained()`로 생성되지 않음 (transformer 5.x기준)
 * 이는 모델/토크나이저 종류에 따라 구성은 다름.
 
 ```python
@@ -131,7 +133,9 @@ from PIL import Image
 
 proc = AutoImageProcessor.from_pretrained("google/vit-base-patch16-224")
 
-img = Image.open("cat.jpg").convert("RGB")
+img_url = "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/cats.png"
+img = Image.open(requests.get(img_url, stream=True).raw).convert("RGB")
+# img = Image.open("cat.jpg").convert("RGB")
 
 batch = proc(images=[img], return_tensors="pt")
 print(batch.keys())
@@ -165,21 +169,32 @@ print(type(proc2))
 * 이는 일부 환경에서 torch 텐서 저장 을 사용하는 경우보다 보다 높은 호환성을 보이기 때문임.
 * 일부 모델은 `use_fast=True` 옵션으로 빠른 이미지 프로세서를 지원
 
+
+참고: [[/hf_dataset_dict/dd_map]]
+
 ---
 
-## 3. 멀티모달 - Processor 사용법 (CLIP 등)
+## 3. Multi-modal - Processor 사용법 (CLIP 등)
+
+Tokenizer 와 ImageProcessor 가 둘 다 필요한 경우 사용되는 보다 추상화된 클래스.
+
+CLIP (Contrastive Language-Image Pretraining) 등의 multi-modal model 에서 주로 사용됨.
 
 ### 3.1 AutoProcessor의 목적
 
 `AutoProcessor`는 
-* 멀티모달 입력(예: 텍스트+이미지)을 
+* Multi-modal 입력(예: 텍스트+이미지)을 
 * 한 번에 처리하기 위해 존재. 
 * 내부적으로 Tokenizer와 ImageProcessor 로 구성.
 * 한 번 호출로 모델 입력 딕셔너리를 구성
 
 ### 3.2 CLIP처럼 “통합 Processor”가 있는 경우
 
-CLIP은 텍스트 인코더 + 이미지 인코더를 함께 쓰는 대표적 멀티모달 모델:
+CLIP은 텍스트 인코더 + 이미지 인코더를 함께 쓰는 대표적 Multi-modal 모델:
+
+* Contrastive: 서로 다른 쌍을 구분하도록 학습하는 대조 학습 방식
+* Language–Image: 텍스트와 이미지를 함께 다루는 멀티모달 구조
+* Pretraining: 대규모 데이터로 사전학습을 수행하는 단계
 
 ```python
 from transformers import AutoProcessor
@@ -197,10 +212,12 @@ print(out.keys())
 # input_ids, attention_mask, pixel_values ... 같은 형태
 ```
 
+Processor가 제공되는 경우, 이를 사용하면 간단히 처리가능하지만 모델에서 어떤 Tokenizer와 ImageProcessor를 요구하는지 등을 파악하는 것이 좋음. 특정한 조합이 요구되면서 Auto로 Processor가 제공되지 않는 경우엔 이를 조합하여 만들어야하며, 커스터마이징을 위해서도 내부 구성을 파악하고 있는 것이 좋음.
 
-### 3.3 PaliGemma처럼 “Tokenizer + ImageProcessor 조합”인 경우
+* `processor_config.json` 을 살펴볼 것.
+* 흔히 `processor.tokenizer` 및 `processor.image_processor` 등의 속성으로 지원됨.
 
-어떤 모델은 특정 tokenizer와 특정 image processor를 조합해 Processor가 구성됨
+> Processor는 내부적으로 Tokenizer + ImageProcessor를 감싸는 래퍼(wrapper) 객체
 
 ---
 
@@ -211,15 +228,52 @@ print(out.keys())
 * 모델이 기대하는 입력 키는 모델 아키텍처에 따라 다름.
   * 텍스트: `input_ids`, `attention_mask`, ...
   * 비전: `pixel_values`
-  * 멀티모달: 둘 다 필요
-* 따라서 "모델 - 전처리기"는 사실상 짝으로 움직여야 안전.
-* Config가 “구조”, processor가 “입력 규격”을 결정: Config는 모델 내부에 존재하는 경우가 일반적.
+  * Multi-modal: 둘 다 필요
+* 따라서 "모델 - 전처리기"는 사실상 pair(짝)으로 움직여야 안전.
+* Config가 "구조", processor가 "입력 규격"을 결정: Config는 모델 내부에 attribute로 존재하는 경우가 일반적.
 
 ### 4.2 AutoTokenizer / AutoImageProcessor / AutoProcessor는 무엇을 기준으로 클래스를 고르나
 
-* Auto 계열은 저장된 repository/directory 의 메타데이터를 읽고, 
-* 그에 맞는 **실제 클래스** 를 선택해 로드.
+* Auto 계열은 저장된 repository/directory 의 메타데이터 JSON 파일을 읽고, 
+* 그에 맞는 **실제 클래스** 를 동적으로 선택해 로드.
 * Processor 등록/연동도 AutoClass 체계 안에서 이뤄짐.
+
+주로 메타데이터가 저장된 JSON 파일의 특정 필드에 의존:
+| Auto 클래스           | 1차 기준 파일                                                            | 실제 판단 키                         |
+| :----------------: | :-----------------------------------------------------------------: | :-----------------------------: |
+| AutoConfig         | config.json                                                         | model_type / auto_map           |
+| AutoModel          | config.json                                                         | model_type / auto_map           |
+| AutoTokenizer      | config.json (+ tokenizer_config.json 보조)                            | model_type / auto_map           |
+| AutoImageProcessor | preprocessor_config.json (없으면 config.json fallback)                 | image_processor_type / auto_map |
+| AutoProcessor      | processor_config.json (없으면 preprocessor_config.json 또는 config.json) | processor_class / auto_map      |
+
+* AutoImageProcessor는 config.json을 fallback으로 사용할 수 있음
+* AutoProcessor는 processor_config.json이 없으면 다른 config를 참고함
+* AutoTokenizer는 tokenizer_config.json도 보조로 참고함.
+
+주의할 점은 다음과 같음:
+* HF의 transformers에서 기본적으로 제공하는 표준 모델들은 `model_type`의 값에 따라 내장된 매핑으로 클래스를 고름.
+* Custom Class 들의 경우, `auto_map` 필드를 참고함.
+
+`BERT` 의 경우 `model_type`가 `bert`로 되어 있으며, 이를 통해 다음이 결정됨:
+
+* AutoConfig → BertConfig
+* AutoModel → BertModel
+* AutoTokenizer → BertTokenizer / BertTokenizerFast
+* AutoModelForMaskedLM → BertForMaskedLM
+
+Custom model 의 경우 `trsut_remote_code=True` 옵션을 사용하며, `config.json`에 다음의 정보가 있음:
+
+```json
+{
+  "auto_map": {
+    "AutoConfig": "configuration_xxx.MyConfig",
+    "AutoModel": "modeling_xxx.MyModel",
+    "AutoTokenizer": "tokenization_xxx.MyTokenizer"
+  }
+}
+```
+* 해당 model은 `auto_map` 필드를 참고하여 관련된 클래스를 import 하게 됨.
 
 ### 4.3 AutoModel은 어떤 입력을 기대하나
 
@@ -484,9 +538,11 @@ class SimpleVisionImageProcessor(ImageProcessingMixin):
 SimpleVisionImageProcessor.register_for_auto_class("AutoImageProcessor")
 ```
 
-위의 코드를 다음과 같이 저장하면 이후 Auto 클래스를 통해 로드가 가능해짐: `auto_map`의 저장 json파일에 생김
+위의 코드를 다음과 같이 저장하면 이후 Auto 클래스를 통해 로드가 가능해짐: 
 
-아래와 같이 `.save_pretrained` 수행시 지정된 디렉토리에 `preprocessor_config.json`이 저장됨.
+
+아래와 같이 `.save_pretrained()` 수행시 지정된 디렉토리에 `preprocessor_config.json`이 저장됨.
+
 ```python
 from image_processing_simple_vision import SimpleVisionImageProcessor
 
@@ -497,10 +553,14 @@ proc = SimpleVisionImageProcessor(size=224)
 # 2) save_pretrained()가 preprocessor_config.json을 자동 생성
 proc.save_pretrained("./simple_vision_proc")
 ```
+* `auto_map` 항목이 저장 json파일에 생김
+* 앞서의 예제와 달리, `.register_for_auto_class()`를 통해 auto 클래스가 찾을 수 있게 됨.
+* `.save_pretrained()`의 호출시 관련 processor 에 해당하는 python파일도 해당 디렉토리에 같이 놓임.
+* 이를 통해 `trust_remote_code=True` 등을 사용할 수 있고, import정보를 config를 통해 얻은 후 실제 모듈을 import가능해짐.
 
 이후 저장된 `preprocessor_config.json`  이 있는 디렉토리를 지정하여 로드 가능:
 
-```Python
+```python
 from transformers import AutoImageProcessor
 
 p = AutoImageProcessor.from_pretrained(
@@ -532,10 +592,14 @@ out2 = p2(img, return_tensors="pt")
 print((out["pixel_values"] - out2["pixel_values"]).abs().max().item())
 ```
 
+* `SimpleVisionImageProcessor`는 `custom_image_processor.py` 모듈이 module search path에 있는 경우만 로딩이 가능.
+* auto_map 필드를 만들어 주지 않았기 때문임.
 
-### 5.4 (선택) AutoImageProcessor로 로드되게 “배포”하는 관점
+
+### 5.4 (선택) AutoImageProcessor로 로드되게 "배포"하는 관점
 
 AutoClass는 
+
 * 저장된 메타데이터 를 보고 
 * 적절한 클래스를 고름.
 
@@ -543,8 +607,10 @@ AutoClass는
 
 * (권장) 커스텀 클래스에 대해 AutoClass 연동 정보를 저장(예: `register_for_auto_class` / `auto_map` 계열)
 * 또는 패키지 형태로 배포하여 import 가능하게 만든 뒤 AutoClass에 등록
+* 이 경우 지정한 디렉토리에 JSON 파일 외에도 관련 모듈 python 파일도 저장됨.
 
 AutoClass 확장 개념 자체는 다음등과 동일한 방식을 채택하고 있음: 
+
 * `AutoConfig.register` 
 * `AutoModel.register`
 
@@ -599,7 +665,7 @@ ip = AutoImageProcessor.from_pretrained("google/vit-base-patch16-224")
 img = Image.open("cat.jpg").convert("RGB")
 ```
 
-#### B-2. 호출(pixel_values)
+#### B-2. 호출
 
 ```python
 x = ip(images=[img], return_tensors="pt")
@@ -621,9 +687,11 @@ print(x2["pixel_values"].shape)
 ImageProcessor는 모델별 전처리 설정을 `preprocessor_config.json`에 저장
 
 
-### 6.3 실습 C - Processor (멀티모달: CLIP 예)
+### 6.3 실습 C - Processor 
 
-Processor는 Tokenizer + ImageProcessor를 묶어서 "한 번 호출"로 멀티모달 입력을 생성.
+Multi-modal: CLIP 을 사용한 예제임.
+
+Processor는 Tokenizer + ImageProcessor를 묶어서 "한 번 호출"로 Multi-modal 입력을 생성.
 
 #### C-1. 로드
 
@@ -663,7 +731,7 @@ print(out2.keys())
 
 ## 7. (권장) 실습 검증 체크리스트
 
-각 실습을 “성공”으로 보기 위한 최소 조건:
+각 실습을 "성공"으로 보기 위한 최소 조건:
 
 * Tokenizer: `input_ids`가 생성되고, 저장/복원 후 동일하게 동작
 * ImageProcessor: `pixel_values`가 생성되고, 저장/복원 후 동일하게 동작
