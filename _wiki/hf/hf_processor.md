@@ -3,7 +3,7 @@ layout  : wiki
 title   : HF - Processor (전처리)
 summary : 
 date    : 2026-02-12 13:59:26 +0900
-updated : 2026-02-19 11:21:51 +0900
+updated : 2026-02-19 11:23:04 +0900
 tag     : 
 resource: 87/038A66A07D49FF9052E19D71612C98
 toc     : true
@@ -27,7 +27,7 @@ latex   : false
 
 ## 0. 입력 전처리 객체들
 
-모델을 "완전하게 재사용"하려면 보통 다음이 한 세트로 있어야함.
+모델을 "완전하게 재사용"하려면 보통 다음이 한 set로 있어야함.
 
 * **Model**: 가중치(Model) + 구조(Config)
 * **Preprocessor**: 입력을 모델이 입력으로 기대하는 **텐서 형식** 으로 변환
