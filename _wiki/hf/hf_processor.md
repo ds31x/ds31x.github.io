@@ -3,7 +3,7 @@ layout  : wiki
 title   : HF - Processor (전처리)
 summary : 
 date    : 2026-02-12 13:59:26 +0900
-updated : 2026-02-19 11:03:03 +0900
+updated : 2026-02-19 11:21:51 +0900
 tag     : 
 resource: 87/038A66A07D49FF9052E19D71612C98
 toc     : true
@@ -17,6 +17,7 @@ latex   : false
 # Processor
 
 입력 전처리(preprocessing) 객체를 다음으로 나누어 정리.
+
 * **텍스트([[/nlp/tokenization]]{tokenization})**, 
 * **이미지(Image preprocessing)**, 
 * **Multi-modal 통합(Processor)** 

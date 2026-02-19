@@ -24,7 +24,9 @@ for CHANGED_FILE in $CHANGE_LIST; do
 
     # URI_LIST=`ag "https://((user-images\.githubuser.*?\/$NUM\/)|(pbs.twimg.com/media/)|(video.twimg.com/.+_video/)).*?(png|jpg|gif|mp4)" -o $CHANGED_FILE`
 
-    URI_LIST=$(ag -o "https://github\.com/user-attachments/assets/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}" "$CHANGED_FILE")
+    # URI_LIST=$(ag -o "https://github\.com/user-attachments/assets/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}" "$CHANGED_FILE")
+    URI_LIST=$(rg -o -P 'https://github\.com/user-attachments/assets/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}' "$CHANGED_FILE")
+
     for URI in $URI_LIST; do
         FILE_NAME=`echo $URI | sed 's,^.*/,,'`
         # RESOLVE_FILE_PATH="$TARGET_PATH/${FILE_NAME}.png"
