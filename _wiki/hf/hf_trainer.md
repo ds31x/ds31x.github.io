@@ -1,6 +1,6 @@
 ---
 layout  : wiki
-title   : Hugging Face Trainer 튜토리얼
+title   : HF-Trainer
 summary : PyTorch 학습 루프를 추상화한 Hugging Face Trainer의 A to Z. TrainingArguments, compute_metrics를 사용한 기본 설정부터, Colab에서 Google Drive를 활용해 학습을 재개하고, AdamW와 스케줄러의 동작 원리를 이해하며 단계별 미세 조정을 수행하는 고급 기법까지 설명함.
 date    : 2026-02-21 07:35:12 +0900
 updated : 2026-02-21 07:35:12 +0900
@@ -14,10 +14,7 @@ latex   : false
 * TOC
 {:toc}
 
-
-# Hugging Face Trainer 
-
-## 1. Trainer란 무엇인가
+# 1. Trainer란 무엇인가
 
 `transformers.Trainer`는 PyTorch 학습 루프를 표준화한 ***고수준 API*** 이다.
 
@@ -56,7 +53,7 @@ Trainer를 사용하는 이유는 위의 단계를 일관된 API로 구현할 �
 
 ---
 
-## 2. Trainer 기본 사용법
+# 2. Trainer 기본 사용법
 
 ---
 
@@ -104,7 +101,6 @@ tokenized_datasets = raw_datasets.map(
     batched=True,
 )
 ```
-
 
 ## 2-4. 모델 준비
 
