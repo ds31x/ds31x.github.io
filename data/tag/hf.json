@@ -7,6 +7,7 @@
  "hf/hf_config",
  "hf/hf_processor",
  "hf/hf_start",
+ "hf/hf_trainer",
  "hf/pipeline",
  "hf/pipeline_repo",
  "hf/pl_model_proc"

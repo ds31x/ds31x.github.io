@@ -1,77 +1,122 @@
-# Vimwiki + Jekyll + Github.io
+# ds31x's blog
 
-## 시작하기
+A personal blog and knowledge base built with Jekyll.
 
-블로그 스켈레톤을 fork 하세요!!
+- **Owner**: ds31x
+- **Email**: dsaint31@gmail.com
+- **GitHub**: [https://github.com/ds31x](https://github.com/ds31x)
 
-https://github.com/johngrib/johngrib-jekyll-skeleton
+---
 
-제 블로그를 fork하는 것보다 블로그 스켈레톤을 fork하는 것을 권합니다.
-블로그를 그냥 fork 하면 제 자기소개와 일기, 에세이까지 당신의 블로그의 컨텐츠가 됩니다.
+## 원본과의 차이점 및 주요 특징 (Differences & Key Features)
 
-* 만약 그냥 fork 하신다면 제 자기소개와 일기를 포함한 _wiki의 모든 md 파일을 삭제하고 사용하세요.
-* skeleton에 있는 문서들은 튜토리얼로 생각하고 읽어주시면 됩니다.
+이 프로젝트는 [johngrib/johngrib-jekyll-skeleton](https://github.com/johngrib/johngrib-jekyll-skeleton)을 기반으로 함.
 
-다음 글을 읽으며 블로그의 구조를 파악하시면 운영에 도움이 될 것입니다.
+원본의 대부분의 기능들을 대부분 유지하며, 다음과 같은 극소수의 부분이 수정되었음.
 
-https://johngrib.github.io/wiki/my-wiki/
+1.  **`rg` (ripgrep)으로의 전환 (Migration to `rg` (ripgrep))**
+    - `tool/save-images.sh`와 같은 일부 도구 스크립트에서 기존에 사용되던 `ag`(The Silver Searcher)가 더 빠른 성능의 `rg`(ripgrep)으로 대체되었음: (`rg` 설치가 필요).
 
-## 설치하기
+2.  **`start.sh` 스크립트 수정 (Modifications to `start.sh` Script)**
+    - 로컬 개발 환경의 편의성을 높이기 위해 헬퍼 스크립트의 기능이 일부 수정됨.
 
-루비가 설치되어 있지 않을 경우 루비를 설치해 주세요. 여기에서는 `rvm`으로
-설치하는 방법을 소개해 드립니다. 다른 방법으로도 루비를 설치할 수 있으니, 다른
-방법으로 하셔도 됩니다.  
+---
 
-루비 버전은 [GitHub Pages Dependency versions](https://pages.github.com/versions/)을 보면 GitHub Pages에서는 `2.7.4`버전을
-사용하고 있으니 해당 버전을 설치해 줍니다.
+## 설치 (Installation)
 
-```bash
-# See also https://rvm.io/rvm/install
-$ gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
-$ curl -sSL https://get.rvm.io | bash
-$ source ~/.rvm/scripts/rvm
-$ rvm install 2.7.4
-$ rvm use 2.7.4
-```
+### 1. 사전 요구사항 (Prerequisites)
 
-그다음 `bundle install`을 실행하여 의존성들을 설치합니다.
+- **Ruby**: You need to have Ruby installed. You can check the recommended version at [GitHub Pages Dependency versions](https://pages.github.com/versions/).
+- **Node.js**: Required to run the metadata generation script.
+- **(EN) `rg` (ripgrep)**: Used in some automation tools, replacing `ag`.
+
+### 2. 의존성 설치 (Dependencies)
 
 ```bash
-$ bundle install
+# Install Ruby dependencies from Gemfile
+bundle install
+
+# Install Node.js dependencies from package.json
+npm install
 ```
 
-### Git hooks 추가하기
+### 3. Git Hooks 
 
-새로운 글을 등록하면 메타 데이터를 업데이트해 주어야 합니다. 커밋하기 전에 이를
-자동으로 될 수 있도록 Git Hooks를 추가해야 합니다.
+새 글을 커밋할 때 자동으로 메타데이터 생성 및 이미지 로컬화를 수행하는 `pre-commit` 훅을 설정.
 
 ```bash
-$ cp tool/pre-commit ./.git/hooks
+cp tool/pre-commit .git/hooks/
 ```
 
-### 노드 모듈 설치하기
+---
 
-메타 데이터 생성을 위해서 `generateData.js`를 실행해야 합니다. 이를 실행하기
-위해서 `yamljs` 의존성을 설치해야 합니다.
+## 로컬 서버 실행 (Running the Server)
+
+### `start.sh` 스크립트 사용 
+
+- **Docker로 실행:**
+  ```bash
+  ./start.sh docker
+  ```
+
+- **Watch 모드로 실행:**
+  ```bash
+  ./start.sh watch
+  ```
+
+- **백그라운드로 실행:**
+  ```bash
+  # 서버 시작. 로그는 .localhost.log 에 저장.
+  ./start.sh back
+
+  # 백그라운드 서버 종료
+  ./start.sh kill
+  ```
+
+### Using Bundler Directly
 
 ```bash
-$ npm install
+# 1. Generate metadata
+./generateData.js
+
+# 2. Serve the site
+bundle exec jekyll serve
 ```
 
-## 실행하기
+The site will be available at `http://localhost:4000`.
 
-```bash
-$ jekyll serve
-```
+---
 
-## 글 작성하기
+## 프로젝트 구조 및 주요 스크립트 (Project Structure & Key Scripts)
 
-### 새로운 카테고리 만들기
+### 주요 폴더 (Main Folders)
+- **`_config.yml`**: The main Jekyll configuration file.
+- **`_data/`**: Data files used by Jekyll at build time.
+- **`_includes/`, `_layouts/`, `_sass/`**: Folders defining the Jekyll theme and structure.
+- **`_posts/`, `_wiki/`**: Core content directories for blog posts and wiki documents.
+- **`data/`**: `generateData.js`에 의해 생성된 JSON 메타데이터가 저장되는 곳. 사이트 내 검색, 태그 기능에 사용. 
+- **`tool/`**: `pre-commit` hook, 이미지 저장 스크립트 등 자동화 및 보조 도구들이 위치. 
+- **`resource/`**: `save-images.sh` 스크립트에 의해 외부 이미지가 다운로드되는 폴더. 
 
-카테고리가 있는 글을 작성하고 싶을 때는 카테고리를 먼저 만들어야 합니다.
-`/_wiki/category-name.md`같이 파일을 만들고 내용에는 다음을 추가해야 합니다.  
+### Git Hooks 및 주요 스크립트 동작 방식 (Git Hooks & Key Scripts Workflow)
 
-이때 `layout`속성은 `category`가 되어야 합니다.
+이 프로젝트는 `pre-commit` Git hook을 통해 커밋 시점의 작업을 자동화.
+
+**`pre-commit` 실행 순서:**
+1.  **`./generateData.js` 실행:**
+    - 모든 마크다운 파일(`_wiki`, `_posts`)의 Front Matter를 파싱하여 사이트 검색 및 태그 기능에 필요한 JSON 메타데이터를 `data` 폴더에 생성. `package.json`에 명시된 `yamljs` 라이브러리를 사용.
+2.  **`./tool/save-images.sh` 실행:**
+    - 스테이징된 마크다운 파일에 포함된 외부 이미지 URL을 `rg`로 찾아 로컬 `resource` 폴더로 다운로드하고, 파일 내 경로를 수정.
+3.  **변경사항 자동 스테이징 (`git add`):**
+    - 위 과정에서 생성된 메타데이터(`data`, `_data`)와 다운로드된 이미지, 수정된 마크다운 파일을 현재 커밋에 자동으로 추가.
+
+---
+
+## 콘텐츠 작성 (Content Creation)
+
+### 새 카테고리 만들기 (Creating a New Category)
+
+`/_wiki/` 디렉터리에 새 파일을 생성하고 (예: `/_wiki/my-category.md`), 아래와 같이 front matter를 작성합니다. `layout`은 `category`여야 함.
 
 ```markdown
 ---
@@ -91,15 +136,9 @@ latex   : false
 {:toc}
 ```
 
-### 위키에 글 등록하기
+### 새 글 작성하기 (Creating a New Post)
 
-위키를 작성할 때는 `/_wiki` 폴더 아래에 마크다운으로 파일을 작성합니다. 만약
-카테고리 아래에 글을 작성하고 싶을 경우에는 카테고리 이름으로 폴더를 만들고
-파일을 추가합니다. 예를 들어 `/_wiki/category-name/document.md`로 만들 수 있습니다.
-`layout`은 `wiki`가 되어야 합니다. `parent`는 상위 카테고리 이름을 작성해야
-합니다.  
-
-만약 상위 카테고리가 없을 경우에는 `parent`에 `index`를 입력합니다.
+`/_wiki/` 또는 카테고리 하위 디렉터리에 마크다운 파일을 생성하고 (예: `/_wiki/my-category/my-post.md`), 아래와 같이 front matter를 작성합니다. `layout`은 `wiki`여야 하며, `parent`는 상위 카테고리 이름이어야 함.
 
 ```markdown
 ---
@@ -119,3 +158,4 @@ latex   : false
 
 내용을 적습니다.
 ```
+

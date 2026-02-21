@@ -3,7 +3,7 @@ layout  : category
 title   : Hugging Face
 summary : 
 date    : 2026-01-23 23:32:00 +0900
-updated : 2026-02-19 13:19:50 +0900
+updated : 2026-02-21 07:35:39 +0900
 tag     : hf
 resource: 1F/F019FC6CEB4E61BC6F07E6EE47F73C
 toc     : true
@@ -26,6 +26,7 @@ latex   : false
 * [[/hf/hf_processor]]
 
 * [[/hf/hf_auto]]
+* [[/hf/hf_trainer]]
 
 ## 주요 내용들
 

@@ -37,6 +37,7 @@
  "/wiki/hf/hf_model",
  "/wiki/hf/hf_processor",
  "/wiki/hf/hf_start",
+ "/wiki/hf/hf_trainer",
  "/wiki/hf/pipeline",
  "/wiki/hf/pipeline_repo",
  "/wiki/hf/pl_model_proc",

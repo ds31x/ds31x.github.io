@@ -3,7 +3,7 @@ layout  : wiki
 title   : 사람의 글이 웹 페이지가 되기까지 - GitHub Pages, Jekyll, 그리고 브라우저
 summary : 
 date    : 2026-01-30 10:29:38 +0900
-updated : 2026-01-30 10:59:10 +0900
+updated : 2026-02-19 14:00:09 +0900
 tag     : git text
 resource: 07/21362DC0524E498C61897979440870
 toc     : true
@@ -27,11 +27,11 @@ GitHub Pages는 GitHub 저장소에 올린 파일들을 이용해 정적 웹 사
 
 ## 동작 방식
 
-사람은 Markdown과 같은 형식으로 내용을 [text file](https://ds31x.tistory.com/174)로 작성한다.
+사람은 [Markdown](https://dsaint31.me/mkdocs_site/CE/markdown_latex/markdown/)과 같은 형식으로 내용(content)을 [text file](https://ds31x.tistory.com/174)로 작성한다.
 
 GigHub Pages는 Jekyll라는 S/W를 통해 이 [text file](https://ds31x.tistory.com/174)을 입력(input)으로 읽어 들여, 
 * 문법 규칙을 해석하고 
-* HTML이라는 또 다른 text 파일로 변환한다.
+* [HTML](https://dsaint31.me/mkdocs_site/CE/ch06/ce06_2_03_Internet/?h=html#protocol)이라는 또 다른 text 파일로 변환한다.
 
 여기까지의 결과물은 
 * 여전히 **웹페이지 소스 코드에 해당하는 text 파일**이며, 
@@ -39,8 +39,12 @@ GigHub Pages는 Jekyll라는 S/W를 통해 이 [text file](https://ds31x.tistory
 
 > 참고: [Markup Language](https://ds31x.blogspot.com/2023/07/ce-markup-languages.html)
 
-이후, 생성된 HTML과 기존에 사람이 설정한 내용을 담은 text파일(`_conifg.yml`)에 기반해 만들어진 CSS, JavaScript 파일(이들도 text file임)이  
-웹 브라우저(이 역시 S/W)로 전달되면, 브라우저는 다음과 같은 순서로 이를 처리한다.
+이후, 
+생성된 HTML과  
+기존에 사람이 설정한 내용을 담은 text파일(`_conifg.yml`)에 기반해 만들어진  
+CSS, JavaScript 파일(이들도 text file임)이  
+**웹 브라우저**(이 역시 S/W)로 전달되면, 
+웹브라우저는 다음과 같은 순서로 이를 처리한다.
 
 * HTML text를 읽어 문서의 구조를 표현하는 트리(DOM, Document Object Model) 생성
 * CSS text를 해석하여 각 요소의 색상, 크기, 위치 규칙 계산
@@ -64,20 +68,26 @@ GigHub Pages는 Jekyll라는 S/W를 통해 이 [text file](https://ds31x.tistory
 * 사람이 인식할 수 있는 시각적 결과로 변환하는 S/W이다.
 
 또한 이들 S/W 자체도 예외가 아니다.
-* Jekyll 역시 Ruby 프로그래밍 언어로 작성된 소스 코드, 즉 text file로 구성된 S/W이며,
+* Jekyll 역시 Ruby 프로그래밍 언어로 작성된 소스 코드, 즉 text file로부터 만들어진 S/W이며,
 * 웹 브라우저 역시 C++, Rust와 같은 프로그래밍 언어로 작성된 소스 코드, 즉 text file로 만들어진 S/W이다.
 
 > 즉 사람의 글에서 시작된 text는,  
-> 다른 text로 작성된 S/W를 거쳐 실행되고,  
+> 다른 text로부터 작성된 S/W (compile 등을 거쳐 S/W가 됨)를 거쳐 실행되고,  
 > 최종적으로 다시 사람이 인식할 수 있는 화면으로 되돌아오는 구조를 가진다.  
 
 
 ## Text 파일의 역할.
 
-사람과 컴퓨터의 일은 결국 사람이 이해할 수 있는 데이터를 컴퓨터가 이해할 수 있는 데이터로 바꾸는 것이고, 이는 text file에서 출발한다고 할 수 있음.  
+사람과 컴퓨터의 일은 
+* 결국 사람이 이해할 수 있는 데이터를 
+* 컴퓨터가 이해할 수 있는 데이터로 바꾸는 것이고, 
+* 이는 text file에서 출발한다고 할 수 있음.  
+
 GUI와 같은 interface를 제공한다면,  
-사람의 특정 행동(e.g. 버튼을 클릭)에 따라 정해진 반응을 하는 방식이라  
-text file이 직접 관여하진 않으나, GUI를 만드는 행위 자체도 text file 을 통해 이루어진다.
+* 사람의 특정 행동(e.g. 버튼을 클릭)에 따라 
+* 컴퓨터가 정해진 반응을 하는 방식이라  
+* text file이 직접 관여하진 않으나, 
+* GUI를 만드는 행위 자체도 text file 을 통해 이루어진다.
 
 ## Text file vs. Binary file
 
@@ -96,12 +106,12 @@ text file이 직접 관여하진 않으나, GUI를 만드는 행위 자체도 te
 * 일반 프로그램(S/W)에서는 text로 작성된 코드가 [binary code](https://dsaint31.me/mkdocs_site/CE/ch08/ce08_compiler_interpreter/?h=bytecode#binary-code)로 변환되어 실행됨
 
 
-text file이라고 해서 모두 같은 수준의 의미를 가지는 것은 아니다.
+text file이라고 해서 모두 같은 수준의 의미를 가지는 것은 아니다.  
 text file은 **기계와의 거리**에 따라 연속적인 스펙트럼 위에 놓여 있다고 볼 수 있다.
 
 일반적인 메모용 text file은 사람 중심의 표현에 가깝고,
 Markdown이나 markup 언어는 사람이 읽기 쉬우면서도 기계가 해석할 수 있는 규칙을 일부 포함한다.
-프로그래밍 언어로 갈수록 문법과 제약이 엄격해지며, 컴퓨터가 정확히 이해하고 실행할 수 있는 표현이 요구된다.
+[프로그래밍 언어](https://dsaint31.me/mkdocs_site/CE/ch08/ce08_programming_language/)로 갈수록 문법과 제약이 엄격해지며, 컴퓨터가 정확히 이해하고 실행할 수 있는 표현이 요구된다.
 
 따라서 text file을 사용한다는 것은 단순히 글을 적는 행위가 아니라,
 **기계가 이해할 수 있는 규칙을 어느 수준까지 만족시키는가**를 선택하는 행위라 볼 수 있다.

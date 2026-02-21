@@ -4,7 +4,7 @@
  "summary": "",
  "parent": "index",
  "url": "/wiki/hf",
- "updated": "2026-02-19 13:19:50 +0900",
+ "updated": "2026-02-21 07:35:39 +0900",
  "resource": "1F/F019FC6CEB4E61BC6F07E6EE47F73C",
  "children": [
   "hf_dataset_dict",
@@ -15,6 +15,7 @@
   "hf/hf_model",
   "hf/hf_processor",
   "hf/hf_start",
+  "hf/hf_trainer",
   "hf/pipeline",
   "hf/pipeline_repo",
   "hf/pl_model_proc"
