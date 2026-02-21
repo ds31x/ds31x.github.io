@@ -451,6 +451,9 @@ learning curve를 이어갈 수 있음.
 Stage2에서 backbone을 열어 학습하는 구조에서
 가장 많이 헷갈리는 부분이 **AdamW의 state 동작**임.
 
+> HF의 Trainer의 기본 optimizer는 AdamW임.    
+> 이에 대해 보다 자세한 내용은 다음을 참고[Adaptive Moment Estimation with Weight decay (AdamW)](https://dsaint31.me/mkdocs_site/ML/ch09/op_adamw/)
+
 여기서 정확히 정리해야 할 것은 세 가지임.
 
 1. freeze는 optimizer에서 파라미터를 제거하는 동작이 아님
@@ -479,6 +482,8 @@ for p in model.backbone.parameters():
 
 ## 4-2 AdamW의 state 생성 방식
 
+* 참고: [Adaptive Moment Estimation with Weight decay (AdamW)](https://dsaint31.me/mkdocs_site/ML/ch09/op_adamw/)
+
 AdamW는 각 파라미터마다 다음 state를 가짐.
 
 * `exp_avg`
@@ -487,7 +492,7 @@ AdamW는 각 파라미터마다 다음 state를 가짐.
 
 중요한 점은 다음임.
 
-> AdamW는 gradient가 처음 등장하는 시점에 `state`를 생성함
+> AdamW는 gradient가 처음 등장하는 시점에 `state`를 생성함.  
 > 이를 lazy initialization 구조라 부름
 
 Stage1에서 backbone이 freeze 상태라면:

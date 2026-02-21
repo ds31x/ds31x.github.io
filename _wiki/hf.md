@@ -18,8 +18,8 @@ latex   : false
 
 * [[/hf/hf_start]]
 * [[/hf/pipeline]]
-* [[/hf/pl_model_proc]]
-* [[/hf/pipeline_repo]]
+    * [[/hf/pl_model_proc]]
+    * [[/hf/pipeline_repo]]
 
 * [[/hf/hf_config]]
 * [[/hf/hf_model]]
