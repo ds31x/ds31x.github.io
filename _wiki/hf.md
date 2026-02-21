@@ -26,7 +26,7 @@ latex   : false
 * [[/hf/hf_processor]]
 
 * [[/hf/hf_auto]]
-* [[/hf/hf_trainer]]
+* [[/hf/hf_trainer]]{HF-Trainer}
 
 ## 주요 내용들
 
