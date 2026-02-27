@@ -14,7 +14,7 @@ latex   : false
 * TOC
 {:toc}
 
-# Attentino is all you need
+# Attention Is All You Need
 
 2017년 Google의 8명의 저자가  
 기존의 RNN의 구조에서 사용되던 attetion 을  
