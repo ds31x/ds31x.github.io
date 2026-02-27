@@ -140,4 +140,4 @@ $$\mathrm{Attention}(Q, K, V)
 ## 참고
 
 * [Natural Language Processing with Transformers, O'Reilly](https://colab.research.google.com/github/nlp-with-transformers/notebooks/blob/main/03_transformer-anatomy.ipynb#scrollTo=N1CswhxaU1ko)
-* [Attentino Mechanism](https://wikidocs.net/65775)
+* [Attention Mechanism](https://wikidocs.net/65775)
