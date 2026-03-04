@@ -136,6 +136,10 @@
   "size": 1
  },
  {
+  "name": "vimwiki",
+  "size": 1
+ },
+ {
   "name": "WordPiece",
   "size": 1
  }
