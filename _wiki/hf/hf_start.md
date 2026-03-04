@@ -4,7 +4,7 @@ title   : HF Start
 summary : Hugging Face Hub와 주요 라이브러리 구조, 인증 방법(hf auth login)을 소개
 date    : 2026-01-22 23:12:26 +0900
 updated : 2026-01-27 16:22:31 +0900
-tag     : [huggingface, hf, ml, ai]
+tag     : huggingface hf ml ai
 resource: D8/AA2903BCE24DD3B682DC77B0D5EC30
 toc     : true
 public  : true
