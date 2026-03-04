@@ -9,9 +9,23 @@ search: exclude
     {% if doc.public == true and doc.title != 'wiki index'%}
     <url>
         <loc>{{ site.url }}{{ doc.url }}</loc>
+        {% if doc.updated == null %}
+            <lastmod>{{ doc.date | date_to_xmlschema }}</lastmod>
+        {% else %}
+            <lastmod>{{ doc.updated | date_to_xmlschema }}</lastmod>
+	{% endif %}
+	<changefreq>{{ doc.sitemap.changefreq | default: "daily" }}</changefreq>
+        {% if doc.sitemap.priority != null %}
+            <priority>{{ doc.sitemap.priority }}</priority>
+	{% endif %}
     </url>
     {% endif %}
 {% endfor %}
+    <url>
+        <loc>{{ site.url }}/blog/</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.5</priority>
+    </url>
 {% for post in site.posts %}
     <url>
         <loc>{{ site.url }}{{ post.url }}</loc>
