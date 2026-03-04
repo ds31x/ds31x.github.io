@@ -76,29 +76,50 @@ OSI 7계층 모델은 네트워크 아키텍처의 표준 [protocol](https://dsa
 
 [[/network/tcp_ip#TCP]] 에서 TCP가 Transport Layer (Layer 4)임.
 
-클라이언트와 서버 간 데이터 전달의 **전송 방식과 특성**을 담당.
+클라이언트와 서버 간 데이터 전달의 **전송 방식과 특성**을 담당: 데이터 전송단위가 segment임.
 
-롤은 반응성이 매우 중요하므로 **주로 UDP 기반 전송**을 사용하여 지연을 최소화.
+LoL과 같은 게임에서는 반응성이 매우 중요하므로 **주로 UDP 기반 전송**을 사용하여 지연을 최소화.
 
 
 ### 3. 네트워크 계층 (Network Layer)
 
 [[/network/tcp_ip#IP]] 에서 IP 가 Network Layer (Layer 3)임.
 
-내 PC에서 라이엇 게임 서버까지 **IP address를 기준으로 패킷이 이동할 경로를 결정**.
+내 PC에서 라이엇 게임 서버까지 **[IP address](https://dsaint31.tistory.com/439)를 기준으로 packet이 이동할 경로를 결정**: 데이터 전송 단위가 packet(=IP datagram)임.
 
 어느 서버로, 어떤 [라우터](https://dsaint31.tistory.com/449)들을 거쳐 갈지가 이 계층에서 결정됨.
 
 ### 2. 데이터 링크 계층 (Data Link Layer)
 
-PC와 [공유기](https://dsaint31.tistory.com/226#%EA%B3%B5%EC%9C%A0%EA%B8%B0%20(NAT%20%EC%9E%A5%EB%B9%84)-1-3), 공유기와 ISP 장비 사이에서 **프레임 단위 통신과 오류 검출**을 담당.
+PC와 [공유기](https://dsaint31.tistory.com/226#%EA%B3%B5%EC%9C%A0%EA%B8%B0%20(NAT%20%EC%9E%A5%EB%B9%84)-1-3), 공유기와 ISP 장비 사이에서 **frame 단위 통신과 오류 검출**을 담당: 데이터 전송단위가 frame.
 
-같은 네트워크 구간([LAN[(https://dsaint31.me/mkdocs_site/CE/ch06/ce06_2_01_history/#lan-vs-wan))에서의 안정적인 전달이 이 계층의 역할임.
+참고로 frame의 payload가 바로 IP packet으로 packet을 **encapsulation** 하고 있음:
+
+```text
+[ Destination MAC ]
+[ Source MAC      ]
+[ Type            ]
+[ Payload (IP packet) ]
+[ FCS (오류 검출) ]
+```
+
+* FCS: Frame Check Sequence: 오류 검출용 필드로 32bit [CRC (Cyclic Redundancy Check)](https://dsaint31.me/mkdocs_site/CE/ch03_seq/ce03_04_ecc_memory/?h=crc#checksum-and-crc)를 사용.
+
+같은 네트워크 구간([LAN](https://dsaint31.me/mkdocs_site/CE/ch06/ce06_2_01_history/#lan-vs-wan))에서의 안정적인 전달이 이 계층의 역할임.
+
+[MAC address](https://dsaint31.tistory.com/227)를 이용하는 [Switch](https://dsaint31.tistory.com/226#Switch-1-1)가 여기에 해당.
 
 ### 1. 물리 계층 (Physical Layer)
 
-유선 LAN, Wi-Fi, 광케이블을 통해 **전기적·무선 신호가 실제로 전달**되는 단계.
-케이블 불량이나 무선 간섭은 바로 지연이나 끊김으로 나타남.
+유선 LAN, Wi-Fi, 광케이블을 통해 **전기적·무선 신호가 실제로 전달**되는 단계: 데이터 전송단위가 1bit.
 
+케이블 불량이나 무선 간섭은 바로 지연이나 끊김으로 나타남.  
+
+모든 연결될 호스트에 같은 전기신호를 보내는 [Hub](https://dsaint31.tistory.com/226#Hub-1) 가 여기에 해당.
+
+## 같이 보면 좋은 자료들
+
+* [Hug, Switch, Router, 공유기](https://dsaint31.tistory.com/226)
+* [MAC Address](https://dsaint31.tistory.com/227)
 
 

@@ -37,7 +37,8 @@ Self-attention은
 * attention weight는 attention score를 softmax 처리하여 확률로 만든 것임.
 
 <img src="https://github.com/user-attachments/assets/d23f92d2-3492-498b-b793-b8d763025912" sytle="display:block; margin:0 auto; max-width:50%" />
-* [Hanus Kim's blog](https://cpm0722.github.io/pytorch-implementation/transformer)
+
+**ref:** [Hanus Kim's blog](https://cpm0722.github.io/pytorch-implementation/transformer)
  
 $$\mathrm{Attention}(Q, K, V)
 = \mathrm{softmax}\!\left(\frac{QK^{\top}}{\sqrt{d_k}}\right)V$$
@@ -107,7 +108,7 @@ $$\mathrm{Attention}(Q, K, V)
         mask: Optional[torch.Tensor] = None
     ) -> torch.Tensor:
         """
-        스케일드 닷-프로덕트 어텐션 계산
+        scaled dot-prodcut attention 어텐션 계산
         
         Attention(Q, K, V) = softmax(QK^T / sqrt(d_k))V
         
@@ -139,4 +140,4 @@ $$\mathrm{Attention}(Q, K, V)
 ## 참고
 
 * [Natural Language Processing with Transformers, O'Reilly](https://colab.research.google.com/github/nlp-with-transformers/notebooks/blob/main/03_transformer-anatomy.ipynb#scrollTo=N1CswhxaU1ko)
-* [Attentino Mechanism](https://wikidocs.net/65775)
+* [Attention Mechanism](https://wikidocs.net/65775)

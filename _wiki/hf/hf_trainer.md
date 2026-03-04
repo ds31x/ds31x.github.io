@@ -4,7 +4,7 @@ title   : HF-Trainer
 summary : PyTorch 학습 루프를 추상화한 Hugging Face Trainer의 A to Z. TrainingArguments, compute_metrics를 사용한 기본 설정부터, Colab에서 Google Drive를 활용해 학습을 재개하고, AdamW와 스케줄러의 동작 원리를 이해하며 단계별 미세 조정을 수행하는 고급 기법까지 설명함.
 date    : 2026-02-21 07:35:12 +0900
 updated : 2026-02-21 07:35:12 +0900
-tag     : hf
+tag     : huggingface hf transformers trainer accelerate datasets ml ai finetuning colab
 resource: 8A/1DD88F028F4A62B0A65D3F48589E61
 toc     : true
 public  : true
