@@ -1,10 +1,10 @@
 ---
 layout  : wiki
 title   : HF Start
-summary : 
+summary : Hugging Face Hub와 주요 라이브러리 구조, 인증 방법(hf auth login)을 소개
 date    : 2026-01-22 23:12:26 +0900
 updated : 2026-01-27 16:22:31 +0900
-tag     : hf
+tag     : [huggingface, hf, ml, ai]
 resource: D8/AA2903BCE24DD3B682DC77B0D5EC30
 toc     : true
 public  : true
@@ -18,18 +18,24 @@ latex   : false
 
 hugging face 를 시작하는 문서.
 
-Hugging Face의 Hub (웹사이트: [huggingface.co](huggingface.co)) 종류들을 소개하고,
+Hugging Face의 Hub (웹사이트: [huggingface.co](huggingface.co)) 종류들을 소개하고,  
 Hugging Face가 제공하는 Library들의 구성을 간단히 살펴본다.
 
 이후,  `hf auth login` 과 `hf auth logout`을 살펴본다.
 
-* 이는 Hugging Face Hub에 접근하기 위한 명령어임(과거 huggingface-cli)
+* 이는 Hugging Face Hub에 접근하기 위한 명령어임(과거 `huggingface-cli`)
 * 일반적으로 개인 Access Token을 로컬에 저장하여 이후 명령과 라이브러리에서 HF Hub 나 repository에 대한 authentication을 자동으로 사용할 수 있음.
-* 이는 비공개 모델과 데이터셋 접근, 모델 업로드·업데이트, Spaces 배포, CLI·라이브러리에서의 인증 등을 가능하게 해 줌.
+* 이는 다음을 가능하게 함:
+    * 비공개 모델과 비공개 데이터셋 접근,
+    * 모델 업로드·업데이트,
+    * Spaces 배포,
+    * CLI·라이브러리에서의 인증.
 
-> 공개모델만 사용하는 경우엔, 굳이 필요하지않긴 함.
+> HF Hub의 공개모델만 사용하는 경우엔, 굳이 필요하지않긴 함.
 
 이 문서는 WSL (Ubuntu distro기준) 와 Colab 을 기준으로 다룸.
+
+===
 
 ## huggingface.co 상단 메뉴 설명:
 
@@ -58,7 +64,7 @@ Hugging Face가 제공하는 Library들의 구성을 간단히 살펴본다.
 
 모델 구현, 전처리, 학습, 추론을 담당하는 라이브러리
 
-1. Transformers (Model Layer)  
+1. **Transformers** (Model Layer)  
    Discriminative / Generative NLP·CV
 	* Transformer 모델이 중심이나,
 	* CNN, RNN, Hybrid 모델들도 포함되어 있음.
@@ -66,9 +72,9 @@ Hugging Face가 제공하는 Library들의 구성을 간단히 살펴본다.
 		* text-classification
 		* seq2seq
 		* vision, multimodal 일부.
-	* Trainder도 포함됨.
+	* Trainer도 포함됨.
 	* Processor Layer와 매우 밀접하게 결합됨.
-2. Processor (Preprocessing Layer)
+2. **Processor** (Preprocessing Layer)
 	* 입력의 modality 에 맞춰 모델에 입력가능한 tensor로 변환하는 계층.
 	* Tokenizer : text => ids
 	* ImageProcessor : image => pixel tensor 
@@ -76,7 +82,7 @@ Hugging Face가 제공하는 Library들의 구성을 간단히 살펴본다.
 	* Processor : 위의 3가지를 통합하여 구성됨.
 		* multimodal 통합 Wrapper임.
 		* 예: Tokenizer + ImageProcessor 
-3. Diffusers (Model Layer) 
+3. **Diffusers** (Model Layer)  
    Diffusion-based Generative Model 
 	* Diffusion Model 전용 라이브러리.
 	* 주요 대상.
@@ -86,11 +92,11 @@ Hugging Face가 제공하는 Library들의 구성을 간단히 살펴본다.
 		* Video Diffusion
 	* Pipeline 중심 구조
 	* Scheduler 개념이 핵심 구성요소
-	* Transformers와는 모델 철학과 실행 구조가 다름
-		* logits 분류가 아니라 반복적 샘플링 기반 생성
+	* **Transformers와는 모델 철학과 실행 구조가 다름**
+		* `logits` 기반 분류가 아니라 반복적 샘플링 기반 생성
 	* 내부적으로 Transformers 컴포넌트(UNet, Text Encoder 등)를 활용하지만
 		* 사용자 관점에서는 독립 계층으로 취급하는 것이 정확
-4. Accelerate (Training/Execution Infra layer)
+4. **Accelerate** (Training/Execution Infra layer)
 	* 학습 및 실행 환경 추상화
 	* 공통 인프라 계층
 		* device
@@ -111,7 +117,13 @@ Hugging Face가 제공하는 Library들의 구성을 간단히 살펴본다.
            [ Accelerate ]
 ```
 
+===
+
 ## WSL 에서 로그인. 
+
+> WSL (Windows Subsystem for Linux) 에 대한 참고자료:
+>
+> * [WSL (WSL2 포함) 정리](https://ds31x.tistory.com/586)
 
 ```bash
 conda create -n hf_env python
@@ -184,6 +196,11 @@ Not logged in증
 ```
 
 ## Google Colab 에서 로그인.
+
+> Google colab에 대한 참고 자료:
+>
+> * [Colab 이란](https://dsaint31.me/mkdocs_site/CE/colab/hw_spec/)
+> * [IPython, Jupyter Notebook, and Colab](https://ds31x.tistory.com/331)
 
 ```bash
 !hf auth login
