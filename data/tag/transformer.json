@@ -1,4 +1,5 @@
 [
  "hf_transformer",
- "hf_transformer/hf_post_transformer"
+ "hf_transformer/hf_post_transformer",
+ "review/2017_Attention_is_all_you_need"
 ]

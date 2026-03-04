@@ -1,6 +1,18 @@
 [
  {
+  "name": "accelerate",
+  "size": 1
+ },
+ {
+  "name": "ai",
+  "size": 2
+ },
+ {
   "name": "AR",
+  "size": 1
+ },
+ {
+  "name": "attention",
   "size": 1
  },
  {
@@ -17,6 +29,10 @@
  },
  {
   "name": "classification",
+  "size": 1
+ },
+ {
+  "name": "colab",
   "size": 1
  },
  {
@@ -37,6 +53,18 @@
  },
  {
   "name": "dataset",
+  "size": 1
+ },
+ {
+  "name": "datasets",
+  "size": 1
+ },
+ {
+  "name": "dl",
+  "size": 1
+ },
+ {
+  "name": "finetuning",
   "size": 1
  },
  {
@@ -64,6 +92,10 @@
   "size": 1
  },
  {
+  "name": "huggingface",
+  "size": 2
+ },
+ {
   "name": "image",
   "size": 1
  },
@@ -81,6 +113,14 @@
  },
  {
   "name": "log",
+  "size": 1
+ },
+ {
+  "name": "ml",
+  "size": 2
+ },
+ {
+  "name": "multi-head-attention",
   "size": 1
  },
  {
@@ -124,8 +164,16 @@
   "size": 1
  },
  {
+  "name": "trainer",
+  "size": 1
+ },
+ {
   "name": "transformer",
-  "size": 2
+  "size": 3
+ },
+ {
+  "name": "transformers",
+  "size": 1
  },
  {
   "name": "tutorial",

@@ -3,8 +3,8 @@ layout  : wiki
 title   : HF Start
 summary : Hugging Face Hub와 주요 라이브러리 구조, 인증 방법(hf auth login)을 소개
 date    : 2026-01-22 23:12:26 +0900
-updated : 2026-01-27 16:22:31 +0900
-tag     : huggingface hf ml ai
+updated : 2026-03-04 18:18:56 +0900
+tag     : huggingface hf ml ai dl
 resource: D8/AA2903BCE24DD3B682DC77B0D5EC30
 toc     : true
 public  : true
@@ -35,7 +35,6 @@ Hugging Face가 제공하는 Library들의 구성을 간단히 살펴본다.
 
 이 문서는 WSL (Ubuntu distro기준) 와 Colab 을 기준으로 다룸.
 
-===
 
 ## huggingface.co 상단 메뉴 설명:
 
@@ -117,7 +116,6 @@ Hugging Face가 제공하는 Library들의 구성을 간단히 살펴본다.
            [ Accelerate ]
 ```
 
-===
 
 ## WSL 에서 로그인. 
 

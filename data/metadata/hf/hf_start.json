@@ -1,10 +1,10 @@
 {
  "type": "wiki",
  "title": "HF Start",
- "summary": "",
+ "summary": "Hugging Face Hub와 주요 라이브러리 구조, 인증 방법(hf auth login)을 소개",
  "parent": "hf",
  "url": "/wiki/hf/hf_start",
- "updated": "2026-01-27 16:22:31 +0900",
+ "updated": "2026-03-04 18:18:56 +0900",
  "resource": "D8/AA2903BCE24DD3B682DC77B0D5EC30",
  "children": []
 }
