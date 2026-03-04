@@ -4,31 +4,86 @@ search: exclude
 ---
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-{% assign documents = site.wiki %}
-{% for doc in documents %}
-    {% if doc.public == true and doc.title != 'wiki index'%}
-    <url>
-        <loc>{{ site.url }}{{ doc.url }}</loc>
-    </url>
-    {% endif %}
-{% endfor %}
-{% for post in site.posts %}
-    <url>
-        <loc>{{ site.url }}{{ post.url }}</loc>
-    {% if post.updated == null %}
-        <lastmod>{{ post.date | date_to_xmlschema }}</lastmod>
-    {% else %}
-        <lastmod>{{ post.updated | date_to_xmlschema }}</lastmod>
-    {% endif %}
-    {% if post.sitemap.changefreq == null %}
-        <changefreq>daily</changefreq>
-    {% else %}
-        <changefreq>{{ post.sitemap.changefreq }}</changefreq>
-    {% endif %}
-    {% if post.sitemap.priority != null %}
-        <priority>{{ post.sitemap.priority }}</priority>
-    {% endif %}
-    </url>
-{% endfor %}
-</urlset>
 
+{%- comment -%}
+0) 데이터 소스
+- wiki 문서: site.wiki (사용자 컬렉션)
+- posts: site.posts
+{%- endcomment -%}
+{% assign documents = site.wiki %}
+
+{%- comment -%}
+1) site root lastmod 계산
+- post.updated가 있으면 그걸, 없으면 post.date를 사용
+- 그 중 최신을 site_lastmod로 사용
+(플러그인 없이도 동작)
+{%- endcomment -%}
+{% assign post_dates = "" | split: "" %}
+{% for post in site.posts %}
+  {% if post.updated %}
+    {% assign post_dates = post_dates | push: post.updated %}
+  {% else %}
+    {% assign post_dates = post_dates | push: post.date %}
+  {% endif %}
+{% endfor %}
+{% assign site_lastmod = post_dates | sort | last %}
+
+{%- comment -%}
+2) site root를 반드시 맨 위에 출력
+{%- endcomment -%}
+<url>
+  <loc>{{ site.url }}</loc>
+  {% if site_lastmod %}
+  <lastmod>{{ site_lastmod | date_to_xmlschema }}</lastmod>
+  {% endif %}
+  <priority>1.0</priority>
+</url>
+
+{%- comment -%}
+3) Wiki 문서 출력: 최신순(안전하게 date 기준 정렬)
+- lastmod는 updated 우선, 없으면 date
+{%- endcomment -%}
+{% assign documents_sorted = documents | sort: "date" | reverse %}
+
+{% for doc in documents_sorted %}
+  {% if doc.public == true and doc.title != 'wiki index' %}
+  <url>
+    <loc>{{ site.url }}{{ doc.url }}</loc>
+    {% if doc.updated %}
+      <lastmod>{{ doc.updated | date_to_xmlschema }}</lastmod>
+    {% elsif doc.date %}
+      <lastmod>{{ doc.date | date_to_xmlschema }}</lastmod>
+    {% endif %}
+  </url>
+  {% endif %}
+{% endfor %}
+
+{%- comment -%}
+4) Posts 출력: 최신순
+- lastmod는 updated 우선, 없으면 date
+- changefreq/priority는 있으면 사용
+{%- endcomment -%}
+{% assign posts_sorted = site.posts | sort: "date" | reverse %}
+
+{% for post in posts_sorted %}
+  <url>
+    <loc>{{ site.url }}{{ post.url }}</loc>
+    {% if post.updated %}
+      <lastmod>{{ post.updated | date_to_xmlschema }}</lastmod>
+    {% else %}
+      <lastmod>{{ post.date | date_to_xmlschema }}</lastmod>
+    {% endif %}
+
+    {% if post.sitemap and post.sitemap.changefreq %}
+      <changefreq>{{ post.sitemap.changefreq }}</changefreq>
+    {% else %}
+      <changefreq>daily</changefreq>
+    {% endif %}
+
+    {% if post.sitemap and post.sitemap.priority %}
+      <priority>{{ post.sitemap.priority }}</priority>
+    {% endif %}
+  </url>
+{% endfor %}
+
+</urlset>
