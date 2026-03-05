@@ -33,8 +33,11 @@ Hugging Face가 제공하는 Library들의 구성을 간단히 살펴본다.
 
 > HF Hub의 공개모델만 사용하는 경우엔, 굳이 필요하지않긴 함.
 
-이 문서는 WSL (Ubuntu distro기준) 와 Colab 을 기준으로 다룸.
+이 문서는 WSL (Ubuntu distro기준) 와 Colab 을 기준으로 다룸.\
 
+`hf auth login` 등의 사용법 실습을 위해선 HF의 Access Token이 필요하므로 다음의 글을 참고해서 우선 Access Token을 만들고 나서 진행할 것.
+
+* [Hugging Face Access Token 생성 및 권한 설정 가이드](https://ds31x.tistory.com/628)
 
 ## huggingface.co 상단 메뉴 설명:
 
