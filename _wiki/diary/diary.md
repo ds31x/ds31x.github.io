@@ -1,5 +1,5 @@
 ---
-layout  : wiki
+layout  : diary
 title   : 
 summary : 
 date    : 2026-01-27 20:40:28 +0900
