@@ -7,8 +7,6 @@
  "updated": "2026-03-09 22:29:52 +0900",
  "resource": "C1/3FA14C0DCB4E469773F87F7AF1B17E",
  "children": [
-  "diary/2026-01-27",
-  "diary/2026-03-04",
-  "diary/test"
+  "./_posts/2026-03-04-vimwiki-diary.md"
  ]
 }
