@@ -3,7 +3,7 @@ layout  : category
 title   : Diary
 summary : 
 date    : 2026-03-09 22:06:48 +0900
-updated : 2026-03-09 22:07:17 +0900
+updated : 2026-03-09 22:18:48 +0900
 tag     : 
 resource: C1/3FA14C0DCB4E469773F87F7AF1B17E
 toc     : true
@@ -15,3 +15,7 @@ latex   : false
 {:toc}
 
 # Diary
+
+Log.
+
+## Related Documents
