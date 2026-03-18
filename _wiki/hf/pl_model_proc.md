@@ -126,7 +126,7 @@ model = AutoModelForImageClassification.from_pretrained(
     trust_remote_code=True,
 )
 
-processor = processor = AutoImageProcessor.from_pretrained(
+processor = AutoImageProcessor.from_pretrained(
     "google/vit-base-patch16-224",
     trust_remote_code=True,
     use_fast=False,
