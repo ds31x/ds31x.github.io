@@ -18,18 +18,22 @@ latex   : false
 
 Pipeline은 `task`, `config.json`, `processor`, `model` 의 조합으로 구성된다.
 
-HF Repo.에 업로드되는 것은 pipeline 객체 자체가 아니라,
-model을 중심으로 한 config 및 processor를 포함한 artifacts의 집합이며,
-이는 Model Repo. 형태로 저장된다.
+HF Repo.에 업로드되는 것은 
+
+* pipeline 객체 자체가 아니라,
+* model을 중심으로 한 config 및 processor를 포함한 artifacts의 집합이며,
+* 이는 **Model Repo. 형태로 저장** 된다.
 
 > Repo. = Repository (저장소)
 
-Pipeline의 실제 구성 방식은 `config.json`과 같은 설정 파일에 정의되어 있고,
-`AutoConfig`, `AutoProcessor`, `AutoModel` 계열의 **AutoClass** 들이 이를 로딩하여
-최종적으로 pipeline 객체를 조립한다.
+주의할 점은,
 
+* Pipeline의 실제 구성 방식은 `config.json`과 같은 설정 파일에 정의되어 있고,
+* `AutoConfig`, `AutoProcessor`, `AutoModel` 계열의 **AutoClass** 들이 이를 로딩하여
+* 최종적으로 pipeline 객체를 조립한다.
 
-이 문서에서는 pipeline 객체를 HF Repo.에 업로드 하는 것을 다룸.
+> 이 문서에서는
+> pipeline 객체를 HF Repo.에 업로드 하는 것을 다룸.
 
 다음은 이 문서의 과정으로 만들어놓은 HF Model Repo.임:
 
@@ -37,10 +41,13 @@ Pipeline의 실제 구성 방식은 `config.json`과 같은 설정 파일에 정
 
 ## HF Repository 에 업로드하기
 
-> Pipeline을 업로드하는 건 사실 Model Repo.에 올리는 것임.
->  
-> 올려진 pipeline의 모델은 pipeline으로 로딩시,
+Pipeline을 업로드하는 건 사실 Model Repo. (모델 대상)에 올리는 것임.
+  
+> 저장소에 올려진 pipeline의 모델은
+> pipeline으로 로딩시,  
 > task, config.json, processor, model class 를 확인하여 재구성되는 것임.
+
+### Pipeline 객체 를 직접 업로드
 
 Pipeline 객체 `img_clf`가 있다면 다음의 코드로 업로드.
 
@@ -49,7 +56,11 @@ img_clf.push_to_hub("dsaint31/tmp-pl-image-classification")
 ```
 * repo가 없으면 **자동 생성**
 * 있으면 overwrite
-* model + config + processor + pipeline metadata까지 같이 업로드
+* model + config + processor + pipeline metadata 까지 같이 업로드
+
+---
+
+### 참고: 
 
 참고로 다음의 에러 발생시:
 ```
@@ -75,6 +86,7 @@ img_clf.push_to_hub("dsaint31/tmp-pl-image-classification")
 
 ---
 
+### 로컬에 먼저 저장후 이를 저장소에 업로드
 
 로컬에 먼저 저장 후 push (선택) 하는 방법도 가능함.
 
@@ -97,7 +109,6 @@ tmp-pl-image-classification/
 ```
 huggingface-cli upload ./tmp-pl-image-classification dsaint31/tmp-pl-image-classification
 ```
-
 
 
 ## HF Repository 기본 구성.
@@ -123,12 +134,16 @@ repo/
 Hugging Face(HF)에서  
 **repository의 config.json** 은 다음을 위한 핵심 meta-data임.
 
+이 파일의 meta-data를 통해
+
 * **modle 의 구조적 정의** 와 
-* 재현 가능한 로딩을 보장.
+* 재현 가능한 로딩이 보장됨.
 
-HF는 기본 모델 각각에 Config 클래스 (`BertConfig`, `ViTConfig` 등) 를 제공하며, 이들은 대응되는 `config.json` 으로 serialization됨.
+HF는 
+* 기본 모델 각각에 Config 클래스 (`BertConfig`, `ViTConfig` 등) 를 제공하며,
+* 이들은 대응되는 `config.json` 으로 serialization됨.
 
-> Custom Model의 경우엔 `PretrainedConifg` 클래스를 상속받아서 대응하는 Config클래스를 만들 수 있음:  
+> Custom Model의 경우엔 `PretrainedConifg` 클래스를 상속받아서 대응하는 Config 클래스를 만들 수 있음:  
 > 자세한 건 [[/hf/hf_config]] 를 참고.
 
 다음이 `config.json`의 핵심요소임:
@@ -144,6 +159,11 @@ HF는 기본 모델 각각에 Config 클래스 (`BertConfig`, `ViTConfig` 등) �
 * attention 구조: `num_attention_heads`
 * ViT의 경우 입력 분해 방식: `image_size`, `patch_size`
 
+> blueprint는 원래  설계도를 햇빛으로 복사하던 옛 인쇄 방식에서 나온 용어임.
+> 옛날엔 설계도가 파란색 바탕의 도면이었음.
+> 이후 의미가 확장되어, 건축·공학의 설계도뿐 아니라
+> 어떤 시스템이나 계획의 전체 구조를 미리 정리한 기본 설계안이라는 뜻으로도 널리 사용되고 있음.
+
 ### AutoClass 또는 Pipeline 로딩의 기준점
 
 HF의 자동 로딩은 전적으로 `config.json`에 의존함:
@@ -152,39 +172,69 @@ AutoClass 중 모델을 로딩하는 예:
 
 ```python
 from transformers import AutoModel
+
 model = AutoModel.from_pretrained("repo_id")
 ```
 
-* `config.json` 다운로드
-* `model_type` 확인 (예: `"vit"`)
-* `architectures` 또는 `AutoModel` 매핑으로 정확한 모델 클래스 결정
-* config로 모델 `skeleton` 생성
-* weight 파일 로드
+1. `config.json` 다운로드
+2. `model_type` 확인 (예: `"vit"`)
+3. `architectures` 또는 `AutoModel` 매핑으로 정확한 모델 클래스 결정
+4. config로 모델 `skeleton` 생성
+5. weight 파일 로드
 
-> config 없이는 AutoModel이 동작 불가
+> config 없이는 AutoModel 은 동작이 불가능 함.
 
-AutoClass 들을 사용하는 Pipeline도 마찬가지임.
+이는, AutoClass 들을 사용하는 Pipeline도 마찬가지임.
 
 ```python
 from transformers import pipeline
-from PIL import Image
 
 img_clf = pipeline(
     task="image-classification",
-    model="google/vit-base-patch16-224",
+    model="dsaint31/tmp-pl-image-classification"
 )
 ```
 
-* `AutoConfig.from_pretrained(repo_id)`로 `config.json`을 먼저 로드
-* `config.model_type` 및 `config.architectures` 등을 바탕으로
+* `pipeline(task="image-classification", model=repo_id)`를 호출하면,
+  먼저 image-classification task에 대응하는 pipeline 클래스가 선택됨
+* 이어서 repository의 설정 파일과 auto mapping 정보를 바탕으로, 해당 task에 맞는 image classification model 클래스가 자동으로 결정
+	* `AutoConfig.from_pretrained(repo_id)`를 통해 `config.json`을 먼저 로드
+	* 해당 파일의 `model_type` 및 `architectures` 등을 바탕으로
 	* 해당 task에 맞는 모델 클래스(예: `AutoModelForImageClassification` 계열)를 선택함
-* 선택된 클래스에 대해 `from_pretrained(repo_id, config=config)`를 호출하여
-	* 모델 skeleton(구조)을 `config`로 생성하고
-	* repo에 저장된 가중치(`model.safetensors`/`pytorch_model.bin`)를 로드함
+* 선택된 클래스에 대해 `from_pretrained(repo_id, config=config)`를 호출됨.
+	* 모델 skeleton(구조)가 `config` 를 기반으로 생성되고
+	* repo. 에 저장된 가중치(`model.safetensors`/`pytorch_model.bin`)가 로드
 * task가 요구하는 전처리기도 같이 로드함
 	* 텍스트: `tokenizer_config.json`, `tokenizer.json` 등
 	* 비전: `preprocessor_config.json` (또는 `image processor` 관련 파일) 등
+* image-classification은 vision task이므로
+	* tokenizer 대신 image processor가 자동으로 로드되며,
+	* 이때 `preprocessor_config.json` 등 전처리 설정 파일이 활용됨
 
+사용자는 
+* `AutoModelForImageClassification`, `AutoImageProcessor`를 직접 명시하지 않아도,
+* repository 안의 설정과 저장 파일 구성을 바탕으로
+* image-classification용 추론 파이프라인을 바로 사용할 수 있음
+
+물론 다음과 같이 명시적으로 model과 processor를 따로 불러들여서 pipeline을 구성할 수도 있음:
+
+```python
+from transformers import pipeline, AutoModelForImageClassification, AutoImageProcessor
+
+model = AutoModelForImageClassification.from_pretrained(
+    "dsaint31/tmp-pl-image-classification"
+)
+
+processor = AutoImageProcessor.from_pretrained(
+    "dsaint31/tmp-pl-image-classification"
+)
+
+img_clf = pipeline(
+    task="image-classification",
+    model=model,
+    image_processor=processor
+)
+```
 
 ### model 구조 명세서.
 
@@ -195,7 +245,7 @@ Hugging Face repository의 `config.json`은
 
 **구조적 명세** 란?
 
-* 모델 코드 내부에 구현된 연산을 어떤 형태로 인스턴스화할지를 결정하는 설정
+* 모델 코드 내부에 구현된 연산을 **어떤 형태로 인스턴스화할지를 결정** 하는 설정
 * layer 수, hidden size, attention head 구성, 입력 처리 방식 등의 하이퍼파라미터를 포함
 
 
