@@ -100,13 +100,20 @@ print(result)
 
 이 경우 지정한 task의 기본값으로 설정된 모델이 선택되나 경고 메시지가 뜸.
 
-실무에서 모델을 지정하는 것이 좋음
+실무에서 모델을 `model` 키워드로 명시적으로 지정하는 것을 권함.
 
 다음의 코드를 통해, `pipe`가 사용하는 실제 `model`이 어떤 클래스인지, `tokenizer`가 무슨 타입인지 등을 확인할 수 있음.
 
 ```python
-print(type(clf.model))
-print(type(getattr(clf, "tokenizer", None)))
+print(type(pipe.model))
+print(type(getattr(pipe, "tokenizer", None)))
+```
+
+결과는 다음과 같음:
+
+```shell
+<class 'transformers.models.distilbert.modeling_distilbert.DistilBertForSequenceClassification'>
+<class 'transformers.models.bert.tokenization_bert.BertTokenizer'>
 ```
 
 ### 2. 모델을 지정하여 사용하기
@@ -128,14 +135,24 @@ print(clf("난 한국어를 선호해."))
 * `revision` 설정 : *커밋 해시* 나 *태그* 를 지정하여 고정(재현성 강화)
 * `device` 또는 `device_map` 지정(성능/운영 고려)
 
+> 한국어 감성 분석에 특화된 KoELECTRA 기반 모델이 성능 면에서 더 높음:
+> `model="jaehyeong/koelectra-base-v3-generalized-sentiment-analysis"` 를 사용해 볼 것.
+
 ### 3. Zero-Shot 텍스트 분류.
 
-`label`을 런타임에 지정하여 주는 방식.
+zero-shot-classification은 `label`을 런타임에 지정하여 주는 방식.
 
-`zero-shot-classification` 은 "후보 라벨을 주면 그중 무엇이 가장 적절한지" 를 추론함.
+> zero-shot classification은  
+> 모델이 특정 분류 task를 위해 별도로 fine-tuning되지 않았더라도,
+> 주어진 label 후보의 의미를 이용해 입력이 어떤 범주에 가장 잘 맞는지 분류하는 방법임.  
+> 즉, 학습 데이터에 없던 새로운 class라도
+> label 이름이나 설명만 적절히 주면 바로 분류에 활용할 수 있다는 점이 핵심임.
+
+`zero-shot-classification` 은 "후보 라벨 리스트를 주면 그 중 무엇이 가장 적절한지" 를 추론함.
 
 ```python
 from transformers import pipeline
+import numpy as np
 
 zs = pipeline(
     task="zero-shot-classification",
@@ -191,12 +208,12 @@ zs = pipeline(
 
 # 2) 입력/라벨 준비
 text = "이 문서는 환자 진료 기록을 요약하고, 치료 계획과 예후를 설명합니다."
-labels = ["의료", "법률", "금융", "교육", "기술"]
+labels = ["의료", "법률", "금융", "교육", "기술", "병원"]
 
 # 3) (중요) hypothesis_template
-# - 모델이 NLI 기반으로 "text" (premise) 와 "가설 문장" (hypothesis) 쌍을 만들어 판단합니다.
-# - 라벨을 {}에 끼워 넣어 hypothesis를 구성합니다.
-# - 다국어/한국어 입력이면 한국어 템플릿이 대개 유리합니다.
+# - 모델이 NLI 기반으로 "text" (premise) 와 "가설 문장" (hypothesis) 쌍을 만들어 판단.
+# - 라벨을 {}에 끼워 넣어 hypothesis를 구성.
+# - 다국어/한국어 입력이면 한국어 템플릿이 대개 유리함.
 hypothesis_template_ko = "이 글의 주제는 {}이다." # {} 안에 빈 칸 넣으면 에러발생함. 주의!
 
 # 4) (중요) multi_label
@@ -222,12 +239,14 @@ out_multilabel = zs(
 )
 
 print("=== multi_label=False (상호배타) ===")
-print(out_exclusive["labels"])
-print(out_exclusive["scores"])
+for label, score in zip(out_exclusive["labels"], out_exclusive["scores"]):
+    print(f"{label}: {round(score, 3)}") 
+print(f"{np.sum(out_exclusive["scores"]) = :.3f}") # 1이 됨.
 
 print("\n=== multi_label=True (복수 선택 가능) ===")
-print(out_multilabel["labels"])
-print(out_multilabel["scores"])
+for label, score in zip(out_multilabel["labels"], out_multilabel["scores"]):
+    print(f"{label}: {round(score, 3)}")
+print(f"{np.sum(out_multilabel["scores"]) = :.3f}") # 1이상이 가능.
 ```
 
 다음은 `batch_size` 를 사용하는 예임.
@@ -251,32 +270,32 @@ outs = zs(texts,
           truncation=True,
           max_length=192,
           batch_size=16,
-	  top_k = 4,     # top 2 선택
+	  top_k = 2,     # top 2 선택
 )
 
 # top 2 선택 
 for t, o in zip(texts, outs):
     print("\n---")
     print(t)
-    print(list(zip(o["labels"], [round(s, 4) for s in o["scores"]])))
+    print(list(zip(o["labels"], [round(s, 2) for s in o["scores"]])))
 
 print( "=======================")  
 # --- threshold 적용 ---
 THRESHOLD = 0.5
 
-# --- top 4 선택 ---
+# --- threshold 넘는 top 2 선택 ---
 for t, o in zip(texts, outs):
     print("\n---")
     print(t)
     print(list(
         zip(
             o["labels"], 
-             [round(s, 4) for s in o["scores"] if s>=THRESHOLD]
+             [round(s, 2) for s in o["scores"] if s>=THRESHOLD]
             )
         )
     )
 ```
-* Thresholdind 의 경우, 아무것도 없을 수 있음.
+* Thresholdind 의 경우, 아무것도 없을 수도 있음 (지정된 threshod를 모두 넘지 못하는 경우).
 * 최대 점수를 받은 라벨을 하나 강제 선택하는 것도 방법임.
 
 ### 4. 이미지 분류 (ViT)
@@ -303,23 +322,47 @@ print(results[:5])
 * 이 모델은 ImageNet-1k라는 방대한 이미지 데이터셋으로 학습됨.
 * 1,000개의 클래스로 이루어진 라벨!
 
-### 5. pipeline 살펴보기.
+> 단, `label2id`는 label중 crane이 중복되어 999개 나옴.
+> crane 이 기계 크레인 과 새 두루미 의 두 가지에 대해 label로 중복 사용.
 
-pipeline을 호출시 파라메터로 받아들이는 인자들은 다음의 코드로 확인 가능함  
+### 참고: pipeline 살펴보기.
+
+`pipeline()` 으로 얻어진 `Pipeline` 객체를 호출시  
+파라메터로 받아들이는 argument(인자)들은 다음의 코드로 확인 가능함  
 (Pipeline 이 callable객체이기 때문)
 
 ```python
 import inspect
-print(inspect.signature(pipe.__call__))
+
+sig = inspect.signature(pipe.__call__)
+print(sig)
 
 # 각 파라미터 정보 출력
 print("\nParameters:")
-for name, param in signature.parameters.items():
-    print(f"- {name}: kind={param.kind}, default={param.default}, annotation={param.annotation}")
+for name, param in sig.parameters.items():
+    print(f"- {name:10}: kind={str(param.kind):22}, default={param.default}, annotation={param.annotation}")
 ```
-* task별로 호출 규약이 다름.
 
-반환되는 output은 dictionary 객체이므로 다음으로 확인 가능
+단, `inspect.signature(pipe.__call__)`로 확인되는 것은 `Pipeline` 객체의 공통 호출 인터페이스임.  
+
+* 실제로 지원되는 세부 keyword argument는 
+* task별 pipeline 구현에서 **kwargs를 통해 처리되는 경우가 많으므로, 
+* 최종적으로는 해당 task의 공식 문서를 확인해야 함.
+
+> [pipelines](https://huggingface.co/docs/transformers/v5.3.0/ko/main_classes/pipelines)
+
+참고로, 결과는 다음과 같음:
+
+```
+(sequences: str | list[str], *args, **kwargs)
+
+Parameters:
+- sequences : kind=POSITIONAL_OR_KEYWORD , default=<class 'inspect._empty'>, annotation=str | list[str]
+- args      : kind=VAR_POSITIONAL        , default=<class 'inspect._empty'>, annotation=<class 'inspect._empty'>
+- kwargs    : kind=VAR_KEYWORD           , default=<class 'inspect._empty'>, annotation=<class 'inspect._empty'>
+```
+
+반환되는 output은 `dict` 객체이므로 다음으로 확인 가능
 
 ```python
 print("--- output.keys()를 리스트로 변환하여 display()로 출력 ---")
@@ -330,12 +373,7 @@ for key in output.keys():
     print(f"- {key}")
 ```
 
-Pipeline이 사용하는 모델의 명세는 `pipe.model.config`를 통해 확인하면 됨.
-
-```python
-print(f"id2label 개수: {len(classifier.model.config.id2label)}")
-print(f"label2id 개수: {len(classifier.model.config.label2id)}")
-```
+Pipeline이 사용하는 모델의 명세는 `pipe.model.config`를 통해 확인할 수 있음.
 
 ## 로컬에 저장 경로 
 
@@ -370,10 +408,10 @@ C:\Users\<USERNAME>\.cache\huggingface\
        │     └─ README.md
        └─ blobs/
 ```
-* Hub의 Git commit 기반 버전 관리를 그대로 반영
+* Hub의 Git commit ID 기반 버전 관리를 그대로 반영
 * 동일 repo라도
 	* 다른 commit
-	* 다른 revisi0on(tag, branch)
+	* 다른 revision(tag, branch)
 	* 의 경우, 서로 다른 snapshot으로 공존 가능
 * `<commit_hash>` 밑의 파일들에 대해 좀 더 자세히 살펴보려면 [[/hf/pipeline_repo]] 를 참고.
 
@@ -383,13 +421,14 @@ C:\Users\<USERNAME>\.cache\huggingface\
 pipeline(
     task,
     model="repo_id",
-    cache_dir="/my/local/cache"
+    cache_dir="/my/local/cache",
 )
 ```
 
 ## 주요 Pipeline taks list
 
-다음의 task를 지원함. 적절한 모델은 HuggingFace Hub 의 모델에서 찾을 수 있음 [https://huggingface.co/models](https://huggingface.co/models)
+다음의 task를 지원함.  
+적절한 모델은 HuggingFace Hub 의 모델에서 찾을 수 있음 [https://huggingface.co/models](https://huggingface.co/models)
 
 <img src="/resource/59/1E4C9B648A4B22AB54B0D2E67CB897/636675dc-9867-436c-a76a-f534e03d1e64.png" style="display: block; margin: 0 auto; width: 500px" />
 
