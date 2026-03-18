@@ -3,7 +3,7 @@ layout  : wiki
 title   : HF-Pipeline Upload
 summary : 
 date    : 2026-02-02 16:47:28 +0900
-updated : 2026-03-19 00:55:40 +0900
+updated : 2026-03-19 00:58:08 +0900
 tag     : hf pipeline repo
 resource: 57/48E6A5A80146F48B0FDD78ADA3766B
 toc     : true
@@ -111,7 +111,7 @@ huggingface-cli upload ./tmp-pl-image-classification dsaint31/tmp-pl-image-class
 ```
 
 
-## HF Repository 기본 구성.
+# HF Repository 기본 구성.
 
 업로드된 Model Repo. 에서의 구성을 보면 다음과 같음.
 
