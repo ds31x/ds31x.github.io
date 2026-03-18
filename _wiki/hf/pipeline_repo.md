@@ -304,17 +304,17 @@ ViT config.json 항목 설명 표
 
 | Key                            | 의미                                                                 |
 | ------------------------------ | ------------------------------------------------------------------ |
-| `architectures`                | 이 설정으로 생성되는 모델 클래스 이름. 보통 `["ViTForImageClassification"]` 등으로 명시됨  |
+| `architectures`                | 이 설정으로 생성되는 모델 클래스 이름. <br/> 보통 `["ViTForImageClassification"]` 등으로 명시됨  |
 | `attention_probs_dropout_prob` | Self-Attention에서 **attention weight**에 적용되는 dropout 비율             |
 | `dtype`                        | 모델 파라미터의 기본 데이터 타입 (`float32`, `float16` 등)                        |
-| `encoder_stride`               | Feature map을 만들 때 encoder 출력의 stride 값. 주로 downstream task용        |
-| `hidden_act`                   | Transformer MLP 블록에서 사용하는 activation 함수 (`gelu`, `relu`, `silu` 등) |
+| `encoder_stride`               | Feature map을 만들 때 encoder 출력의 stride 값. <br/>주로 downstream task용        |
+| `hidden_act`                   | Transformer MLP 블록에서 사용하는 activation 함수 <br/> (`gelu`, `relu`, `silu` 등) |
 | `hidden_dropout_prob`          | Transformer block 내부에서 hidden state에 적용되는 dropout 비율               |
-| `hidden_size`                  | Transformer의 **embedding dimension**. 각 token vector의 차원           |
+| `hidden_size`                  | Transformer의 **embedding dimension**. <br/>각 token vector의 차원           |
 | `id2label`                     | 분류 문제에서 **class id → label name** 매핑 딕셔너리                          |
-| `image_size`                   | 입력 이미지의 한 변 크기 (정사각형 가정, 예: 224)                                   |
+| `image_size`                   | 입력 이미지의 한 변 크기 <br/>(정사각형 가정, 예: 224)                                   |
 | `initializer_range`            | 가중치 초기화 시 사용하는 정규분포의 표준편차                                          |
-| `intermediate_size`            | MLP block의 hidden dimension. 보통 `hidden_size * 4`                  |
+| `intermediate_size`            | MLP block의 hidden dimension. <br/>보통 `hidden_size * 4`                  |
 | `label2id`                     | 분류 문제에서 **label name → class id** 매핑 딕셔너리                          |
 | `layer_norm_eps`               | LayerNorm에서 수치 안정성을 위한 epsilon 값                                   |
 | `model_type`                   | 모델 계열 식별자. ViT의 경우 `"vit"`                                         |
