@@ -3,7 +3,7 @@ layout  : wiki
 title   : HF-Pipeline Upload
 summary : 
 date    : 2026-02-02 16:47:28 +0900
-updated : 2026-03-19 00:51:50 +0900
+updated : 2026-03-19 00:55:40 +0900
 tag     : hf pipeline repo
 resource: 57/48E6A5A80146F48B0FDD78ADA3766B
 toc     : true
@@ -288,7 +288,7 @@ Hugging Face repository의 `config.json`은
 
 * PyTorch
 * TensorFlow
-* Flax
+* Flax : [JAX](https://ds31x.tistory.com/606) 위에서 동작하는 neural network library.
 
 HF는 동일 config로 다음의 framework용 AutoClass에서 사용됨:
 
