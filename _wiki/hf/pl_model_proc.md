@@ -16,7 +16,8 @@ latex   : false
 
 # image-classification 테스크용 model과 processor
 
-다음이 가능한 `custom_model` 과 `custom_processor` 의 조건을 살펴본다.
+`"image-classification"` task의  `pipeline()` 에서  
+사용 가능한 `custom_model` 과 `custom_processor` 의 조건을 살펴본다.
 
 ```python
 pipeline(
@@ -33,7 +34,7 @@ pipeline(
 * `AutoModelForImageClassification` 로 로드 가능
 * 또는 `PreTrainedModel` 상속 + `logits` 반환
 
-즉, forward가 다음과 같은 contract를 만족해야 함:
+즉, forward가 다음과 같은 contract(=API)를 만족해야 함:
 
 ```python
 def forward(self, pixel_values=None, labels=None, **kwargs):
@@ -43,7 +44,8 @@ def forward(self, pixel_values=None, labels=None, **kwargs):
         logits=logits
     )
 ```
-* `ImageClassifierOutput`이 권장됨.
+* 입력으로 image processor가 만든 `pixel_values`를 받아 `logits`를 반환할 수 있어야 함
+* 반환값으 `ImageClassifierOutput`이 권장됨.
 * `dict` 객체를 반환해도 되긴 함: `return {"logits": logits}`
 
 `ImageClassifierOutput`은 다음의 구조를 가짐:
@@ -60,7 +62,7 @@ ImageClassifierOutput(
 > `pixel_values` 를 통해 `(B,C,H,W)`형태의 tensor로 입력을 받아야 함.
 
 
-모델의 `.config`에 다음의 속성이 필요함:
+모델의 `.config`에 다음의 분류 속성이 필요함:
 
 ```python
 config.id2label
@@ -69,6 +71,9 @@ config.num_labels
 ```
 
 ## Custom processor의 조건
+
+> `BaseImageProcessor` 계열과 호환되는 image processor 를 권장.
+> 연결될 model이 기대하는 출력을 반환해야함: 
 
 `processor` 다음과 같은 호출이 가능한 callable 객체여야함:
 
@@ -82,7 +87,9 @@ processor(images, return_tensors="pt")
 {"pixel_values": tensor}
 ```
 * `pixel_values` 키가 반드시 있어야 함.
-* `model(**{"pixel_values": ...})` 의 형태로 모델의 `.forward` signature가 되어있기로 약속됨.
+* `model(**{"pixel_values": ...})` 의 형태로 모델의 `.forward()`의 signature가 되어있기로 약속됨.
+
+> resize, normalize, tensor 변환 등 수행.
 
 ## Custom pipeline 만들기
 
