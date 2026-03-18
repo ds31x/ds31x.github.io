@@ -375,7 +375,9 @@ for key in output.keys():
 
 Pipeline이 사용하는 모델의 명세는 `pipe.model.config`를 통해 확인할 수 있음.
 
-## 로컬에 저장 경로 
+## 로컬에 저장 경로 - Cache 
+
+* **참고: [Hugging Face 캐시 디렉터리 구조 정리](https://ds31x.tistory.com/644)**
 
 Pipeline으로 특정 task 에 관련된 모델과 컴포넌트들을 HF Hub로부터 가져오면 다음의 cache directory 에 저장된다.
 
@@ -408,7 +410,7 @@ C:\Users\<USERNAME>\.cache\huggingface\
        │     └─ README.md
        └─ blobs/
 ```
-* Hub의 Git commit ID 기반 버전 관리를 그대로 반영
+* Hub의 Git commit hash 기반 버전 관리를 그대로 반영
 * 동일 repo라도
 	* 다른 commit
 	* 다른 revision(tag, branch)
