@@ -3,7 +3,7 @@ layout  : wiki
 title   : HF-Pipeline Upload
 summary : 
 date    : 2026-02-02 16:47:28 +0900
-updated : 2026-03-19 00:45:53 +0900
+updated : 2026-03-19 00:51:50 +0900
 tag     : hf pipeline repo
 resource: 57/48E6A5A80146F48B0FDD78ADA3766B
 toc     : true
@@ -336,7 +336,7 @@ ViT config.json 항목 설명 표
 
 ## **`tokenizer.json`**
 
-* 텍스트 입력을 모델이 처리 가능한 token ID로 변환하기 위한 **[[/hlp/tokenization|Tokenizer]]) 정의**
+* 텍스트 입력을 모델이 처리 가능한 token ID로 변환하기 위한 [[/nlp/tokenization|Tokenizer]] 정의**
 * vocab, tokenization 규칙, special token 정보 등을 포함
 * 텍스트 기반 pipeline에서 입력 전처리를 재현하기 위해 필수적인 파일
 * `AutoTokenizer` 또는 `pipeline()` 로딩 시 자동으로 참조됨
