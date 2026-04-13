@@ -22,6 +22,14 @@ github pages 로 text파일이 정적웹페이지로 만들어지는 점을 정�
 text file vs. binary file
 * [text file vs. binary file](https://ds31x.tistory.com/395#text-file-and-binary-file)
 
+# GitHub Page란?
+
+GitHub Pages (=github.io)는 GitHub가 제공하는 정적 웹사이트 호스팅 기능이다.
+
+* 저장소(repository)에 있는 파일을
+* Jekyll로 빌드해서
+* 웹사이트로 배포해 준다
+
 # 정리 자료
 
 github.io 의 페이지를 가장 최소한으로 구축하는 방법 (로컬은 아예 안 건드리는...)
@@ -37,12 +45,13 @@ github.io 의 페이지를 가장 최소한으로 구축하는 방법 (로컬은
 
 # 참고자료0-이호준 선생님
 
-개인적으론 선호하는 방식. 
+개인적으론 선호하는 방식.  
+
 [이종립 선생님](https://johngrib.github.io/)의 [[/first-log]]{vimwiki + github.io} 는 vim 연습도 겸할 수 있음.
 
 # 참고자료1-위니블로그
 
-이호준 선생님의 vimwiki 기반의 github.io작성을 선호하지만,  
+이호준 선생님의 [[/first-log]]{vimwiki + github.io}를 개인적으로 선호하지만,  
 아래 것도 살펴보니 정말 잘 만들어진 블로그 테마임 (`vi`를 익히기 싫다면 가장 편안한 시작점임).
 기능도 강력하고, 디자인도 좋고, 무엇보다 설명이 충실함(youtube). 
 * [https://blog.weniv.co.kr/](https://blog.weniv.co.kr/)
