@@ -356,9 +356,9 @@ revocation은 한번 이루어지면 영구적임
 ## 13. 핵심 정리 문장
 
 * signing 은 암호학적 행위이다: private key를 통해 데이터를 처리.
-* Authentication 은 signature verificaton result을 통해 identiy proof(신원 증명)으로 해석하는 절차이다.
-* Primary 비밀키는 subkeys를 certify 한다: subkey에 대해 key-binding certificaton signatures를 생성 (=cerify).
-* subkeys 는 실사용을 담당한다 (실제 사용되는 key로 보안 등의 이유로 짧은 주기별로 교체/폐기 됨).
+* Authentication 은 signature verification result을 통해 identiy proof(신원 증명)으로 해석하는 절차이다.
+* Primary 비밀키는 subkeys를 certify 한다: subkey에 대해 key-binding certification signatures를 생성 (=cerify).
+* subkeys 는 실사용을 사용된다 (실제 사용되는 key로 보안 등의 이유로 짧은 주기별로 교체/폐기 됨).
 * revocation 은 신뢰 관계를 공식적으로 종료한다.
 
 
