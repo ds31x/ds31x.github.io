@@ -216,7 +216,7 @@ OpenPGP(GPG)에서는 Private and Public 외에도 Primary and Sub 의 구분이
 * **Subkey (서브키)**
   * 실제 사용 목적 담당 
   * 서명용, 암호화용 등으로 분리 가능
-  * certification, signing, authentification, encryption
+  * certification, signing, authentication, encryption
 
 
 ### 7.2 Primary 비밀키의 subkey들에 대한 certify 역할
@@ -263,11 +263,13 @@ Subkey
 
 ## 8. Certificate 
 
-certificate 는 명사로 인증서 라고 생각할 것.
+certificate 는 명사로 **인증서** 라고 생각할 것.
 
 ### 정의
 
 * **Certificate**: 공개키와 신원을 연결한 신뢰 문서
+* Certificates는 **Credential의 한 종류**
+* 보통, 신뢰할 수 있는 제3자(CA, 인증 기관)가 발행한 디지털 문서를 의미함.
 
 ### 개념
 
@@ -275,6 +277,17 @@ X.509 체계에서는 CA가 인증서를 발급하지만,
 OpenPGP에서는 **Primary key가 서브키를 certify 하는 구조**가
 인증서 체계의 역할을 부분적으로 대체함.
 
+* 구조: 공개 키(Public Key)와 발행 기관의 디지털 서명이 포함되어 있음.
+* 용도: 주로 통신 암호화(HTTPS/SSL)나 신원 확인 시 "이 공개 키가 특정 소유자의 것이 맞음"을 공적으로 보증할 때 사용함.
+* 특징: 비밀번호처럼 단순한 값이 아니라, 암호학적 검증이 가능한 구조화된 파일 형태임
+
+### 8-1. Credentials
+
+Credential (자격증명)은 사용자의 신원을 증명하기 위해 제시하는 모든 수단을 아우르는 상위 개념임.
+
+* 범위: 넓은 개념으로, "나는 누구인가"를 입증하는 모든 데이터를 포함함.
+* 구성 요소: ID/비밀번호, 생체 정보(지문, 안면 인식), OTP 번호, API Key, 그리고 Certificates까지 모두 Credential의 일종임.
+* 특징: 시스템에 접근할 수 있는 '열쇠' 그 자체를 의미함.
 
 ## 9. Validation / Validate (유효성 확인)
 
