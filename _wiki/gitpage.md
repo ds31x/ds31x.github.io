@@ -26,7 +26,7 @@ text file vs. binary file
 
 github.io 의 페이지를 가장 최소한으로 구축하는 방법 (로컬은 아예 안 건드리는...)
 * [What GitHub Pages is](https://dsaint31.github.io/github/git-page/)
-* 이 자료보다는 아래 [참고 자료1](#참고자료0-이호준-선생님) 이 훨씬 좋은 블로그 결과물을 쉽게 만들어냄.
+* 이 자료보다는 아래 [참고 자료0](#참고자료0-이호준-선생님)과 [참고 자료1](#참고자료1-위니블로그) 이 훨씬 좋은 블로그 결과물을 쉽게 만들어냄.
 
 다음 글은 로컬에 Jekyll 환경을 구축하는 법을 따라하면서 
 **gem**, **budler** 와 같은 Ruby의 package manaer의 개념을 익히도록 구성.
@@ -37,7 +37,12 @@ github.io 의 페이지를 가장 최소한으로 구축하는 방법 (로컬은
 
 # 참고자료0-이호준 선생님
 
-개인적으론 [이종립 선생님](https://johngrib.github.io/)의 [[/first-log]]{vimwiki + github.io} 를 선호하지만,
+개인적으론 선호하는 방식. 
+[이종립 선생님](https://johngrib.github.io/)의 [[/first-log]]{vimwiki + github.io} 는 vim 연습도 겸할 수 있음.
+
+# 참고자료1-위니블로그
+
+이호준 선생님의 vimwiki 기반의 github.io작성을 선호하지만,  
 아래 것도 살펴보니 정말 잘 만들어진 블로그 테마임 (`vi`를 익히기 싫다면 가장 편안한 시작점임).
 기능도 강력하고, 디자인도 좋고, 무엇보다 설명이 충실함(youtube). 
 * [https://blog.weniv.co.kr/](https://blog.weniv.co.kr/)
