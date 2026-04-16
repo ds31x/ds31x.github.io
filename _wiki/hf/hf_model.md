@@ -1,16 +1,17 @@
 ---
 layout  : wiki
 title   : HF-Model
-summary : 
+summary :  Hugging Face PreTrainedModel의 구조, 기능, 및 활용 튜토리얼 (텍스트/이미지/멀티모달)
 date    : 2026-02-11 23:54:23 +0900
 updated : 2026-02-12 09:45:52 +0900
-tag     : 
+tag     : huggingface transformers pytorch deep-learning nlp computer-vision pretrained-model
 resource: 96/D94CEC777847F2A858477156E4D7BD
 toc     : true
 public  : true
 parent  : [[/hf]]
-latex   : false
+latex   : true
 ---
+
 * TOC
 {:toc}
 
@@ -45,6 +46,11 @@ Text / Image 의 경우를 나누어서 간단히 소개
 * `from_pretrained()`로 로드하는
 
 기능을 제공하는 쪽이 `PreTrainedModel`임.
+
+
+>  "shard"는 본래 깨진 도자기·유리·암석의 파편(조각) 을 뜻하는 명사로서
+> 컴퓨터 과학에선 하나의 큰 데이터셋·데이터베이스·파일을 수평 분할(horizontal partitioning) 한 개별 단위를 가리키는데 사용됨.
+> 대형 언어 모델(LLM)의 가중치(weight) 파일은 수십~수백 GB에 달하여 단일 파일로 저장하기 어렵기 때문에 전체 모델 가중치를 일정 크기(예: 5GB, 10GB) 단위로 분할하여 여러 개의 파일에 나누어 저장하는데, 이 각각의 분할 파일을 shard, 이 방식으로 저장된 가중치를 sharded weight라 함.
 
 
 ## Config / Model / 입력 객체의 역할 분리
@@ -92,6 +98,10 @@ class MyModel(PreTrainedModel):
 * Hub의 `auto_map` 메타데이터와 연결됨
 * `from_pretrained()`가 config 기반으로 올바른 모델 클래스를 선택할 수 있게 함
 
+> 컴퓨터 과학에서 "dispatch"는
+> 주로 "어떤 호출(call)·요청(request)·이벤트(event) 등을
+> 적절한 처리 주체(함수, 스레드, 큐)로 보내는(라우팅하는) 행위" 를 뜻함.
+
 ### 2) `from_pretrained()`의 내부 복원 절차
 
 보통은 PreTrainedModel 이 제공하는 메서드를 그냥 사용하면 되지만,  
@@ -113,22 +123,52 @@ model = MyModel.from_pretrained("repo_id")
 8. `tie_weights()` 및 내부 초기화 정리
 9. 기본적으로 `eval()` 모드 설정
 
-즉, `from_pretrained()`는 단순한 `load_state_dict` 이 아니라  
-**Hub 의 contract 전체를 복원하는 고수준의 복합 복원 메서드** 에 해당함.
+실제로 `from_pretrained()`는 단순한 `load_state_dict` 이 아니라  
+**Hub 의 contract 전체를 복원하는 고수준의 복원 메서드** 임.
+
+
+HF의 `PreTrainedModel`의 `from_pretrained()`가 state_dict를 어떻게 로딩하는지 다음 절을 참고할 것.
 
 ### 3) state_dict 로딩 전략
 
-HF는 일반 PyTorch의 경우와 달리 다음을 처리함:
+`state_dict`는 PyTorch에서 `nn.Module` 객체의 parameters와 buffers를 관리하는 `collections.OrderedDict` 객체임.  
+
+* PyTorch 에서 저장과 로드에 사용되는 객체임
+    * parameters와 buffers의 이름(`str`)을 키로
+    * 해당하는 `torch.Tensor`를 값으로 가지는 mapping임.
+* 참고자료: [PyTorch: state_dict()](https://ds31x.tistory.com/264)
+
+HF의 `PreTrainedModel` 객체에서 `.from_pretrained()` 메서드는  
+일반 PyTorch의  `load_state_dict()`와 달리 다음의 개선된 기능을 제공함:
 
 * missing keys 처리
+    * 체크포인트에는 없으나 현재 모델 구조에는 존재하는 키(예: fine-tuning 시 새로 추가된 레이어의 가중치)를 경고(warning)와 함께 random initialization으로 처리
+    * 클래스 속성 `_keys_to_ignore_on_load_missing`을 통해 특정 키를 무시 목록으로 등록할 수 있음.   
 * unexpected keys 처리
+    * 체크포인트에는 존재하나 현재 모델 구조에는 없는 키를 경고와 함께 무시(skip)함
+    * 클래스 속성 `_keys_to_ignore_on_load_unexpected`을 통해 예상된 불일치를 사전에 등록할 수 있음.
 * sharded weight 로딩
+    * 대형 모델의 가중치를 여러 파일로 분할 저장한 sharded checkpoint(`model.safetensors.index.json` 또는 `pytorch_model.bin.index.json`)를
+    * 자동으로 인식하고 순차적으로 로드 
 * safetensors 지원
+    * 기존 `.bin` 포맷(pickle 기반) 대신
+    * 보안성과 로딩 속도가 향상된 `.safetensors` 포맷을 우선적으로 탐색하여 로드 
 * `low_cpu_mem_usage=True` 옵션 통해 메모리 최적화 로딩.
-* `device_map="auto"` 기반 분산 로딩
-* `dtype` 자동 캐스팅.
+    * 가중치 로딩 시 먼저 모델을 meta device (실제 메모리를 점유하지 않는 가상 디바이스)에 생성한 후,
+    * 실제 가중치 텐서를 레이어 단위로 순차적으로 CPU 메모리에 적재
+    * 이를 통해 피크 메모리 사용량을 대폭 절감할 수 있음.
+* device_map="auto" 옵션 등을 통한 `device_map="auto"` 기반 분산 로딩:
+    * accelerate 라이브러리와 연동하여 사용 가능한 GPU/CPU/Disk 자원을 자동으로 파악
+    * 이를 통해 레이어 단위로 최적 디바이스에 분산 배치를 수행할 수 있음.
+    * 추가적으로 `device_map`에 사용자 정의 딕셔너리를 전달하여 수동 배치도 가능
+* `torch_dtype` 옵션을 통한 `dtype` 자동 캐스팅:
+    * `from_pretrained(torch_dtype=torch.float16)` 등을 통해
+    * 로딩 시점에 가중치의 데이터 타입을 자동으로 casting 가능.
+    * 이를 통해 메모리 사용량 및 추론 속도를 최적화가 가능함.
 
-이는 일반 PyTorch 모델의 `load_state_dict` 와 구조적으로 다른 중요한 차이점임.
+이는 일반 PyTorch 모델의 `load_state_dict(strict=True/False)`의 기능을 상회하는 고급 기능들이며, 이를 통해 HF의 `PreTrainedMOdel`은 사전학습 모델을 보다 효율적으로 사용할 수 있음.
+
+* 참고: [PyTorch: Save and Load Model](https://ds31x.tistory.com/263)
 
 ### 4) `post_init()`의 역할
 
@@ -138,10 +178,25 @@ Custom 모델 작성 시 생성자(`__init__`)에서 다음의 hook 호출이 �
 self.post_init()
 ```
 
-이 호출을 통해 수행되는 내용은 다음과 같음:
+`post_init()`의 내부 구현은 다음과 같이 세 단계로 구성:
 
-* weight initialization 수행: `self.init_weights()` 실행
-* `self.tie_weights()` 실행
+* weight initialization 수행: `self.init_weights()` 실행:
+    * `apply(self._init_weights)`를 통해 모든 서브모듈을 순회하며 각 레이어 타입에 맞는 초기화를 수행. 
+* `self.tie_weights()` (가중치 공유)실행
+    * Encoder-Decoder 또는 언어모델 구조에서 입력 embedding 행렬과 출력 lm_head(linear projection)의 가중치를 공유(tying) 함.
+        * 언어 모델의 입력과 출력은 동일한 vocabulary를 공유하며, 구조적으로 다음과 같이 대칭을 이룸.
+        * ```[입력 단계]                          [출력 단계]
+token id                             logits (vocab 크기)
+   │                                      ▲
+   ▼                                      │
+Embedding lookup                      lm_head (Linear)
+W_e ∈ ℝ^{V×d}                        W_o ∈ ℝ^{d×V}
+   │                                      │
+   ▼                                      │
+hidden vector (d-dim)  ──► ... ──►  hidden vector (d-dim)
+```
+        *  Tying을 적용하여 입력 embedding 행렬(W_e)와 출력 lm_head 행렬(W_o)의 가중치를 공유하도록 처리: $W_e^\top = W_o$
+    * `from_pretrained()` 호출 시에도 tie_weights()가 재실행되므로, 체크포인트 로딩 후에도 tying 상태가 자동 복원 
 * gradient checkpointing 관련 초기화
 * 내부 hook 정리
 
