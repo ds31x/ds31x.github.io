@@ -33,7 +33,7 @@ Text / Image 의 경우를 나누어서 간단히 소개
 * 그 설계도(`config`)를 받아서 
 * **실제 레이어들을 만들고** (`__init__`)
 * 연결하고 (`forward`), 
-* 가중치를 붙여서 동작 가능한 모델로 만드는 구현체**임.
+* 가중치를 붙여서 동작 가능한 모델로 만드는 **구현체**임.
 
 모델을 완전히 복원하려면 보통 아래 2가지를 함께 사용함.
 
@@ -227,7 +227,7 @@ Config와 Weight는 항상 분리 저장됨.
 
 구조-구현 분리 관점에서:
 
-```
+```text
 PretrainedConfig  :  구조 메타데이터
 PreTrainedModel   :  실제 레이어 구현
 ```
@@ -269,7 +269,7 @@ PreTrainedModel   :  실제 레이어 구현
 
 ## 0.4 Hub 복원 전체 흐름
 
-```
+```text
 repo_id
    ↓
 config.json
@@ -441,7 +441,7 @@ inputs = processor(image, return_tensors="pt")
 ## 2.2 최소 예제: 커스텀 이미지 분류 모델
 
 
-```Python
+```python
 from transformers.modeling_outputs import ImageClassifierOutput
 
 class MyImageForImageClassification(PreTrainedModel):
@@ -484,7 +484,7 @@ class MyImageForImageClassification(PreTrainedModel):
 
 따라서 다음의 방식이 항상 동작한다고 기대하기 어려움:
 
-```
+```python
 hidden_size = getattr(self.backbone.config, "hidden_size", None)
 ```
 
@@ -583,7 +583,7 @@ class CLIPProcessor(ProcessorMixin):
 
 즉,
 
-> Processor는 실제 전처리를 구현한다기보다  
+> **Processor** 는 실제 전처리를 구현한다기보다  
 > 여러 전처리 객체를 보유하는 wrapper임.
 
 
@@ -597,14 +597,14 @@ repo/
  ├── tokenizer_config.json
  ├── special_tokens_map.json
  ├── preprocessor_config.json
- ├── processor_config.json
+ └── processor_config.json
 ```
 
 processor_config.json은 다음의 정보를 가짐:
 
-* 어떤 tokenizer
-* 어떤 image_processor
-* 어떤 auto_map
+* 어떤 tokenizer 를 사용하는지.
+* 어떤 image_processor 를 사용하는지.
+* auto_map 에 대한 설정정보.
 
 
 ## 4.3 AutoProcessor 동작
