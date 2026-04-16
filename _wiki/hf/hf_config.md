@@ -19,6 +19,7 @@ latex   : true
 
 Text / Image 의 경우를 나누어서 간단히 소개.
 
+[관련 ipynb파일](https://gist.github.com/dsaint31x/c764651b921ce00433bb4202af7ef202)
 
 ## 0. `PretrainedConfig` 란? 
 
