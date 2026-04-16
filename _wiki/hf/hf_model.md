@@ -332,6 +332,7 @@ tokens = tokenizer("Hello world", return_tensors="pt")
 
 ## 1.2 최소 예제: 커스텀 텍스트 분류 모델
 
+전체 예제는 다음을 참고: [관련 ipynb](https://gist.github.com/dsaint31x/0024cb11141075ff572b25a351a57c30)
 
 ```python
 import torch
