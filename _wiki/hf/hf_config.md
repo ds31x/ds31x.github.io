@@ -1,16 +1,17 @@
 ---
 layout  : wiki
-title   : HF-Config
-summary : 
+title   : HF PretrainedConfig
+summary : Hugging Face PretrainedConfig의 구조, 주요 기능, 텍스트/이미지 모델 설정 및 AutoClass 등록 튜토리얼
 date    : 2026-02-11 22:56:59 +0900
-updated : 2026-02-19 12:44:43 +0900
-tag     : hf config
+updated : 2026-04-16 00:00:00 +0900
+tag     : huggingface transformers pytorch deep-learning nlp computer-vision config pretrained-model
 resource: 31/709D1251394DFBA0DBF7E440BE0A97
 toc     : true
 public  : true
 parent  : [[/hf]]
-latex   : false
+latex   : true
 ---
+
 * TOC
 {:toc}
 
@@ -21,8 +22,9 @@ Text / Image 의 경우를 나누어서 간단히 소개.
 
 ## 0. `PretrainedConfig` 란? 
 
-`PretrainedConfig`는 **모델의 구조를 정의하고 재현하기 위한 설정(구성) 클래스**임.
-가중치가 아니라, 모델이 어떤 아키텍처와 하이퍼파라미터로 구성되어 있는지를 설명하는 메타데이터를 담당하는 역할임.
+`PretrainedConfig`는 **모델의 구조를 정의하고 재현하기 위한 설정(구성) 클래스**임.  
+
+가중치가 아니라, 모델이 어떤 아키텍처와 하이퍼파라미터로 구성되어 있는지를 설명하는 **메타데이터(주로 구조에 대한)를 담당**하는 역할임.
 
 모델을 완전히 복원하려면 두 가지 요소가 필요함.
 
@@ -35,6 +37,7 @@ Text / Image 의 경우를 나누어서 간단히 소개.
 ### 일반 모델 Config와의 관계
 
 `BertConfig`, `ViTConfig`와 같은 일반 모델의 설정 클래스는 모두 `PretrainedConfig`를 상속한 구현체임.
+
 사용자가 직접 정의하는 Custom Config 클래스 역시 동일하게 `PretrainedConfig`를 상속하여 작성하는 구조임.
 
 즉, 관계는 다음과 같음.
@@ -97,8 +100,10 @@ class MyTextConfig(PretrainedConfig):
         num_labels=2,
         id2label=None,
         label2id=None,
-        **kwargs
+        **kwargs  # 마지막은 variable keyward parameter로 처리. 
     ):
+        # 부모 클래스 proxy에서 __init__호출시
+        # **kwargs 로 kwargs를 unpacking하여 넘겨줘야 함.
         super().__init__(**kwargs)
 
         self.vocab_size = vocab_size
@@ -111,7 +116,11 @@ class MyTextConfig(PretrainedConfig):
         self.id2label = id2label or {i: f"LABEL_{i}" for i in range(num_labels)}
         self.label2id = label2id or {v: k for k, v in self.id2label.items()}
 ```
+* 부모클래스의 proxy object (정확히는 MRO상의 다음클래스의 proxy)를 얻고(`super()`)
+* 이를 통한  `__init__(**kwargs)`를 호출해야 함.
+* keyward parameter `kwargs`에 대해 unpacking하여 호출하는 것에 유의할 것.
 
+>  proxy(대리 객체) 란, 부모 클래스(또는 MRO 상의 다음 클래스)를 직접 참조하지 않고 간접적으로 위임(delegate)하는 객체
 
 ### 1.2 텍스트에서 config 의 주요 요소들
 
@@ -238,6 +247,8 @@ print(json.load(open("./tmp_cfg/config.json")))
 
 Config가 JSON으로 정상 직렬화되었는지 검증하는 단계임.
 
+> `num_labels` 는 키로 저장되지 않음.
+> 이는 `id2label`로부터 `len()`함수를 통해 얻어지므로 해당 내용이 json에 저장되지 않음
 
 #### 3단계: 복원 확인
 
