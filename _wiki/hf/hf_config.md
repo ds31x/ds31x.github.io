@@ -203,22 +203,26 @@ class MyTextConfig(PretrainedConfig):
 
 ### 1.3 save/load 실습
 
-```python
-cfg = MyTextConfig(num_labels=3)
-cfg.save_pretrained("./tmp_cfg")
-
-from transformers import AutoConfig
-cfg2 = AutoConfig.from_pretrained("./tmp_cfg", trust_remote_code=True)
-```
-
 #### 실습 목표
 
 Config가
 
 1. 정상적으로 저장되고
 2. 동일 구조로 복원되는지
-3. AutoConfig가 올바른 클래스를 선택하는지
-   확인하는 과정임.
+3. `AutoConfig`가 올바른 클래스를 선택하는지 확인.
+
+#### 0단계: 저장 및 로드하기
+
+```python
+cfg = MyTextConfig(num_labels=3)
+cfg.save_pretrained("./tmp_cfg")
+
+from transformers import AutoConfig
+cfg2 = MyTextConfig.from_pretrained("./tmp_cfg")
+```
+
+* `cfg.save_pretrained("./tmp_cfg")` 에 의해, `./tmp_cfg`에 config.json 과 관련 소스코드가 저장됨.
+* 위의 경우는 정확히 Class를 알고 있고, 해당 클래스가 이미 정의된 경우 사용하는 방법임.
 
 
 #### 1단계: 생성 확인
@@ -392,7 +396,7 @@ class MyImageConfig(PretrainedConfig):
 입력 토큰 생성 방식에서 차이가 있음.
 
 
-## 3. 참고 - AutoClass 에 등록하기
+## 3. 참고 - Auto 클래스에 등록하기 (`AutoConfig`)
 
 
 ### 3.1 로컬 registry 방식
@@ -416,11 +420,14 @@ AutoConfig.register("my_text", MyTextConfig)
 저장과 로딩은 다음과 같음:
 
 ```python
-# 사전 조건: 세션에 클래스 등록
+# 사전 세션에 클래스 등록
 AutoConfig.register("my_text", MyTextConfig)
 
+# config객체 생성및 저장
 cfg = MyTextConfig(num_labels=3)
 cfg.save_pretrained("./tmp_text_cfg")
+
+# config복원
 cfg2 = AutoConfig.from_pretrained("./tmp_text_cfg")
 ```
 
@@ -468,7 +475,8 @@ cfg_remote = AutoConfig.from_pretrained(
 * `trust_remote_code=True`이므로 이경우 복원된 클래스는 정확히 똑같지 않음.
 	* 내용은 똑같지만, 원격코드 로드시 `transformers_modules.<저장된파일위치>.<원래 클래스 타입>`이 됨.
 * `trust_remote_code=True` 을 사용하지 않으면 에러가 발생함.
-    * 단, HF 내부의 dict 객체인 세션에 등록된 경우엔 이를 통해 반환이 이루어짐(로컬 registry의 경우와 같이 똑같은 타입으로)
+    * 단, HF 내부의 dict 객체인 세션에 등록된 경우엔 이를 통해 반환이 이루어짐
+    * 이는 로컬 registry의 경우와 같은 동작에 해당함.
 
 일반적으로는 다음과 같이 HF Hub의 repository로부터 읽어들임:
 
