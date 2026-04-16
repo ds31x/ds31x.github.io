@@ -481,7 +481,7 @@ cfg_remote = AutoConfig.from_pretrained(
 
 일반적으로는 다음과 같이 HF Hub의 repository로부터 읽어들임:
 
-```
+```python
 cfg = AutoConfig.from_pretrained("your-username/my-text-model_repo",
                                   trust_remote_code=True)
 ```
@@ -492,7 +492,7 @@ cfg = AutoConfig.from_pretrained("your-username/my-text-model_repo",
 단, Hub에 해당 계정의 저장소(위의 예에선 `your-username/my-text-model_repo`)에 Config 소스 코드와 json이 업로드가 먼저 되어 있어야함.
 
 다음의 코드를 참고:
-```pyton
+```python
 from huggingface_hub import HfApi
 
 api = HfApi()
