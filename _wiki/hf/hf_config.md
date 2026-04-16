@@ -397,35 +397,119 @@ class MyImageConfig(PretrainedConfig):
 
 ### 3.1 로컬 registry 방식
 
+HF 내부의 dict 객체인 세션 registry에 등록시킴.
+
 ```python
 AutoConfig.register("my_text", MyTextConfig)
 ```
 
-* 현재 세션에서만 유효한 등록임.
+* 첫 번째 인자("my_text")는 반드시 해당 클래스의 model_type 속성값과 일치해야 함
+* 현재 Python 세션에서만 유효한 등록으로 Python 프로세스를 재시작하는 경우 다시 호출하여 등록해야 함.
 * Hub와 무관함 (Hub에 등록하려면 다음을 참고)
+* `config.json`에 아무런 변경도 추가되지 않음.
+    * `auto_map` 필드가 추가되지 않음.
+
+`from_pretrained()`로 로딩할 때, `trust_remote_code=True` 없이도 사용가능함.
+
+> HF의 세션 registry는 `transformers/models/auto/configuration_auto.py` 내부의 `_LazyAutoMapping` 또는 별도의 `dict`로 관리
+
+저장과 로딩은 다음과 같음:
+
+```python
+# 사전 조건: 세션에 클래스 등록
+AutoConfig.register("my_text", MyTextConfig)
+
+cfg = MyTextConfig(num_labels=3)
+cfg.save_pretrained("./tmp_text_cfg")
+cfg2 = AutoConfig.from_pretrained("./tmp_text_cfg")
+```
+
+*  위와 같이 `trust_remote_code=True` 옵션 없이 호출할 경우,
+*  복원된 클래스는 정확히 등록시점의 클래스와 일치함.
+
+`config.json`의 `model_type` 값으로 registry를 조회하여 세션에 등록된 클래스 객체를 그대로 사용
+
+```python
+# 로컬 registry 방식에서는 isinstance()가 정상 동작
+assert isinstance(cfg2, MyTextConfig)   # True
+
+# trust_remote_code=True 방식과의 차이
+# → 동적 재로드 없음 → 클래스 객체 동일 → isinstance() 통과
+```
 
 
 ### 3.2 Hub 배포용 방식
 
-Custom config의 python 소스 코드 파일 마지막에 다음을 추가:
+Custom config의 python 소스 코드 파일 마지막에 다음을 추가하면 됨:
 
 ```python
 MyTextConfig.register_for_auto_class("AutoConfig")
 ```
 
-이렇게 하면 `config.json`에 `auto_map` 필드가 추가됨.
+* 이렇게 하면 `config.json`에 `auto_map` 필드가 추가됨.
+* `auto_map`에 "어느 파일(모듈)의 어느 클래스" 를 기록됨.
+* 단, Jupyter notebook 셀에서 정의된 클래스일 경우 모듈명(`__module__`)이 `"__main__"`이 되어 소스 파일 경로를 특정할 수 없음.
+* 때문에 `auto_map` 필드 생성이 거부됨.
+* 이 때문에 colab이나 jupyter notebook으로 config 클래스를 정의할 때, `%%writefile <저장할 파일 명>`의 magic command를 사용하여 별도의 `.py`파일로 저장시켜야 함.
 
-이 `auto_map`필드는 Hub에서 다음을 통해 config를 로드할 수 있게 해 줌:
-
-```python
-AutoConfig.from_pretrained("repo", trust_remote_code=True)
-```
-
-이는 이미지의 경우도 동일:
+이같이 Auto 클래스에 등록하고 나서 다음과 같이 `.save_pretrained()`로 local path에 저장한 경우, 해당 local path 인자를 통해서  `AutoConfig` 클래스를 통해 로딩이 가능해짐
 
 ```python
-MyImageConfig.register_for_auto_class("AutoConfig")
+MyTextConfig.register_for_auto_class("AutoConfig")
+HUB_TEXT_DIR = "./tmp_hub_text_cfg"
+MyTextConfig(num_labels=2).save_pretrained(HUB_TEXT_DIR)
+# 로컬 경로에서 trust_remote_code=True 로 복원 테스트
+cfg_remote = AutoConfig.from_pretrained(
+    HUB_TEXT_DIR, 
+    trust_remote_code=True,
+)
 ```
+
+* `trust_remote_code=True`이므로 이경우 복원된 클래스는 정확히 똑같지 않음.
+	* 내용은 똑같지만, 원격코드 로드시 `transformers_modules.<저장된파일위치>.<원래 클래스 타입>`이 됨.
+* `trust_remote_code=True` 을 사용하지 않으면 에러가 발생함.
+    * 단, HF 내부의 dict 객체인 세션에 등록된 경우엔 이를 통해 반환이 이루어짐(로컬 registry의 경우와 같이 똑같은 타입으로)
+
+일반적으로는 다음과 같이 HF Hub의 repository로부터 읽어들임:
+
+```
+cfg = AutoConfig.from_pretrained("your-username/my-text-model_repo",
+                                  trust_remote_code=True)
+```
+
+즉, 이 방법은 Hub에 업로드시키고 나서는  
+`auto_map`필드를 내부적으로 사용하여 Hub에서 다음을 통해 config를 로드할 수 있게 해 줌.
+
+단, Hub에 해당 계정의 저장소(위의 예에선 `your-username/my-text-model_repo`)에 Config 소스 코드와 json이 업로드가 먼저 되어 있어야함.
+
+다음의 코드를 참고:
+```pyton
+from huggingface_hub import HfApi
+
+api = HfApi()
+REPO_ID   = "your-username/my-text-model"
+LOCAL_DIR = "./tmp_hub_text_cfg"
+
+# 1) 로컬 저장
+cfg = MyTextConfig(num_labels=3)
+MyTextConfig.register_for_auto_class("AutoConfig")
+cfg.save_pretrained(LOCAL_DIR)
+
+# 2) repo 생성
+api.create_repo(repo_id=REPO_ID, exist_ok=True, private=True)
+
+# 3) 폴더 전체 업로드
+api.upload_folder(
+    folder_path = LOCAL_DIR,
+    repo_id     = REPO_ID,
+    repo_type   = "model",
+    commit_message = "Add MyTextConfig",   # Hub commit 메시지
+)
+print(f"업로드 완료: https://huggingface.co/{REPO_ID}")
+```
+
+이는 이미지의 경우도 동일함.
+
 
 ## 4. 주의
 
