@@ -28,7 +28,7 @@ Sequence data를 다루는데 있어서 가장 강력하게 사용되던 RNN 구
 [scaled dot-product](https://dsaint31.me/mkdocs_site/ML/ch16_RNN/RNN_attention_score/#attention-scores) 기반의 attention을 활용하여, 
 
 * Multi-Head Attention (=[[/review/self_attention]]) 와
-* Masked Multi-Head Attention(self attention 과 cross attetion) 과
-* Point-wise FeedForward,
-* LayerNormalization 등을 통해
+* Masked Multi-Head Attention(self attention) 과 Multi-Head Cross Attetion 과
+* Position-wise Feed Forward Network,
+* Layer Normalization 등을 통해
 * **[Encoder-Decoder](https://dsaint31.me/mkdocs_site/ML/ch16_RNN/RNN_topologies/#many-to-many-encoder-decoder)** 구조의 모델을 구성함.
