@@ -1,3 +1,5 @@
 [
+ "hf/hf_config",
+ "hf/hf_model",
  "hf/hf_trainer"
 ]

@@ -48,6 +48,10 @@
   "size": 1
  },
  {
+  "name": "computer-vision",
+  "size": 2
+ },
+ {
   "name": "config",
   "size": 1
  },
@@ -58,6 +62,10 @@
  {
   "name": "datasets",
   "size": 1
+ },
+ {
+  "name": "deep-learning",
+  "size": 2
  },
  {
   "name": "dl",
@@ -85,7 +93,7 @@
  },
  {
   "name": "hf",
-  "size": 12
+  "size": 11
  },
  {
   "name": "how-to",
@@ -93,7 +101,7 @@
  },
  {
   "name": "huggingface",
-  "size": 2
+  "size": 4
  },
  {
   "name": "image",
@@ -128,6 +136,10 @@
   "size": 2
  },
  {
+  "name": "nlp",
+  "size": 2
+ },
+ {
   "name": "OSI",
   "size": 1
  },
@@ -136,8 +148,16 @@
   "size": 2
  },
  {
+  "name": "pretrained-model",
+  "size": 2
+ },
+ {
   "name": "processor",
   "size": 1
+ },
+ {
+  "name": "pytorch",
+  "size": 2
  },
  {
   "name": "repo",
@@ -173,7 +193,7 @@
  },
  {
   "name": "transformers",
-  "size": 1
+  "size": 3
  },
  {
   "name": "tutorial",

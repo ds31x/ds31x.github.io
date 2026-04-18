@@ -1,10 +1,10 @@
 {
  "type": "wiki",
- "title": "HF-Config",
- "summary": "",
+ "title": "HF PretrainedConfig",
+ "summary": "Hugging Face PretrainedConfig의 구조, 주요 기능, 텍스트/이미지 모델 설정 및 AutoClass 등록 튜토리얼",
  "parent": "hf",
  "url": "/wiki/hf/hf_config",
- "updated": "2026-02-19 12:44:43 +0900",
+ "updated": "2026-04-16 00:00:00 +0900",
  "resource": "31/709D1251394DFBA0DBF7E440BE0A97",
  "children": []
 }

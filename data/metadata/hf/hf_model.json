@@ -1,7 +1,7 @@
 {
  "type": "wiki",
  "title": "HF-Model",
- "summary": "",
+ "summary": "Hugging Face PreTrainedModel의 구조, 기능, 및 활용 튜토리얼 (텍스트/이미지/멀티모달)",
  "parent": "hf",
  "url": "/wiki/hf/hf_model",
  "updated": "2026-02-12 09:45:52 +0900",
