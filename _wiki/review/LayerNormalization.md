@@ -3,7 +3,7 @@ layout  : wiki
 title   : Layer Normalization
 summary : 행(Row) 방향 통계로 PAD 토큰 왜곡을 원천 차단하는 정규화 기법; Transformer의 de facto standard
 date    : 2026-04-18 22:07:58 +0900
-updated : 2026-04-18 23:04:37 +0900
+updated : 2026-04-18 23:16:36 +0900
 tag     : deep-learning normalization transformer nlp batch-normalization pytorch
 resource: F6/7939D8592B448B96D72126B5683A3D
 toc     : true
@@ -46,7 +46,7 @@ $$\text{LN}(\mathbf{x}) = \gamma \odot \frac{\mathbf{x} - \mu}{\sqrt{\sigma^2 + 
 
 ## BN vs. LN
 
-![](https://github.com/user-attachments/assets/5ae2c019-8bec-4feb-a83f-d68c28a804dc){style="display: block; margin: 0 auto; width: 500"}
+![LN](/resource/F6/7939D8592B448B96D72126B5683A3D/5ae2c019-8bec-4feb-a83f-d68c28a804dc.png){style="display: block; margin: 0 auto; width: 500"}
 
 | 구분                |                                  Batch Normalization                                   |         Layer Normalization          |
 |---------------------|:--------------------------------------------------------------------------------------:|:------------------------------------:|

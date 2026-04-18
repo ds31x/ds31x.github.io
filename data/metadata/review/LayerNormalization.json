@@ -4,7 +4,7 @@
  "summary": "행(Row) 방향 통계로 PAD 토큰 왜곡을 원천 차단하는 정규화 기법; Transformer의 de facto standard",
  "parent": "review/2017_Attention_is_all_you_need",
  "url": "/wiki/review/LayerNormalization",
- "updated": "2026-04-18 23:04:37 +0900",
+ "updated": "2026-04-18 23:16:36 +0900",
  "resource": "F6/7939D8592B448B96D72126B5683A3D",
  "children": []
 }
