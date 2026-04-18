@@ -3,12 +3,12 @@ layout  : wiki
 title   : Layer Normalization
 summary : 행(Row) 방향 통계로 PAD 토큰 왜곡을 원천 차단하는 정규화 기법; Transformer의 de facto standard
 date    : 2026-04-18 22:07:58 +0900
-updated : 2026-04-18 22:59:47 +0900
+updated : 2026-04-18 23:04:37 +0900
 tag     : deep-learning normalization transformer nlp batch-normalization pytorch
 resource: F6/7939D8592B448B96D72126B5683A3D
 toc     : true
 public  : true
-parent  : [[/review/Transformer]]
+parent  : [[/review/2017_Attention_is_all_you_need]]
 latex   : true
 ---
 * TOC
