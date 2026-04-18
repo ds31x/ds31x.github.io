@@ -108,10 +108,24 @@ dd["train"].features
 ### 5.1 단일 `Dataset`에서 split 생성
 
 ```python
+# Hugging Face Datasets 라이브러리를 사용하여
+# "imdb" 데이터셋의 train 분할(split)만 로드함.
+# 결과는 하나의 Dataset 객체로 반환됨.
 train_only = load_dataset("imdb", split="train")
+
+# 로드한 train 데이터셋을 다시 학습용(train)과 평가용(test)으로 분할함.
+# test_size=0.2 는 전체 데이터의 20%를 test 쪽으로 분리하겠다는 뜻임.
+# seed=42 는 난수 시드를 고정하여, 매번 같은 방식으로 분할되게 하기 위한 설정임.
+# 결과는 DatasetDict 형태로 반환되며,
+# 일반적으로 "train", "test" 두 개의 키를 가짐.
 dd2 = train_only.train_test_split(test_size=0.2, seed=42)
 
+# 분할된 전체 구조를 출력함.
+# 각 split 이름과 각 split에 포함된 샘플 수, feature 정보 등을 확인할 수 있음.
 print(dd2)
+
+# DatasetDict의 key 목록을 출력함.
+# 보통 dict_keys(['train', 'test']) 와 같이 표시됨.
 print(dd2.keys())
 ```
 
