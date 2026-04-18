@@ -52,7 +52,7 @@ $$\text{LN}(\mathbf{x}) = \gamma \odot \frac{\mathbf{x} - \mu}{\sqrt{\sigma^2 + 
 
 | 구분                |                                  Batch Normalization                                   |         Layer Normalization          |
 |---------------------|:--------------------------------------------------------------------------------------:|:------------------------------------:|
-| 정규화 축           |           배치 축 (열, Column) </br> 좀더 정확히는 feature를 제외한 모든 축            |        feature axis (행, Row)        |
+| 정규화 축           |           배치 축 (열, Column) <br/> 좀더 정확히는 feature를 제외한 모든 축            |        feature axis (행, Row)        |
 | 패딩 토큰 간섭      | **심각한 왜곡 발생**<br/> 무의미한 padding으로 인해 평균과 분산등이 계산이 부정확해짐. |               **없음**               |
 | Regularization 효과 |                               배치 노이즈 기반 (암묵적)                                | 기재하기 어려움<br/> (deterministic) |
 | 주요 적용 도메인    |                                        CV / CNN                                        |          NLP / Transformer           |
