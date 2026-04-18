@@ -3,7 +3,7 @@ layout  : wiki
 title   : Transformer
 summary : Attention is all you need
 date    : 2026-01-22 14:05:18 +0900
-updated : 2026-04-18 22:46:37 +0900
+updated : 2026-04-18 22:59:47 +0900
 tag     : transformer attention multi-head-attention
 resource: 08/A1F11336AE4B348E5C35356B0F88BA
 toc     : true
@@ -31,5 +31,5 @@ Sequence data를 다루는데 있어서 가장 강력하게 사용되던 RNN 구
 <<<<<<< Updated upstream
 * Masked Multi-Head Attention(self attention) 과 Multi-Head Cross Attetion 과
 * Position-wise Feed Forward Network,
-* [[LayerNormalization]] 등을 통해
+* [[/review/LayerNormalization]] 등을 통해
 * **[Encoder-Decoder](https://dsaint31.me/mkdocs_site/ML/ch16_RNN/RNN_topologies/#many-to-many-encoder-decoder)** 구조의 모델을 구성함.
