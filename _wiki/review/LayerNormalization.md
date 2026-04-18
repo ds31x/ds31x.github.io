@@ -19,14 +19,16 @@ latex   : true
 
 ## Overview
 
-- BN(Batch Normalization)이 NLP 도메인에서 겪는 **패딩(Padding) 왜곡 문제** 를 극복하기 위해 Ba et al. (2016)이 제안한 Normalization(정규화) 기법임.
-- Mini-batch 전체가 아니라, **개별 샘플(단일 토큰) 하나의 feature 차원 전체(행, Row)** 방향으로 평균($\mu$)과 분산($\sigma^2$)을 계산함.
+- BN(Batch Normalization)이 NLP 도메인에서 겪는 **패딩(Padding) 왜곡 문제** 를 극복하기 위해
+  Ba et al. (2016)이 제안한 Normalization(정규화) 기법임.
+- Mini-batch 전체가 아니라,
+- **개별 샘플(단일 토큰) 하나의 feature 차원 전체(행, Row)** 방향으로 평균($\mu$)과 분산($\sigma^2$)을 계산함.
 - Transformer 아키텍처에서 사실상 표준(de facto standard) Normalization 기법으로 채택됨.
 
 > **정규화(Normalization)**는 들쭉날쭉한 데이터의 통계적 특성을 평균 0, 분산 1로 일정하게 맞추는 작업임.  
 > BN과 Layer Normalization 은 인공신경망 학습시  
 > 각 layer 를 거치는 데이터들이  
-> Gradient Exploding이나 Vanishing이 일어나지 않으면서 학습을 효과적으로 할 수 있는 
+> Gradient Exploding이나 Vanishing이 일어나지 않으면서 학습을 효과적으로 할 수 있는  
 > 즉, 특성을 보존하면서 안정적인 분포를 가지도록 해 줌.
 
 ## Formula
@@ -46,7 +48,7 @@ $$\text{LN}(\mathbf{x}) = \gamma \odot \frac{\mathbf{x} - \mu}{\sqrt{\sigma^2 + 
 
 ## BN vs. LN
 
-![](https://github.com/user-attachments/assets/5ae2c019-8bec-4feb-a83f-d68c28a804dc){style="display: block; margin: 0 auto; width: 500"}
+![](https://github.com/user-attachments/assets/5ae2c019-8bec-4feb-a83f-d68c28a804dc)
 
 | 구분                |                                  Batch Normalization                                   |         Layer Normalization          |
 |---------------------|:--------------------------------------------------------------------------------------:|:------------------------------------:|
