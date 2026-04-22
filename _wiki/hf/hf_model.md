@@ -328,7 +328,7 @@ tokens = tokenizer("Hello world", return_tensors="pt")
 ```python
 import torch
 import torch.nn as nn
-from transformers import PreTrainedModel, AutoModel
+from transformers import PreTrainedModel, AutoModel, AutoConfig
 from transformers.modeling_outputs import SequenceClassifierOutput
 
 class MyTextForSequenceClassification(PreTrainedModel):
@@ -337,11 +337,22 @@ class MyTextForSequenceClassification(PreTrainedModel):
     def __init__(self, config: MyTextConfig):
         super().__init__(config)
 
-        self.backbone = AutoModel.from_pretrained(config.backbone_name_or_path)
+        # PreTrainedModel.from_pretrained() 는 __init__ 을 항상
+        # meta device context 안에서 호출함.
+        # meta context 안에서 중첩 from_pretrained() 호출은 금지됨.
+        # → torch.empty(1).is_meta 로 복원(meta context)인지/일반 생성인지를 감지해 분기함.
+        if torch.empty(1).is_meta:
+            # 복원 경로: 구조만 생성, 가중치는 from_pretrained() 가 자동 복원
+            # MyTextForSequenceClassification.from_pretrained("./ckpt") 등으로 복원인 경우
+            backbone_cfg  = AutoConfig.from_pretrained(config.backbone_name_or_path)
+            self.backbone = AutoModel.from_config(backbone_cfg)
+        else:
+            # 일반 생성 경로: backbone 사전학습 가중치 포함
+            # MyTextForSequenceClassification(config) 와 같이 생성자로 새로 만든 경우
+            self.backbone = AutoModel.from_pretrained(config.backbone_name_or_path)
+
         hidden_size = self.backbone.config.hidden_size
-
         self.classifier = nn.Linear(hidden_size, config.num_labels)
-
         self.post_init()
 
     def forward(self, input_ids=None, attention_mask=None, labels=None, **kwargs):
@@ -356,14 +367,19 @@ class MyTextForSequenceClassification(PreTrainedModel):
         return SequenceClassifierOutput(loss=loss, logits=logits)
 ```
 
-여기서 중요한 점은 다음과 같음: 
+여기서 중요한 점은 다음과 같음:
 
 * `config_class = MyTextConfig`로 "이 모델은 이 Config를 받는다"를 명시
 * `super().__init__(config)` 호출로 HF 내부 규약 초기화
 * `post_init()` 호출로 HF가 기대하는 초기화 루틴 정리
+* `__init__` 안에서 `torch.empty(1).is_meta` 로 현재 context를 감지해 분기함
+    * `True` (복원 경로): `AutoModel.from_config()` : 구조만 생성, 가중치는 외부 `from_pretrained()` 가 자동 복원
+    * `False` (일반 생성 경로): `AutoModel.from_pretrained()` : backbone 사전학습 가중치 포함
+    * `PreTrainedModel.from_pretrained()` 는 `__init__` 을 항상 meta device context 안에서 호출하므로 이 분기 없이는 `RuntimeError` 발생함
+        * 확실한 건 transformers 4.51.3부터 우회가 안되어서 무조건 `is_meta`를 확인하여 처리해야함.
+        * `low_cpu_mem_usage` 값과 무관하게 항상 `meta device context` 가 적용됨.
 
-Tokenizer는 모델 내부에 포함되지 않음.  
-전처리는 항상 외부에서 수행됨.
+Tokenizer는 모델 내부에 포함되지 않음. 전처리는 항상 외부에서 수행됨.
 
 ## 1.3 텍스트 모델에서 ModelOutput 사용 이유
 
