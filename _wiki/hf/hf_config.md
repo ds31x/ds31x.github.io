@@ -98,30 +98,65 @@ class MyTextConfig(PretrainedConfig):
         num_hidden_layers=4,
         num_attention_heads=4,
         intermediate_size=1024,
-        num_labels=2,
+        num_labels=None,
         id2label=None,
         label2id=None,
-        **kwargs  # 마지막은 variable keyward parameter로 처리. 
+        **kwargs,  # 마지막은 variable keyword parameters로 처리
     ):
-        # 부모 클래스 proxy에서 __init__호출시
-        # **kwargs 로 kwargs를 unpacking하여 넘겨줘야 함.
-        super().__init__(**kwargs)
+        # PretrainedConfig는 num_labels, id2label, label2id를
+        # 서로 연결된 상태로 관리하므로,
+        # 이 3개는 super().__init__()에 직접 넘겨주는 것이 맞음.
+        #
+        # 단순히 super().__init__(**kwargs)만 호출한 뒤
+        # self.num_labels, self.id2label 등을 나중에 직접 대입하면
+        # 저장/복원 시 내부 일관성이 깨질 수 있음.
 
+        # from_pretrained()로 복원할 때 config.json 안에
+        # num_labels가 없고 id2label / label2id만 있는 경우가 있음.
+        # 이때는 label map의 길이로 num_labels를 추론해야
+        # classifier 출력 차원이 잘못 2로 고정되는 문제를 막을 수 있음.
+        if num_labels is None and id2label is not None:
+            num_labels = len(id2label)
+
+        if num_labels is None and label2id is not None:
+            num_labels = len(label2id)
+
+        # 아무 정보도 없을 때만 최종 기본값 사용
+        if num_labels is None:
+            num_labels = 2
+
+        # id2label / label2id가 명시적으로 안 들어온 경우만 자동 생성
+        if id2label is None:
+            id2label = {i: f"LABEL_{i}" for i in range(num_labels)}
+
+        if label2id is None:
+            label2id = {v: k for k, v in id2label.items()}
+
+        # 핵심:
+        # label 관련 상태는 반드시 부모 클래스 초기화 시점에 함께 전달해야 함.
+        # 그래야 save_pretrained() / from_pretrained() 과정에서
+        # Hugging Face 규약대로 일관되게 저장/복원됨.
+        super().__init__(
+            num_labels=num_labels,
+            id2label=id2label,
+            label2id=label2id,
+            **kwargs,
+        )
+
+        # 아래 항목들은 사용자 정의 config 필드이므로
+        # 일반 attribute처럼 저장해도 괜찮음.
         self.vocab_size = vocab_size
         self.hidden_size = hidden_size
         self.num_hidden_layers = num_hidden_layers
         self.num_attention_heads = num_attention_heads
         self.intermediate_size = intermediate_size
-
-        self.num_labels = num_labels
-        self.id2label = id2label or {i: f"LABEL_{i}" for i in range(num_labels)}
-        self.label2id = label2id or {v: k for k, v in self.id2label.items()}
 ```
-* 부모클래스의 proxy object (정확히는 MRO상의 다음클래스의 proxy)를 얻고(`super()`)
 * 이를 통한  `__init__(**kwargs)`를 호출해야 함.
 * keyward parameter `kwargs`에 대해 unpacking하여 호출하는 것에 유의할 것.
 
 >  proxy(대리 객체) 란, 부모 클래스(또는 MRO 상의 다음 클래스)를 직접 참조하지 않고 간접적으로 위임(delegate)하는 객체
+
+주의할 점은 `PretrainedConfig`가 내부적으로 관리하는 속성들, 예를 들어 `num_labels`, `id2label`, `label2id` 같은 값들은 가급적 `super().__init__(...)`을 통해 부모 클래스 초기화 시점에 함께 넘겨주는 것이 좋음.
 
 ### 1.2 텍스트에서 config 의 주요 요소들
 
@@ -301,20 +336,46 @@ class MyImageConfig(PretrainedConfig):
         backbone_name_or_path="google/vit-base-patch16-224",
         image_size=224,
         num_channels=3,
-        num_labels=2,
+        num_labels=None,
         id2label=None,
         label2id=None,
         **kwargs
     ):
-        super().__init__(**kwargs)
+        # PretrainedConfig가 관리하는 label 관련 속성은
+        # super().__init__(...) 시점에 함께 넘겨주는 것이 안전함.
+        #
+        # from_pretrained()로 복원할 때 config.json 안에
+        # num_labels가 없고 id2label / label2id만 있을 수 있으므로
+        # 이 경우에는 label map 길이로 num_labels를 추론함.
+        if num_labels is None and id2label is not None:
+            num_labels = len(id2label)
 
+        if num_labels is None and label2id is not None:
+            num_labels = len(label2id)
+
+        # 아무 정보도 없을 때만 최종 기본값 사용
+        if num_labels is None:
+            num_labels = 2
+
+        # label map이 명시되지 않은 경우만 자동 생성
+        if id2label is None:
+            id2label = {i: f"LABEL_{i}" for i in range(num_labels)}
+
+        if label2id is None:
+            label2id = {v: k for k, v in id2label.items()}
+
+        super().__init__(
+            num_labels=num_labels,
+            id2label=id2label,
+            label2id=label2id,
+            **kwargs,
+        )
+
+        # 아래 값들은 custom config 필드이므로
+        # 일반 attribute처럼 저장하면 됨.
         self.backbone_name_or_path = backbone_name_or_path
         self.image_size = image_size
         self.num_channels = num_channels
-
-        self.num_labels = num_labels
-        self.id2label = id2label or {i: f"LABEL_{i}" for i in range(num_labels)}
-        self.label2id = {v: k for k, v in self.id2label.items()}
 ```
 
 
@@ -525,6 +586,7 @@ print(f"업로드 완료: https://huggingface.co/{REPO_ID}")
 * `__init__`에서 속성 추가시 반드시 JSON 직렬화 가능한 값만 사용할 것.
 * `model_type`은 가급적 변경하지 않는 것이 안전: 처음부터 좋은 이름으로...
 * `num_labels` / `id2label` / `label2id` 는 거의 항상 필요함.
+* 주의할 점은 PretrainedConfig가 관리하는 공통 속성들은 나중에 직접 대입하기보다 super().__init__(...)으로 넘겨 초기화하는 편이 안전함.
 
 보통 `config`는 "구조", `processor`는 "입력 규격" 을 결정.
 
