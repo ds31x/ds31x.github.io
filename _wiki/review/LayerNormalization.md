@@ -28,7 +28,7 @@ latex   : true
 
 [참고: Jimmy Lei Ba, et al. 2016, Layer Normalization](https://arxiv.org/abs/1607.06450)
 
-> **정규화(Normalization)**는 들쭉날쭉한 데이터의 통계적 특성을 **평균 0, 분산 1로 일정하게 맞추는 작업** 임.
+> **정규화(Normalization)** 는 들쭉날쭉한 데이터의 통계적 특성을 **평균 0, 분산 1로 일정하게 맞추는 작업** 임.
 > 
 > BN과 Layer Normalization 은
 > 인공신경망 학습시  
@@ -233,3 +233,5 @@ print(f"  nn.LayerNorm : {out_ln[0, 0].numpy().round(4).tolist()}")
     - 다른 토큰 결과에는 전혀 영향을 주지 않음.
 - **수동 계산과 `nn.LayerNorm` 결과가 일치** :
     - LN 수식의 동작을 코드 레벨에서 직접 검증 가능함.
+ 
+참고: LN은 biased variance를 사용하는데 biased variance에 대해 자세한 건 다음을 참고: [url](https://dsaint31.tistory.com/701#2.%20Sample%20Variance%20and%20Standard%20Deviation-1-3)
