@@ -97,7 +97,7 @@ $$\mu_{i,t}^{\text{LN}} = \frac{1}{d}\sum_{j=1}^{d} x_{i,t,j}$$
 ## 단점: Regularization 효과가 거의 없음
 
 - **BN**: 미니배치마다 달라지는 $\mu_B$, $\sigma_B^2$ = stochastic noise : implicit regularization 효과 제공.
-- **LN**: token 하나에 해당하는 feature vector 내에서 평균과 분산이 구해지는 **deterministic 연산** : BN에서 stochastic noise가 원천적으로 발생하지 않음.
+- **LN**: token 하나에 해당하는 feature vector 내에서 평균과 분산이 구해지는 **deterministic 연산** : BN이 수반하는 stochastic noise가 LN에선 원천적으로 발생하지 않음.
 - 따라서 LN 적용 시 필요에 따라 **Dropout 등 별도의 regularization 기법을 병행** 하는 것이 반드시 필요함.
 
 > LN은 Attention 또는 FFN sub-layer의 전(Pre-LN) 또는 후(Post-LN)에
