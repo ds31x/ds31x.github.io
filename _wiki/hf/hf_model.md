@@ -189,16 +189,7 @@ self.post_init()
 * `self.tie_weights()` (가중치 공유)실행
     * Encoder-Decoder 또는 언어모델 구조에서 입력 embedding 행렬과 출력 lm_head(linear projection)의 가중치를 공유(tying) 함.
         * 언어 모델의 입력과 출력은 동일한 vocabulary를 공유하며, 구조적으로 다음과 같이 대칭을 이룸.
-        * ```[입력 단계]                          [출력 단계]
-token id                             logits (vocab 크기)
-   │                                      ▲
-   ▼                                      │
-Embedding lookup                      lm_head (Linear)
-W_e ∈ ℝ^{V×d}                        W_o ∈ ℝ^{d×V}
-   │                                      │
-   ▼                                      │
-hidden vector (d-dim)  ──► ... ──►  hidden vector (d-dim)
-```
+        * ![](https://github.com/user-attachments/assets/49b7e4dc-9f9e-4c8c-928a-24d891ee2d90)
         *  Tying을 적용하여 입력 embedding 행렬(W_e)와 출력 lm_head 행렬(W_o)의 가중치를 공유하도록 처리: $W_e^\top = W_o$
     * `from_pretrained()` 호출 시에도 tie_weights()가 재실행되므로, 체크포인트 로딩 후에도 tying 상태가 자동 복원 
 * gradient checkpointing 관련 초기화
