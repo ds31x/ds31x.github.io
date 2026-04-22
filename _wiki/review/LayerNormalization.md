@@ -143,6 +143,8 @@ x = torch.tensor([
 # 1. Batch Normalization
 #    - nn.BatchNorm1d 입력 형태: (N, C) 또는 (N, C, L)
 #    - NLP 시퀀스에 적용하려면 (B, T, C) → (B, C, T) permute 필요
+#    - 참고로, BatchNorm1d는 tensor의 채널이 두 번째에 오기를 기대합
+#    - 참고로, BatchNorm2d는 (B, C, H, W) 를 기대 (torch 기준)
 #    - train() 모드: 현재 미니배치 통계(μ_B, σ_B²) 사용
 # ════════════════════════════════════════════════════════════════
 bn = nn.BatchNorm1d(num_features=C, affine=False)  # γ,β 없이 순수 정규화만 확인
@@ -224,6 +226,10 @@ print(f"  nn.LayerNorm : {out_ln[0, 0].numpy().round(4).tolist()}")
   nn.LayerNorm : [-1.4638, -0.8783, -0.2928,  0.2928,  0.8783,  1.4638]
 ```
 
-- **BN의 `<PAD>` 출력이 0이 아님** → 패딩 토큰들이 feature별 $\mu_B$, $\sigma_B^2$을 왜곡했다는 직접적인 증거임.
-- **LN의 `<PAD>` 출력은 정확히 0** → 해당 토큰의 모든 feature가 동일값(0)이므로 $\mu=0$, $\sigma=0$이 되어 $\epsilon$ 처리 후 0으로 수렴함. 다른 토큰 결과에는 전혀 영향을 주지 않음.
-- **수동 계산과 `nn.LayerNorm` 결과가 일치** → LN 수식의 동작을 코드 레벨에서 직접 검증 가능함.
+- **BN의 `<PAD>` 출력이 0이 아님** :
+    - 패딩 토큰들이 feature별 $\mu_B$, $\sigma_B^2$을 왜곡했다는 직접적인 증거임.
+- **LN의 `<PAD>` 출력은 정확히 0** :
+    - 해당 토큰의 모든 feature가 동일값(0)이므로 $\mu=0$, $\sigma=0$이 되어 $\epsilon$ 처리 후 0으로 수렴함.
+    - 다른 토큰 결과에는 전혀 영향을 주지 않음.
+- **수동 계산과 `nn.LayerNorm` 결과가 일치** :
+    - LN 수식의 동작을 코드 레벨에서 직접 검증 가능함.
