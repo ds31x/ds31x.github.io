@@ -19,17 +19,25 @@ latex   : true
 
 ## Overview
 
-- BN(Batch Normalization)이 NLP 도메인에서 겪는 **패딩(Padding) 왜곡 문제** 를 극복하기 위해
+- 기존의 BN(Batch Normalization)이  
+  NLP 도메인에서 겪는 **패딩(Padding) 왜곡 문제** 를 극복하기 위해  
   Ba et al. (2016)이 제안한 Normalization(정규화) 기법임.
 - Mini-batch 전체가 아니라,
 - **개별 샘플(단일 토큰) 하나의 feature 차원 전체(행, Row)** 방향으로 평균($\mu$)과 분산($\sigma^2$)을 계산함.
 - Transformer 아키텍처에서 사실상 표준(de facto standard) Normalization 기법으로 채택됨.
 
-> **정규화(Normalization)**는 들쭉날쭉한 데이터의 통계적 특성을 평균 0, 분산 1로 일정하게 맞추는 작업임.  
-> BN과 Layer Normalization 은 인공신경망 학습시  
+[참고: Jimmy Lei Ba, et al. 2016, Layer Normalization](https://arxiv.org/abs/1607.06450)
+
+> **정규화(Normalization)**는 들쭉날쭉한 데이터의 통계적 특성을 **평균 0, 분산 1로 일정하게 맞추는 작업** 임.
+> 
+> BN과 Layer Normalization 은
+> 인공신경망 학습시  
 > 각 layer 를 거치는 데이터들이  
-> Gradient Exploding이나 Vanishing이 일어나지 않으면서 학습을 효과적으로 할 수 있는  
-> 즉, 특성을 보존하면서 안정적인 분포를 가지도록 해 줌.
+> Gradient Exploding이나 Vanishing이 일어나지 않으면서
+> 학습을 효과적으로 할 수 있는  
+> 즉, **특성을 보존하면서 안정적인 분포** 를 가지도록 해 줌.
+
+[참고: Batch Normalization](https://dsaint31.me/mkdocs_site/ML/ch09/batch_normalization/)
 
 ## Formula
 
@@ -39,12 +47,12 @@ $$\mu = \frac{1}{d}\sum_{j=1}^{d} x_j, \qquad \sigma^2 = \frac{1}{d}\sum_{j=1}^{
 
 $$\text{LN}(\mathbf{x}) = \gamma \odot \frac{\mathbf{x} - \mu}{\sqrt{\sigma^2 + \epsilon}} + \beta$$
 
-- $d$: 정규화 대상 feature 수 (임베딩 차원)
+- $d$: 정규화(Noramlization) 대상 feature 수 (임베딩 차원)
 - $\gamma,\, \beta \in \mathbb{R}^{d}$: 학습 가능한 scale / shift 파라미터
 - $\epsilon$: numerical stability를 위한 작은 상수 (기본값 $10^{-5}$)
 
 
-위의 수식은 training 과정에 해당하며, inference 과정에서는 training 중 구한 Exponential Moving Average로 구한 평균과 분산이 사용됨: 이는 BN과 동일함.
+위의 수식은 training 과정에 해당하며, inference 과정에서는 training 중 구한 [Exponential Moving Average](https://dsaint31.tistory.com/860)로 구한 평균과 분산이 사용됨: [이는 BN과 동일함](https://dsaint31.me/mkdocs_site/ML/ch09/batch_normalization/#test-and-inference).
 
 ## BN vs. LN
 
@@ -54,7 +62,7 @@ $$\text{LN}(\mathbf{x}) = \gamma \odot \frac{\mathbf{x} - \mu}{\sqrt{\sigma^2 + 
 |---------------------|:--------------------------------------------------------------------------------------:|:------------------------------------:|
 | 정규화 축           |           배치 축 (열, Column) <br/> 좀더 정확히는 feature를 제외한 모든 축            |        feature axis (행, Row)        |
 | 패딩 토큰 간섭      | **심각한 왜곡 발생**<br/> 무의미한 padding으로 인해 평균과 분산등이 계산이 부정확해짐. |               **없음**               |
-| Regularization 효과 |                               배치 노이즈 기반 (암묵적)                                | 기재하기 어려움<br/> (deterministic) |
+| Regularization 효과 |                               배치 노이즈 기반 (암묵적)                                | 기대하기 어려움<br/> (deterministic) |
 | 주요 적용 도메인    |                                        CV / CNN                                        |          NLP / Transformer           |
 | 배치 크기 의존성    |                        있음 <br/>(작은 크기의 batch 시 불안정)                         |                 없음                 |
 
@@ -89,11 +97,14 @@ $$\mu_{i,t}^{\text{LN}} = \frac{1}{d}\sum_{j=1}^{d} x_{i,t,j}$$
 ## 단점: Regularization 효과가 거의 없음
 
 - **BN**: 미니배치마다 달라지는 $\mu_B$, $\sigma_B^2$ = stochastic noise : implicit regularization 효과 제공.
-- **LN**: token 하나에 해당하는 feature vector 내에서 평균과 분산이 구해지는 deterministic 연산 : BN에서 random한 선택에 의한 노이즈가 원천적으로 발생하지 않음.
-- 따라서 LN 적용 시 필요에 따라 Dropout 등 별도의 regularization 기법을 병행하는 것이 반드시 필요함.
+- **LN**: token 하나에 해당하는 feature vector 내에서 평균과 분산이 구해지는 **deterministic 연산** : BN에서 stochastic noise가 원천적으로 발생하지 않음.
+- 따라서 LN 적용 시 필요에 따라 **Dropout 등 별도의 regularization 기법을 병행** 하는 것이 반드시 필요함.
 
 > LN은 Attention 또는 FFN sub-layer의 전(Pre-LN) 또는 후(Post-LN)에
 > 적용되어, 해당 sub-layer 입출력 tensor의 분포를 안정화시키는 역할을 수행함.
+
+* BERT 계열의 경우, Post-LN을 사용 (initialization과 learning ratio에 민감하나 보다 높은 표현력이 가능하다고 알려짐.)
+* GPT 계열 및 ViT 의 경우, Pre-LN을 사용 (보다 안정적이 학습이 가능하여 Layer를 보다 깊게 쌓는데 유리하다고 알려짐.)
 
 ---
 
