@@ -56,8 +56,6 @@ $$\text{LN}(\mathbf{x}) = \gamma \odot \frac{\mathbf{x} - \mu}{\sqrt{\sigma^2 + 
 
 ## BN vs. LN
 
-![LN](/resource/F6/7939D8592B448B96D72126B5683A3D/5ae2c019-8bec-4feb-a83f-d68c28a804dc.png)
-
 | 구분                |                                  Batch Normalization                                   |         Layer Normalization          |
 |---------------------|:--------------------------------------------------------------------------------------:|:------------------------------------:|
 | 정규화 축           |           배치 축 (열, Column) <br/> 좀더 정확히는 feature를 제외한 모든 축            |        feature axis (행, Row)        |
