@@ -580,29 +580,49 @@ Score = freq(pair) / (freq(first) × freq(second))
 
 ### 8.3 Unigram LM (2018)
 
+Unigram LM은 가능한 여러 subword 분해 후보에 확률을 부여하고, 전체 확률이 가장 높은 조합을 선택하는 확률 기반 subword tokenization 방식임.
+
 * Kudo (2018)
 * SentencePiece의 기본 알고리즘
 
 **BPE와의 근본적 차이:**
 
 * BPE: 병합(merge) 방식 - 작은 단위에서 시작하여 확장
+    * Bottom-Up 방식 
 * Unigram LM: 가지치기(pruning) 방식 - 큰 단위에서 시작하여 축소
+    * Top-Down 방식 
 
 **동작 원리:**
 
-* 큰 vocabulary로 시작
-* 각 subword의 확률 계산
-* 확률이 낮은 subword 제거
-* 원하는 vocabulary 크기까지 반복
+* corpus에서 추출한 많은 수의 candidate subword 집합으로 시작
+* 각 subword의 발생 확률을 추정
+* corpus likelihood 기여도가 낮은 subword를 제거(pruning)
+* 목표 vocabulary 크기에 도달할 때까지 반복
+
+참고로 Unigram LM 에서의  초기 vocabulary는 보통
+
+* 문자(character)
+* 자주 등장하는 문자 n-gram
+* substring candidate
+
+등으로 구성된 비교적 큰 후보 집합을 의미함하.
+
+Unigram LM의 핵심은 “처음부터 확정된 vocabulary”가 아니라 과잉 생성된 candidate set에서 불필요한 token을 제거해가는 방식이라는 점임.
 
 **장점:**
 
 * 여러 가능한 분해 중 확률이 가장 높은 것 선택
 * Tokenization의 다양성 허용: 확률이 높은 것을 고르는게 아닌 확률에 따른 sampling 처리가 가능.
 	* 이같은 sampling으로 처리시 같은 Text도 다르게 tokenization이 될 수 잇음.
-	* Tokenizer를 훈련시킬 때, training regularization으로 사용함.
+	* Tokenizer를 훈련시킬 때, training regularization으로 사용함. 
 * T5, ALBERT 등에서 사용
 
+> 공백 기준 단어 분리가 어려운 언어에서는 Unigram LM이 BPE보다 segmentation flexibility 측면에서 유리한 경우가 많음.
+>
+> * 이때문에 공백으로 단어 분리가 어려운 영어 외의 언어(한국어,일본어,중국어 등)에서 사용됨.
+> 
+> 다만 실제 성능은 언어, corpus, vocabulary size, downstream task에 따라 달라짐.
+> BPE는 단순성, 속도, 안정성 면에서 여전히 강점이 큼.
 
 ### 8.4 SentencePiece (2018)
 
@@ -625,6 +645,9 @@ Score = freq(pair) / (freq(first) × freq(second))
 - 알고리즘: BPE 또는 Unigram LM
 - 도구/프레임워크: SentencePiece
 
+> SKTBrain의 KoBERT가 Unigram LM기반의 SentencePiece를 사용함.  
+> MarianMT도 주로 SentencePiece를 사용.
+
 ### 8.5 BBPE (Byte-level BPE, 2019)
 
 * Radford et al. (2019)
@@ -644,13 +667,18 @@ Score = freq(pair) / (freq(first) × freq(second))
 
 ## 9. 비교
 
-| 알고리즘  | 기본 단위   | 방식 | 결정성  | 주요 사용 모델 | 
-| :---:     | :---:       | :---:| :---:   | :---:          |
-| BPE       | Character   | 빈도 기반 병합 | 결정적 | - |
-| WordPiece | CharacterLM | likelihood     | 결정적 | BERT, DistilBERT |
-| BBPE      | Byte        | 빈도 기반 병합 | 결정적 | GPT-2, GPT-3, GPT-4 |
-| UnigramLM | Character/Byte | 확률 기반 pruning | 확률적 | T5, ALBERT, LLaMa | 
+BPE, WordPiece, Unigram LM, Byte-level BPE는 tokenization algorithm임.
 
+이와 달리, SentencePiece는 whitespace pre-tokenization 없이 raw text를 직접 처리할 수 있는 tokenizer toolkit/framework임.
+
+Tokenization algorithm 비교는 다음과 같음.
+
+| 알고리즘 | 기본 단위 | 방식 | 결정성 | 주요 사용 모델 |
+| :---: | :---: | :---: | :---: | :---: |
+| BPE | Character | 빈도 기반 병합 | 결정적 | GPT 초기 계열, 일부 MT |
+| WordPiece | Character | likelihood 기반 병합 | 결정적 | BERT, DistilBERT, mBERT |
+| Unigram LM | Character / Subword candidate | 확률 기반 pruning | 일반적으로 결정적. <br/> sampling 사용 시 확률적 | T5, ALBERT, XLNet |
+| Byte-level BPE | Byte | 빈도 기반 병합 | 결정적 | GPT-2, RoBERTa, GPT-3 계열 |
 
 ## 10. References
 
