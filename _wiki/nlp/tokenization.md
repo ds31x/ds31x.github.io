@@ -549,6 +549,8 @@ Byte Pair Encoding (BPE)는 빈도 기반의 데이터 압축 알고리즘으로
 
 ### 8.2 WordPiece (2016)
 
+BPE와 유사한 방식이나 빈도(frequency)가 아닌 Language model likelihood 를 기준으로 병합하는 방식으로 Google BERT에서 사용됨.
+
 * Wu et al. (2016)
 * Google에서 개발
 * BERT, DistilBERT 등에서 사용
@@ -561,16 +563,17 @@ Byte Pair Encoding (BPE)는 빈도 기반의 데이터 압축 알고리즘으로
 
 **병합 기준:**
 
-가장 높은 점수(아래 참조)의 쌍을 병합
+가장 높은 score를 갖는 symbol pair를 병합함.
 
-```
-Score = freq(pair) / (freq(first) × freq(second))
-```
+\[
+\text{score}(a,b) = \frac{\text{freq}(a,b)}{\text{freq}(a) \times \text{freq}(b)}
+\]
 
-* 분자는 BPE와 유사.
-* 분모를 통해 개선.
+- 분자 \(\text{freq}(a,b)\)는 두 symbol이 함께 등장한 빈도를 의미함.
+- 분모 \(\text{freq}(a) \times \text{freq}(b)\)는 각 symbol이 개별적으로 얼마나 자주 등장하는지를 보정함.
+- 따라서 단순히 자주 등장하는 pair가 아니라, **각 symbol의 개별 빈도에 비해 함께 등장하는 경향이 강한 pair**가 우선적으로 병합됨.
 
-가장 높은 점수의 쌍을 병합
+WordPiece는 단순 빈도만 보지 않고, 두 symbol의 개별 빈도를 분모로 보정하여 “개별적으로 흔한 symbol끼리 우연히 자주 붙은 경우”보다 “서로 결합성이 강한 pair”를 우선 병합함.
 
 **특징:**
 
@@ -617,7 +620,8 @@ Unigram LM의 핵심은 “처음부터 확정된 vocabulary”가 아니라 과
 	* Tokenizer를 훈련시킬 때, training regularization으로 사용함. 
 * T5, ALBERT 등에서 사용
 
-> 공백 기준 단어 분리가 어려운 언어에서는 Unigram LM이 BPE보다 segmentation flexibility 측면에서 유리한 경우가 많음.
+> 공백 기준 단어 분리가 어려운 언어에서는 Unigram LM이 BPE보다 segmentation flexibility 측면에서 유리한 경우가 많음.  
+> (하지만 최신 LLM 등에선 Byte-level BPE가 좀 더 우세한 편인 듯)
 >
 > * 이때문에 공백으로 단어 분리가 어려운 영어 외의 언어(한국어,일본어,중국어 등)에서 사용됨.
 > 
