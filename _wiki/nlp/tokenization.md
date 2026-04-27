@@ -621,7 +621,7 @@ Unigram LM의 핵심은 “처음부터 확정된 vocabulary”가 아니라 과
 * T5, ALBERT 등에서 사용
 
 > 공백 기준 단어 분리가 어려운 언어에서는 Unigram LM이 BPE보다 segmentation flexibility 측면에서 유리한 경우가 많음.  
-> (하지만 최신 LLM 등에선 Byte-level BPE가 좀 더 우세한 편인 듯)
+> (하지만 최신 LLM 등에선 Byte-level BPE가 좀 더 우세한 편인 듯하나 Google/T5/Gemma 계열이나 번역 모델에서는 SentencePiece도 여전히 널리 사용됨.)
 >
 > * 이때문에 공백으로 단어 분리가 어려운 영어 외의 언어(한국어,일본어,중국어 등)에서 사용됨.
 > 
