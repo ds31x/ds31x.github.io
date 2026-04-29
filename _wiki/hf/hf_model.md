@@ -322,7 +322,7 @@ tokens = tokenizer("Hello world", return_tensors="pt")
 * Tokenizer는 **입력 규격 정의 및 변환 수행 객체** 이고
 * Model은 "계산 객체"임.
 
-> 보다 자세한 건 다음을 참고: [[hf_processor]]
+> 보다 자세한 건 다음을 참고: [[/hf/hf_processor]]
 
 ## 1.2 최소 예제: 커스텀 텍스트 분류 모델
 
