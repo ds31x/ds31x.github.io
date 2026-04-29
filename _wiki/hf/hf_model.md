@@ -3,7 +3,7 @@ layout  : wiki
 title   : HF-Model
 summary :  Hugging Face PreTrainedModel의 구조, 기능, 및 활용 튜토리얼 (텍스트/이미지/멀티모달)
 date    : 2026-02-11 23:54:23 +0900
-updated : 2026-02-12 09:45:52 +0900
+updated : 2026-04-30 04:43:35 +0900
 tag     : huggingface transformers pytorch deep-learning nlp computer-vision pretrained-model
 resource: 96/D94CEC777847F2A858477156E4D7BD
 toc     : true
@@ -189,7 +189,7 @@ self.post_init()
 * `self.tie_weights()` (가중치 공유)실행
     * Encoder-Decoder 또는 언어모델 구조에서 입력 embedding 행렬과 출력 lm_head(linear projection)의 가중치를 공유(tying) 함.
         * 언어 모델의 입력과 출력은 동일한 vocabulary를 공유하며, 구조적으로 다음과 같이 대칭을 이룸.
-        * ![](https://github.com/user-attachments/assets/49b7e4dc-9f9e-4c8c-928a-24d891ee2d90)
+        * ![](/resource/96/D94CEC777847F2A858477156E4D7BD/49b7e4dc-9f9e-4c8c-928a-24d891ee2d90.png)
         *  Tying을 적용하여 입력 embedding 행렬(W_e)와 출력 lm_head 행렬(W_o)의 가중치를 공유하도록 처리: $W_e^\top = W_o$
     * `from_pretrained()` 호출 시에도 tie_weights()가 재실행되므로, 체크포인트 로딩 후에도 tying 상태가 자동 복원 
 * gradient checkpointing 관련 초기화
@@ -302,7 +302,7 @@ Tokenizer는 텍스트에서의 전처리 객체임.
 * 문자열을 subword token 단위로 분해
 * 각 token을 vocabulary index로 매핑
 * special token 들 추가 삽입
-* padding 수행
+* padding 수행 (`padding=True` 일 경우 기본적으로 가장 긴 sequence에 맞추어)
 * attention mask 생성
 * segment id 생성(필요 시)
 
@@ -313,6 +313,8 @@ tokens = tokenizer("Hello world", return_tensors="pt")
 ```
 
 * 이때 반환되는 것은 이미 모델이 처리 가능한 텐서 구조임.
+    * `"input_ids"` 키의 value가 바로 token 을 vocabulary index로 변환한 결과 tensor임.
+    * `"token_type_ids"` 와 `"attention_mask"` 등의 키와 해당 tensor도 반환됨 (BertTokenizer의 경우)
 * Model은 문자열을 직접 처리하지 않음.
 
 즉,
@@ -320,6 +322,7 @@ tokens = tokenizer("Hello world", return_tensors="pt")
 * Tokenizer는 **입력 규격 정의 및 변환 수행 객체** 이고
 * Model은 "계산 객체"임.
 
+> 보다 자세한 건 다음을 참고: [[hf_processor]]
 
 ## 1.2 최소 예제: 커스텀 텍스트 분류 모델
 
