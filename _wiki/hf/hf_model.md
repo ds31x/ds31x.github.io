@@ -149,8 +149,8 @@ HF의 `PreTrainedModel` 객체에서 `.from_pretrained()` 메서드는
     * 체크포인트에는 없으나 현재 모델 구조에는 존재하는 키(예: fine-tuning 시 새로 추가된 레이어의 가중치)를 경고(warning)와 함께 random initialization으로 처리
     * 클래스 속성 `_keys_to_ignore_on_load_missing`을 통해 특정 키를 무시 목록으로 등록할 수 있음.   
 * unexpected keys 처리
-    * 체크포인트에는 존재하나 현재 모델 구조에는 없는 키를 경고와 함께 무시(skip)함
-    * 클래스 속성 `_keys_to_ignore_on_load_unexpected`을 통해 예상된 불일치를 사전에 등록할 수 있음.
+    * **체크포인트에는 존재하나 현재 모델 구조에는 없는 키 (`UNEXPPECTED`로 지칭됨)** 를 경고와 함께 무시(skip)함
+    * ~~클래스 속성 `_keys_to_ignore_on_load_unexpected`을 통해 예상된 불일치를 사전에 등록할 수 있음.~~
 * sharded weight 로딩
     * 대형 모델의 가중치를 여러 파일로 분할 저장한 sharded checkpoint(`model.safetensors.index.json` 또는 `pytorch_model.bin.index.json`)를
     * 자동으로 인식하고 순차적으로 로드 
