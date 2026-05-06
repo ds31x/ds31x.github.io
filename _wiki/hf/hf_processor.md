@@ -623,14 +623,56 @@ outputs = model(**inputs)
 
 ### 5.1 언제 Custom ImageProcessor가 필요한가
 
-다음 중 하나라도 해당되면 Custom ImageProcessor 가  필요.
+`transformers`에는 `CLIPImageProcessor`,
+`ViTImageProcessor` 등
+다양한 Built-in ImageProcessor가
+이미 제공되고 있음.
+이들만으로 충분하지 않은 경우,
+즉 **기존 processor가 지원하지 않는
+전처리가 필요한 경우**에
+Custom ImageProcessor를 구현함.
 
-* **모델 입력 규격이 표준 전처리와 다름**:
-    * 예) 6채널, 특수한 normalize, 의료영상 전용 windowing 등이 필요한 경우.
-* 학습/추론 재현성을 위해 “전처리 설정”을 모델과 함께 배포해야 함
-	* ImageProcessor는 `save_pretrained()` 시 
-	* 설정을 `preprocessor_config.json`로 저장
-* Hub 배포 시 `AutoImageProcessor.from_pretrained()`로 자동 로드 기능 추가.
+구체적으로 다음과 같은 경우가 해당됨:
+
+* **비표준 입력 형식**:
+  6-channel image, 의료영상 전용
+  windowing, modality-specific
+  preprocessing 등
+  기존 processor의 파이프라인으로
+  처리할 수 없는 입력을 다뤄야 하는 경우.
+* **고유한 전처리 파이프라인**:
+  모델 구조에 맞는 특수한
+  normalization, cropping, tiling 등
+  기존 processor에 없는
+  전처리 로직이 필요한 경우.
+* **새로운 모델 아키텍처 구현**:
+  처음부터 모델을 설계하면서,
+  대응하는 기존 processor가
+  존재하지 않는 경우.
+
+Custom ImageProcessor를 구현하면
+다음과 같은 이점을 자동으로 얻게 됨:
+
+* **전처리 재현성**:
+  전처리 로직과 설정값이
+  하나의 클래스에 캡슐화되므로,
+  학습과 추론에서
+  동일한 입력 변환을 보장할 수 있음.
+* **모델과 함께 저장/배포**:
+  `save_pretrained()`를 통해
+  전처리 설정이
+  `preprocessor_config.json`에 저장되고,
+  `AutoImageProcessor.from_pretrained()`로
+  다시 로드할 수 있음.
+
+즉 Custom ImageProcessor는
+단순히 resize나 normalization을
+수행하기 위한 객체가 아니라,
+**기존 processor로 커버되지 않는
+전처리 로직**을
+HuggingFace 생태계의
+저장/로드/Auto 클래스 체계 안에서
+관리하기 위한 구성요소임.
 
 ### 5.2 Custom ImageProcessor 최소 구현 골격
 
