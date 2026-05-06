@@ -93,8 +93,9 @@ print(batch["input_ids"].shape)
 ```
 
 Tokenizer는 
-* 텍스트를 토큰화하고 
-* 토큰의 열을 숫자 텐서로 바꾸는 
+* 텍스트를 토큰화하고 (token sequence)
+* 각 token을 vocabulary에 정의된 정수 ID로 바꾸고, (token ID sequence)
+* 이를 tensor 형태로 반환하는 (tensor)
 * "모델 입력 생성기" 임
 
 ### 1.2 저장/로드: tokenizer 아티팩트
@@ -110,7 +111,7 @@ Tokenizer를 저장하면 출력 디렉토리에 tokenizer를 다시 복원하�
 	* `vocab.txt`
  	* `vocab.json`
 	* `merges.txt`
-	* SentencePiece `.model`
+	* SentencePiece `.model` (vocabulary와 segmentation model 정보를 담은 파일 확장자)
 
 다만 실제 생성 파일은 tokenizer 종류에 따라 다름.  
 
@@ -157,7 +158,7 @@ print(f"{tok2.vocab_size = }")
 > * tokenizer 호출 시점이 아니라
 > * collator 단계에서 동적 padding(dynamic padding)을 수행할 수도 있음.
 
-특수 토큰을 추가하고 그 token을 model 입력에 사용할 예정이라면 다음의 처리를 수행:
+Special Token 을 추가하고 그 token을 model 입력에 사용할 예정이라면 다음의 처리를 수행:
 
 ```Python
 from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -209,7 +210,7 @@ batch = proc(images=[img], return_tensors="pt")
 print(batch.keys())
 # dict_keys(['pixel_values'])  (모델에 따라 추가 key가 있을 수 있음)
 print(batch["pixel_values"].shape)
-# (1, 3, 224, 224) 같은 형태
+# (1, 3, 224, 224) 같은 shape의 tensor객체임.
 ```
 
 ImageProcessor는 
@@ -235,7 +236,7 @@ print(type(proc2))
 * `datasets.map()`과 결합할 때는 `pixel_values`를 **numpy로 변환** 하여 
 * 저장 안정성을 확보하는 방식이 많이 사용함.
 * 이는 일부 환경에서 torch 텐서 저장 을 사용하는 경우보다 보다 높은 호환성을 보이기 때문임.
-* 일부 모델은 `use_fast=True` 옵션으로 빠른 이미지 프로세서를 지원
+* 일부 모델은 `use_fast=True` 옵션으로 보다 빠른 ImageProcessor 를 지원
 
 
 참고: [[/hf_dataset_dict/dd_map]]
@@ -244,9 +245,9 @@ print(type(proc2))
 
 ## 3. Multi-modal - Processor 사용법 (CLIP 등)
 
-Tokenizer 와 ImageProcessor 가 둘 다 필요한 경우 사용되는 보다 추상화된 클래스.
+Tokenizer 와 ImageProcessor 가 둘 다 필요한 경우에 사용되는 **보다 추상화된 클래스**.
 
-CLIP (Contrastive Language-Image Pretraining) 등의 multi-modal model 에서 주로 사용됨.
+CLIP (Contrastive Language-Image Pretraining) 등과 같은 multi-modal model 에서 주로 사용됨.
 
 ### 3.1 AutoProcessor의 목적
 
@@ -258,11 +259,11 @@ CLIP (Contrastive Language-Image Pretraining) 등의 multi-modal model 에서 �
 
 ### 3.2 CLIP처럼 “통합 Processor”가 있는 경우
 
-CLIP은 텍스트 인코더 + 이미지 인코더를 함께 쓰는 대표적 Multi-modal 모델:
+CLIP은 "텍스트 인코더" + "이미지 인코더" 를 함께 쓰는 대표적 Multi-modal 모델:
 
 * Contrastive: 서로 다른 쌍을 구분하도록 학습하는 대조 학습 방식
 * Language–Image: 텍스트와 이미지를 함께 다루는 멀티모달 구조
-* Pretraining: 대규모 데이터로 사전학습을 수행하는 단계
+* Pretraining: 대규모 데이터로 사전학습을 수행한 모델임.
 
 ```python
 from transformers import AutoProcessor
@@ -280,10 +281,17 @@ print(out.keys())
 # input_ids, attention_mask, pixel_values ... 같은 형태
 ```
 
-Processor가 제공되는 경우, 이를 사용하면 간단히 처리가능하지만 모델에서 어떤 Tokenizer와 ImageProcessor를 요구하는지 등을 파악하는 것이 좋음. 특정한 조합이 요구되면서 Auto로 Processor가 제공되지 않는 경우엔 이를 조합하여 만들어야하며, 커스터마이징을 위해서도 내부 구성을 파악하고 있는 것이 좋음.
+**주의사항**
+
+* Processor가 제공되는 경우, 이를 사용하면 간단히 처리가능함.
+* 하지만 모델에서 어떤 Tokenizer와 ImageProcessor를 요구하는지 등을 파악해보기 위해 Processor의 I/O 및 설정(`.json`)을 살펴보는 것이 좋음.
+* 해당 모델의 커스터마이징을 위해서도 내부 구성을 파악하고 있는 것이 좋음.
+* 만약, 특정한 조합이 요구되면서 Auto로 Processor가 제공되지 않는 경우라면, 이를 조합하여 만들어야 함.
+
+다음의 확인이 필요함:
 
 * `processor_config.json` 을 살펴볼 것.
-* 흔히 `processor.tokenizer` 및 `processor.image_processor` 등의 속성으로 지원됨.
+* 흔히 `processor.tokenizer` 및 `processor.image_processor` 등의 속성으로 실제 전처리 컴포넌트가 지원됨.
 
 > Processor는 내부적으로 Tokenizer + ImageProcessor를 감싸는 래퍼(wrapper) 객체
 
@@ -294,9 +302,9 @@ Processor가 제공되는 경우, 이를 사용하면 간단히 처리가능하�
 ### 4.1 입력 전처리 객체(Processor)와 모델(Model)은 pair임.
 
 * 모델이 기대하는 입력 키는 모델 아키텍처에 따라 다름.
-  * 텍스트: `input_ids`, `attention_mask`, ...
-  * 비전: `pixel_values`
-  * Multi-modal: 둘 다 필요
+    * 텍스트: `input_ids`, `attention_mask`, ...
+    * 비전: `pixel_values`
+    * Multi-modal: 둘 다 필요
 * 따라서 "모델 - 전처리기"는 사실상 pair(짝)으로 움직여야 안전.
 * Config가 "구조", processor가 "입력 규격"을 결정: Config는 모델 내부에 attribute로 존재하는 경우가 일반적.
 
@@ -308,28 +316,28 @@ Processor가 제공되는 경우, 이를 사용하면 간단히 처리가능하�
 
 주로 메타데이터가 저장된 JSON 파일의 특정 필드에 의존:
 
-| Auto 클래스           | 1차 기준 파일                                                            | 실제 판단 키                         |
+| Auto 클래스           | 1차 기준 파일                                                            | 실제 사용되는 Key             |
 | :----------------: | :-----------------------------------------------------------------: | :-----------------------------: |
-| AutoConfig         | config.json                                                         | model_type / auto_map           |
-| AutoModel          | config.json                                                         | model_type / auto_map           |
-| AutoTokenizer      | config.json (+ tokenizer_config.json 보조)                            | model_type / auto_map           |
-| AutoImageProcessor | preprocessor_config.json (없으면 config.json fallback)                 | image_processor_type / auto_map |
-| AutoProcessor      | processor_config.json (없으면 preprocessor_config.json 또는 config.json) | processor_class / auto_map      |
+| `AutoConfig`         | `config.json`                                                         | `model_type` / `auto_map`   |
+| `AutoModel`          | `config.json`                                                         | `model_type` / `auto_map`   |
+| `AutoTokenizer`      | `config.json`<br/>(+ `tokenizer_config.json` 보조)                            | `model_type` / `auto_map` |
+| `AutoImageProcessor` | `preprocessor_config.json`<br/>(없으면 `config.json` fallback)                 | `image_processor_type` / `auto_map` |
+| `AutoProcessor`      | `processor_config.json`<br/>(없으면 `preprocessor_config.json` 또는 `config.json`) | `processor_class` / `auto_map` |
 
-* AutoImageProcessor는 config.json을 fallback으로 사용할 수 있음
-* AutoProcessor는 processor_config.json이 없으면 다른 config를 참고함
-* AutoTokenizer는 tokenizer_config.json도 보조로 참고함.
+* `AutoImageProcessor`는 `config.json`을 fallback으로 사용할 수 있음
+* `AutoProcessor`는 `processor_config.json`이 없으면 다른 config를 참고함
+* `AutoTokenizer`는 `tokenizer_config.json`도 보조로 참고함.
 
 주의할 점은 다음과 같음:
 * HF의 transformers에서 기본적으로 제공하는 표준 모델들은 `model_type`의 값에 따라 내장된 매핑으로 클래스를 고름.
-* Custom Class 들의 경우, `auto_map` 필드를 참고함.
+* **Custom Class 들의 경우, `auto_map` 필드를 참고함.**
 
 `BERT` 의 경우 `model_type`가 `bert`로 되어 있으며, 이를 통해 다음이 결정됨:
 
-* AutoConfig → BertConfig
-* AutoModel → BertModel
-* AutoTokenizer → BertTokenizer / BertTokenizerFast
-* AutoModelForMaskedLM → BertForMaskedLM
+* `AutoConfig` → `BertConfig`
+* `AutoModel` → `BertModel`
+* `AutoTokenizer` → `BertTokenizer` / `BertTokenizerFast`
+* `AutoModelForMaskedLM` → `BertForMaskedLM`
 
 Custom model 의 경우 `trsut_remote_code=True` 옵션을 사용하며, `config.json`에 다음의 정보가 있음:
 
@@ -350,7 +358,7 @@ Custom model 의 경우 `trsut_remote_code=True` 옵션을 사용하며, `config
 * `forward(...)`에서 특정 입력 key(키)를 기대
 * 실무적으로는 
 	* AutoModel을 로드한 뒤, 
-	* 해당 모델에 맞는 AutoTokenizer/AutoImageProcessor/AutoProcessor를 같이 로드 하는 패턴이 일반적.
+	* 해당 모델에 맞는 `AutoTokenizer`/`AutoImageProcessor`/`AutoProcessor`를 같이 로드 하는 패턴이 일반적.
 
 ---
 
@@ -667,18 +675,18 @@ print((out["pixel_values"] - out2["pixel_values"]).abs().max().item())
 
 ### 5.4 (선택) AutoImageProcessor로 로드되게 "배포"하는 관점
 
-AutoClass는 
+**AutoClass** 는 
 
 * 저장된 메타데이터 를 보고 
 * 적절한 클래스를 고름.
 
-커스텀 클래스까지 자동으로 로드하려면 보통 다음 중 하나를 이용함:
+Custom Class 까지 자동으로 로드하려면 보통 다음 중 하나를 이용함:
 
-* (권장) 커스텀 클래스에 대해 AutoClass 연동 정보를 저장(예: `register_for_auto_class` / `auto_map` 계열)
+* (권장) Custom Class 에 대해 AutoClass 연동 정보를 저장(예: `register_for_auto_class` / `auto_map` 계열)
 * 또는 패키지 형태로 배포하여 import 가능하게 만든 뒤 AutoClass에 등록
 * 이 경우 지정한 디렉토리에 JSON 파일 외에도 관련 모듈 python 파일도 저장됨.
 
-AutoClass 확장 개념 자체는 다음등과 동일한 방식을 채택하고 있음: 
+AutoClass 확장 개념 자체는 다음 등과 동일한 방식을 채택하고 있음: 
 
 * `AutoConfig.register` 
 * `AutoModel.register`
