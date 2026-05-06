@@ -143,22 +143,23 @@ print(f"{tok2.vocab_size = }")
 
 * `padding=True`는 배치 텐서화를 위해 사실상 필수 (batch내에 가장 긴 샘플에 맞추어짐.)
 * `truncation=True`는 최대 길이 초과 시 안전장치 (model의 최대 context length 제한을 넘지 않도록)
-* 특수 토큰 추가 후에는 `save_pretrained()`로 결과를 고정해두는 습관이 필요함.
-	* 특수 토큰 추가는 단순 문자열 추가가 아니라
+* 특수 토큰(Special Token) 추가 후에는 `save_pretrained()`로 결과를 고정해두는 습관이 필요함.
+	* Special Token 추가는 단순 문자열 추가 가 아니라
 	* token string과 token ID의 mapping, special token map, added vocabulary를 바꾸는 작업임.
 	* 때문에 저장하지 않으면 나중에 tokenizer를 다시 로드했을 때
 	* 추가한 token이 사라지거나 ID mapping이 달라져, 학습 시점과 추론 시점의 입력 표현이 달라질 수 있음.
 	* 새 token을 추가한 뒤 model의 embedding matrix 의 row의 크기를 거기에 맞추어줘야 함: `model.resize_token_embeddings(len(tok))`
 
-> 길이가 다른 여러 문장을 하나의 batch tensor로 만들려면 padding이 필요함.
-> `padding=True` 또는 `padding="longest"`를 사용하면
+> 길이가 다른 여러 문장을 하나의 batch tensor로 만들려면 padding이 필요함.  
+> `padding=True` 또는 `padding="longest"`를 사용하면  
 > batch 안에서 가장 긴 sequence 길이에 맞추어 padding이 적용됨.
-> 단, `DataCollatorWithPadding`을 사용하는 경우에는
+> 
+> 단, `DataCollatorWithPadding`을 사용하는 경우에는  
 >
 > * tokenizer 호출 시점이 아니라
 > * collator 단계에서 동적 padding(dynamic padding)을 수행할 수도 있음.
 
-Special Token 을 추가하고 그 token을 model 입력에 사용할 예정이라면 다음의 처리를 수행:
+Special Token 을 추가하고 그 token을 model 입력에 사용할 예정이라면 다음과 같은 처리를 수행:
 
 ```Python
 from transformers import AutoTokenizer, AutoModelForCausalLM
