@@ -634,145 +634,49 @@ outputs = model(**inputs)
 
 ### 5.2 Custom ImageProcessor 최소 구현 골격
 
-핵심 포인트:
+Custom `ImageProcessor`를 만들기 위해 알아야 할 핵심은 딱 두 가지임:
 
-* **`ImageProcessingMixin`**이 `save_pretrained()` / `from_pretrained()` 등 "저장-로드" 루틴을 제공
-* 이를 상속하여 해당 기능을 그대로 사용하면 됨.
-* 실질적인 전처리 로직은 `__call__`(또는 `preprocess`)에서 구현.
-* **주의할 점은 `to_dict()`로 직렬화 가능한 속성(attributes)**만 남겨야 `preprocessor_config.json`이 안정적으로 생성된다는 점임.
+1. **`ImageProcessingMixin`** 을 상속하면, `save_pretrained()` / `from_pretrained()` 등의 **저장-로드** 기능을 그대로 사용할 수 있음.
+2. 때문에 실질적인 **전처리 로직** 을 `__call__` 메서드에서만 구현하면 됨.
 
-아래 예제는 “Resize + Normalize + CHW 텐서”를 만들어 `pixel_values`를 반환.
+#### 직렬화(Serialization)가 자동으로 되려면?
 
-```python
-# custom_image_processor.py
-from __future__ import annotations
+`ImageProcessingMixin`은
 
-from dataclasses import dataclass, asdict
-from typing import Any, Dict, List, Optional, Union
+* `save_pretrained()` 호출 시 내부적으로
+* `to_dict()`를 사용하여
+* `preprocessor_config.json`을 생성함.
 
-import numpy as np
-import torch
-from PIL import Image
+이 기본 `to_dict()`는 **`self.__dict__`** 기반으로 동작하므로, `__init__`에서 `self.xxx = value` 형태로 속성을 저장하기만 하면 **`to_dict()`를 오버라이드할 필요가 없음.**
 
-from transformers.image_processing_base import ImageProcessingMixin
-from transformers.utils.generic import TensorType
+단, 저장되는 속성의 타입이 다음과 같이 **JSON 직렬화가 가능한 단순 타입**이어야 함:
 
-@dataclass
-class SimpleVisionProcessorConfig:
-    size: int = 224
-    do_resize: bool = True
-    do_normalize: bool = True
-    image_mean: List[float] = None
-    image_std: List[float] = None
+* `int`, `float`, `bool`, `str`
+* `list`, `dict` (내부 원소도 단순 타입이어야 함)
 
-    def __post_init__(self):
-        if self.image_mean is None:
-            self.image_mean = [0.485, 0.456, 0.406]
-        if self.image_std is None:
-            self.image_std = [0.229, 0.224, 0.225]
+이처럼 `__init__`에서 `self.xxx = value`로 **인스턴스의 루트 레벨에 직접 저장**하는 속성들을 **flat attributes** 라고 부름.  
 
+**flat attributes**의 경우, 
 
-class SimpleVisionImageProcessor(ImageProcessingMixin):
-    """
-    Custom ImageProcessor (ImageProcessingMixin 기반)
-    - images -> pixel_values (B, C, H, W)
-    - save_pretrained() => preprocessor_config.json 생성
-    """
+* 별도의 중첩 객체(nested object)를 거치지 않고
+* 바로 `self.__dict__`에 들어가기 때문에,
+* 기본 `to_dict()`가 그대로 직렬화 가능함.
 
-    model_input_names = ["pixel_values"]  # 관례적으로 지정
+> **주의:**
+> `self.cfg = SomeConfig(...)` 처럼
+> 별도 객체에 속성을 묶어두면,
+> 기본 `to_dict()`가 그 내부까지
+> 풀어주지 못하므로
+> 직접 `to_dict()`를 오버라이드해야 함.  
+> 따라서 **flat attributes 방식**
+> (= `self.xxx`로 직접 저장)이
+> 가장 간단하고 권장되는 방법임.
 
-    def __init__(self, **kwargs):
-        # kwargs는 JSON 직렬화 대상이 되므로 단순 타입 위주로 유지
-        self.cfg = SimpleVisionProcessorConfig(**kwargs)
+#### 최소 구현 예제
 
-    # ---------
-    # 직렬화
-    # ---------
-    def to_dict(self) -> Dict[str, Any]:
-        # ImageProcessingMixin이 save_pretrained()할 때 to_dict()를 사용. 
-        d = asdict(self.cfg)
-        d["processor_class"] = self.__class__.__name__  # 관례적 메타
-        return d
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any], **kwargs) -> "SimpleVisionImageProcessor":
-        # from_pretrained() 경로에서 내부적으로 사용될 수 있어 제공해두면 안전.
-        data = dict(data)
-        data.pop("processor_class", None)
-        data.update(kwargs)
-        return cls(**data)
-
-    # ---------
-    # 전처리
-    # ---------
-    def _ensure_pil(self, img: Union[Image.Image, np.ndarray]) -> Image.Image:
-        if isinstance(img, Image.Image):
-            return img
-        if isinstance(img, np.ndarray):
-            if img.ndim == 2:
-                # grayscale -> RGB (단순 예시)
-                img = np.stack([img, img, img], axis=-1)
-            return Image.fromarray(img.astype(np.uint8))
-        raise TypeError(f"Unsupported image type: {type(img)}")
-
-    def _resize(self, img: Image.Image) -> Image.Image:
-        if not self.cfg.do_resize:
-            return img
-        return img.resize((self.cfg.size, self.cfg.size), resample=Image.BILINEAR)
-
-    def _to_chw_float(self, img: Image.Image) -> np.ndarray:
-        x = np.array(img).astype(np.float32) / 255.0  # HWC, 0..1
-        x = np.transpose(x, (2, 0, 1))                # CHW
-        return x
-
-    def _normalize(self, x: np.ndarray) -> np.ndarray:
-        if not self.cfg.do_normalize:
-            return x
-        mean = np.array(self.cfg.image_mean, dtype=np.float32)[:, None, None]
-        std = np.array(self.cfg.image_std, dtype=np.float32)[:, None, None]
-        return (x - mean) / std
-
-    def __call__(
-        self,
-        images: Union[Image.Image, np.ndarray, List[Union[Image.Image, np.ndarray]]],
-        return_tensors: Optional[Union[str, TensorType]] = "pt",
-        **kwargs,
-    ) -> Dict[str, Any]:
-        if not isinstance(images, list):
-            images = [images]
-
-        batch = []
-        for im in images:
-            im = self._ensure_pil(im).convert("RGB")
-            im = self._resize(im)
-            x = self._to_chw_float(im)
-            x = self._normalize(x)
-            batch.append(x)
-
-        pixel_values = np.stack(batch, axis=0)  # (B,C,H,W)
-
-        if return_tensors in ("pt", TensorType.PYTORCH):
-            pixel_values = torch.from_numpy(pixel_values)
-        elif return_tensors in ("np", TensorType.NUMPY):
-            pass
-        else:
-            raise ValueError(f"return_tensors not supported: {return_tensors}")
-
-        return {"pixel_values": pixel_values}
-```
-
-* `preprocessor_config.json`에는 위 `to_dict()` 결과가 저장
-
-
-위에서 serialization의 `to_dict`와 `from_dict`를 오버라이드 했지만,
-* `__init__`에서 `self.xxx = ...` 형태로 값을 직접 저장하는 방식을 사용하고
-* 해당 properties 가 JSON 직렬화가 가능한 경우(`int`, `float`, `bool`, `str`, `list`, `dict`) 에는
-* 굳이 `to_dict`를 오버라이드 안해도, 부모 클래스의 기본 `to_dict()`가 `self.__dict__`기반으로 직렬화를 수행함.
-
-앞서의 예에선 root property에 직렬화할 속성들이 놓이는 대신에,  
-하나의 root property `cfg` 가 존재하고
-해당 `cfg` 안에 실제 필요한 속성들이 놓이는 구조였기 때문에  
-명시적으로 `to_dict` 를 구현해 주는 것이 좋으나, 다음과 같이 구현하면 굳이 필요하지 않음.
+아래 예제는
+* **"Resize → Normalize → CHW Tensor"** 를 수행하여
+* `pixel_values`를 반환하는 Custom `ImageProcessor`임.
 
 ```python
 # image_processing_simple_vision.py
@@ -785,11 +689,25 @@ import numpy as np
 import torch
 from PIL import Image
 
-from transformers.image_processing_base import ImageProcessingMixin
+from transformers.image_processing_base import (
+    ImageProcessingMixin,
+)
 from transformers.utils.generic import TensorType
 
 
-class SimpleVisionImageProcessor(ImageProcessingMixin):
+class SimpleVisionImageProcessor(
+    ImageProcessingMixin,
+):
+    """
+    Custom ImageProcessor
+    (ImageProcessingMixin 기반)
+    - images → pixel_values (B, C, H, W)
+    - save_pretrained() 호출 시
+      preprocessor_config.json 자동 생성
+    """
+
+    # HuggingFace 관례:
+    # 모델에 전달할 입력 key 이름을 지정
     model_input_names = ["pixel_values"]
 
     def __init__(
@@ -801,97 +719,240 @@ class SimpleVisionImageProcessor(ImageProcessingMixin):
         image_std: list[float] | None = None,
         **kwargs: Any,
     ):
+        # ── 반드시 super().__init__() 호출 ──
+        # ImageProcessingMixin 내부 초기화 +
+        # kwargs 처리를 위해 필수임.
         super().__init__(**kwargs)
 
-        # flat attributes only -> 기본 to_dict/save_pretrained로 충분
+        # ── flat attributes로 저장 ──
+        # self.xxx 형태 + JSON 직렬화 가능 타입
+        #   부모의 기본 to_dict()가
+        #   알아서 직렬화해줌
         self.size = int(size)
         self.do_resize = bool(do_resize)
         self.do_normalize = bool(do_normalize)
-        self.image_mean = image_mean if image_mean is not None else [0.485, 0.456, 0.406]
-        self.image_std = image_std if image_std is not None else [0.229, 0.224, 0.225]
+        self.image_mean = (
+            image_mean
+            if image_mean is not None
+            else [0.485, 0.456, 0.406]
+        )
+        self.image_std = (
+            image_std
+            if image_std is not None
+            else [0.229, 0.224, 0.225]
+        )
 
-    def _ensure_pil(self, img: Image.Image | np.ndarray) -> Image.Image:
+    # ────────────────────────────
+    # 내부 헬퍼 메서드
+    # ────────────────────────────
+
+    def _ensure_pil(
+        self,
+        img: Image.Image | np.ndarray,
+    ) -> Image.Image:
+        """입력을 PIL Image로 변환."""
         if isinstance(img, Image.Image):
             return img
         if isinstance(img, np.ndarray):
             arr = img
-            if arr.ndim == 2:
-                arr = np.stack([arr, arr, arr], axis=-1)
+            if arr.ndim == 2:  # grayscale→3ch
+                arr = np.stack(
+                    [arr, arr, arr], axis=-1,
+                )
             if arr.dtype != np.uint8:
-                arr = np.clip(arr, 0, 255).astype(np.uint8)
+                arr = (
+                    np.clip(arr, 0, 255)
+                    .astype(np.uint8)
+                )
             return Image.fromarray(arr)
-        raise TypeError(f"Unsupported image type: {type(img)}")
+        raise TypeError(
+            f"Unsupported image type:"
+            f" {type(img)}"
+        )
 
-    def _resize(self, img: Image.Image) -> Image.Image:
+    def _resize(
+        self, img: Image.Image,
+    ) -> Image.Image:
+        """self.size x self.size 로 리사이즈."""
         if not self.do_resize:
             return img
-        return img.resize((self.size, self.size), resample=Image.BILINEAR)
+        return img.resize(
+            (self.size, self.size),
+            resample=Image.BILINEAR,
+        )
 
-    def _to_chw_float01(self, img: Image.Image) -> np.ndarray:
-        x = np.asarray(img, dtype=np.float32) / 255.0  # HWC
-        return np.transpose(x, (2, 0, 1))              # CHW
+    def _to_chw_float01(
+        self, img: Image.Image,
+    ) -> np.ndarray:
+        """PIL Image → (C,H,W) float32 [0,1]."""
+        x = (  # HWC, [0,1]
+            np.asarray(img, dtype=np.float32)
+            / 255.0
+        )
+        return np.transpose(x, (2, 0, 1))  # CHW
 
-    def _normalize(self, x: np.ndarray) -> np.ndarray:
+    def _normalize(
+        self, x: np.ndarray,
+    ) -> np.ndarray:
+        """ImageNet mean/std 기반 정규화."""
         if not self.do_normalize:
             return x
-        mean = np.asarray(self.image_mean, dtype=np.float32)[:, None, None]
-        std = np.asarray(self.image_std, dtype=np.float32)[:, None, None]
+        mean = np.asarray(
+            self.image_mean, dtype=np.float32,
+        )[:, None, None]
+        std = np.asarray(
+            self.image_std, dtype=np.float32,
+        )[:, None, None]
         return (x - mean) / std
+
+    # ────────────────────────────
+    # __call__: 실제 전처리 진입점
+    # ────────────────────────────
 
     def __call__(
         self,
-        images: Image.Image | np.ndarray | list[Image.Image | np.ndarray],
-        return_tensors: str | TensorType | None = "pt",
+        images: (
+            Image.Image
+            | np.ndarray
+            | list[Image.Image | np.ndarray]
+        ),
+        return_tensors: (
+            str | TensorType | None
+        ) = "pt",
         **kwargs: Any,
     ) -> dict[str, torch.Tensor | np.ndarray]:
+        """
+        Parameters
+        ----------
+        images :
+            단일 이미지 또는 이미지 리스트
+        return_tensors :
+            "pt" (PyTorch) 또는 "np" (NumPy)
+
+        Returns
+        -------
+        dict with "pixel_values":
+            shape (B, C, H, W)
+        """
         if not isinstance(images, list):
             images = [images]
 
         batch = []
         for im in images:
-            im = self._ensure_pil(im).convert("RGB")
+            im = (
+                self._ensure_pil(im)
+                .convert("RGB")
+            )
             im = self._resize(im)
             x = self._to_chw_float01(im)
             x = self._normalize(x)
             batch.append(x)
 
-        pixel_values = np.stack(batch, axis=0).astype(np.float32)
+        pixel_values = (
+            np.stack(batch, axis=0)
+            .astype(np.float32)
+        )
 
-        if return_tensors in ("pt", TensorType.PYTORCH):
-            pixel_values = torch.from_numpy(pixel_values)
-        elif return_tensors in ("np", TensorType.NUMPY) or return_tensors is None:
+        if return_tensors in (
+            "pt", TensorType.PYTORCH,
+        ):
+            pixel_values = (
+                torch.from_numpy(pixel_values)
+            )
+        elif (
+            return_tensors
+            in ("np", TensorType.NUMPY)
+            or return_tensors is None
+        ):
             pass
         else:
-            raise ValueError(f"Unsupported return_tensors: {return_tensors}")
+            raise ValueError(
+                "Unsupported return_tensors:"
+                f" {return_tensors}"
+            )
 
         return {"pixel_values": pixel_values}
 
 
-# AutoImageProcessor 매핑 정보(auto_map)를 저장되도록 등록
-SimpleVisionImageProcessor.register_for_auto_class("AutoImageProcessor")
+# ── AutoImageProcessor 등록 ──
+# 이 한 줄을 추가하면,
+# config.json의 auto_map에
+# "AutoImageProcessor" 매핑이 자동 포함됨.
+SimpleVisionImageProcessor \
+    .register_for_auto_class(
+        "AutoImageProcessor",
+    )
 ```
 
-위의 코드를 다음과 같이 저장하면 이후 Auto 클래스를 통해 로드가 가능해짐: 
+#### 핵심 정리
+
+| 항목 | 설명 |
+|---|---|
+| 상속 대상 | `ImageProcessingMixin` |
+| `super().__init__` | 필수. 내부 초기화용 |
+| 속성 저장 방식 | `self.xxx = value` |
+| `to_dict()` 오버라이드 | 불필요 (flat attrs) |
+| 전처리 로직 위치 | `__call__` 메서드 |
+| `model_input_names` | `["pixel_values"]` |
+| Auto 등록 | `register_for_auto_class()` |
 
 
-아래와 같이 `.save_pretrained()` 수행시 지정된 디렉토리에 `preprocessor_config.json`이 저장됨.
+#### 저장 및 Auto 클래스를 통한 로드
+
+위 코드를 `image_processing_simple_vision.py`로 저장한 뒤,  
+다음과 같이 `.save_pretrained()`를 수행하면  
+지정 디렉토리에 `preprocessor_config.json`이 생성됨:
 
 ```python
-from image_processing_simple_vision import SimpleVisionImageProcessor
+from image_processing_simple_vision import (
+    SimpleVisionImageProcessor,
+)
 
-
-# 1) 인스턴스 생성
+# 1. 인스턴스 생성
 proc = SimpleVisionImageProcessor(size=224)
 
-# 2) save_pretrained()가 preprocessor_config.json을 자동 생성
-proc.save_pretrained("./simple_vision_proc")
+# 2. save_pretrained()가
+#    preprocessor_config.json을 자동 생성
+proc.save_pretrained(
+    "./simple_vision_proc",
+)
 ```
-* `auto_map` 항목이 저장 json파일에 생김
-* 앞서의 예제와 달리, `.register_for_auto_class()`를 통해 auto 클래스가 찾을 수 있게 됨.
-* `.save_pretrained()`의 호출시 관련 processor 에 해당하는 python파일도 해당 디렉토리에 같이 놓임.
-* 이를 통해 `trust_remote_code=True` 등을 사용할 수 있고, import정보를 config를 통해 얻은 후 실제 모듈을 import가능해짐.
 
-이후 저장된 `preprocessor_config.json`  이 있는 디렉토리를 지정하여 로드 가능:
+이때 `.save_pretrained()`가 수행하는 작업은 다음 두 가지임:
+
+1. **`preprocessor_config.json` 생성**:
+	* `to_dict()` 결과가 JSON으로 저장됨.
+	* 앞서 `.register_for_auto_class()`를 호출해두었기 때문에,
+    * `auto_map` 항목이 함께 기록됨.
+2. **Python 소스 파일 복사**:
+	* 해당 processor 클래스가 정의된 `.py` 파일이
+	* 지정 디렉토리에 같이 복사됨.
+
+저장된 `preprocessor_config.json`의 내용은 다음과 같음:
+
+```json
+{
+  "auto_map": {
+    "AutoImageProcessor":
+      "image_processing_simple_vision"
+      ".SimpleVisionImageProcessor"
+  },
+  "do_normalize": true,
+  "do_resize": true,
+  "image_mean": [0.485, 0.456, 0.406],
+  "image_std": [0.229, 0.224, 0.225],
+  "image_processor_type":
+    "SimpleVisionImageProcessor",
+  "size": 224
+}
+```
+
+`auto_map`에 모듈 경로와 클래스명이 기록되어 있으므로,  
+`AutoImageProcessor`가 이 정보를 읽어 해당 `.py` 파일을 import할 수 있게 됨.
+
+이후 저장된 디렉토리를 지정하여
+* `AutoImageProcessor.from_pretrained()`로
+* 로드할 수 있음:
 
 ```python
 from transformers import AutoImageProcessor
@@ -900,34 +961,107 @@ p = AutoImageProcessor.from_pretrained(
     "./simple_vision_proc",
     trust_remote_code=True,
 )
-
 print(type(p), p.size)
+# <class '...SimpleVisionImageProcessor'> 224
 ```
 
+> **참고: `trust_remote_code=True`가 필요한 이유**
+> 
+> `auto_map`이 가리키는 `.py` 파일은
+> 
+> * `transformers` 라이브러리에 내장된 코드가 아니라,
+> * 사용자가 작성한 커스텀 코드임.
+> 
+> 따라서 보안상의 이유로 이 옵션을 명시적으로 켜줘야 해당 코드의 import가 허용됨.
 
 ### 5.3 저장/로드 실습: `preprocessor_config.json` round-trip
 
+5.2에서 구현한
+SimpleVisionImageProcessor를 실제로
+저장하고 다시 로드하여,
+전처리 결과가 동일한지 확인하는
+round-trip 실습임.
+
+#### 1단계: 저장하기
+
 ```python
-from custom_image_processor import SimpleVisionImageProcessor
+from image_processing_simple_vision import (
+    SimpleVisionImageProcessor,
+)
 from PIL import Image
 
-p = SimpleVisionImageProcessor(size=224, do_resize=True, do_normalize=True)
+# 인스턴스 생성
+p = SimpleVisionImageProcessor(
+    size=224,
+    do_resize=True,
+    do_normalize=True,
+)
 
+# 전처리 수행
 img = Image.open("cat.jpg").convert("RGB")
 out = p(img, return_tensors="pt")
-print(out["pixel_values"].shape)  # (1, 3, 224, 224)
+print(out["pixel_values"].shape)
+# torch.Size([1, 3, 224, 224])
 
+# 저장
 save_dir = "./tmp_custom_imgproc"
-p.save_pretrained(save_dir)  # preprocessor_config.json 생성 
+p.save_pretrained(save_dir)
+```
+`save_pretrained()` 수행 후 `save_dir` 내부에는 다음 파일들이 생성됨:
 
-p2 = SimpleVisionImageProcessor.from_pretrained(save_dir)
+* `preprocessor_config.json`: `to_dict()` 결과가 JSON으로 저장됨. `auto_map` 항목이 포함되어 있음.
+* `image_processing_simple_vision.py`: `register_for_auto_class()`를 호출해두었기 때문에, processor 클래스가 정의된 `.py` 파일이 자동으로 복사됨.
+
+#### 2단계: 로드 및 검증
+
+로드 방법은 두 가지가 있음:
+
+**(A) 클래스 직접 지정 로드**
+
+```python
+p2 = SimpleVisionImageProcessor \
+    .from_pretrained(save_dir)
+```
+* 이미 해당 클래스를 import한 상태이므로,
+* `trust_remote_code` 없이 `from_pretrained()`만으로 로드 가능함.
+
+**(B) AutoImageProcessor 로드**
+
+```python
+from transformers import AutoImageProcessor
+
+p2 = AutoImageProcessor.from_pretrained(
+    save_dir,
+    trust_remote_code=True,
+)
+```
+* `auto_map` 정보를 통해 클래스명과 모듈 경로를 자동으로 찾아 import함.
+* 해당 `.py` 파일이 `save_dir`에 함께 저장되어 있으므로, 별도로 모듈을 import하지 않아도 됨.
+* 단, 사용자 코드를 동적으로 `import`하는 것이므로 `trust_remote_code=True`가 필수임.
+
+**3단계: round-trip 검증**
+
+어떤 방식으로 로드했든,
+동일 이미지에 대해 전처리 결과가
+완전히 일치하는지 확인:
+
+```python
 out2 = p2(img, return_tensors="pt")
-print((out["pixel_values"] - out2["pixel_values"]).abs().max().item())
+
+diff = (
+    out["pixel_values"]
+    - out2["pixel_values"]
+).abs().max().item()
+
+print(diff)  # 0.0
 ```
 
-* `SimpleVisionImageProcessor`는 `custom_image_processor.py` 모듈이 module search path에 있는 경우만 로딩이 가능.
-* auto_map 필드를 만들어 주지 않았기 때문임.
+* `diff`가 `0.0`이면 저장/로드 round-trip이 정상적으로 동작한 것임.
 
+> `register_for_auto_class()`를 호출한 상태에서 `save_pretrained()`를 수행하면, `auto_map` + `.py` 파일이 함께 저장됨.
+>  따라서 (A) 직접 클래스 지정, (B) AutoImageProcessor 두 가지 방식 모두로 로드가 가능함.
+> 만약 `register_for_auto_class()`를 호출하지 않았다면, `auto_map` 필드와 `.py` 파일 복사가 이루어지지 않으므로,
+> (A) 방식만 사용 가능하고 해당 모듈이 Python의 module search path에 있어야 함.
 
 ### 5.4 Custom `AutoImageProcessor`를 AutoClass로 로드되게 만드는 방법
 
