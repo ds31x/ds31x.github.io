@@ -74,22 +74,74 @@ Processor는 "새로운 기능"이라기보다,
 ### 1.1 예제: AutoTokenizer
 
 ```python
+# %%
 from transformers import AutoTokenizer
 
-tok = AutoTokenizer.from_pretrained("bert-base-uncased")
-# tokenizer.json, tokenizer_config.json, vocab.txt 등이
-# ~/.cache/huggingface 밑에 서브디렉토리에 캐싱됨.
+# 1. 모델에 맞는 토크나이저 로드
+# AutoTokenizer는 모델 이름만 주어지면 적절한 토크나이저 클래스를 자동으로 선택함.
+# (예: bert-base-uncased의 경우 BertTokenizer를 로드)
+# 로드된 데이터(tokenizer.json, vocab.txt 등)는 ~/.cache/huggingface에 캐싱됨.
+# use_fast=True: Rust로 구현된 Fast Tokenizer를 명시적으로 사용하도록 설정
+tok = AutoTokenizer.from_pretrained("bert-base-uncased", use_fast=True)
 
+# Fast Tokenizer 사용 여부 확인
+print(f"Using Fast Tokenizer: {tok.is_fast}")
+
+# %%
+# 2. 텍스트를 입력 데이터(Batch)로 변환
+# - padding: 배치 내의 문장 길이를 가장 긴 문장에 맞춤
+# - truncation: 모델의 최대 입력 길이를 초과하는 경우 자름
+# - return_tensors: "pt"(PyTorch), "np"(NumPy), "tf"(TensorFlow) 중 선택
 batch = tok(
     ["hello world", "this is a test"],
-    padding=True,         # 배치 내 길이 맞춤
-    truncation=True,      # 너무 길면 자름
-    return_tensors="pt",  # "pt" | "np" | "tf"
+    padding=True,
+    truncation=True,
+    return_tensors="pt",
 )
 
+# batch는 dict 형태이며 보통 다음 키를 포함함:
+# - input_ids: 토큰의 정수 인덱스
+# - attention_mask: 실제 토큰(1)과 패딩 토큰(0)을 구분
+# - token_type_ids: (BERT 등에서) 문장 구분용 (A 문장인지 B 문장인지)
 print(batch.keys())
-# dict_keys(['input_ids', 'token_type_ids', 'attention_mask'])  (모델에 따라 다름)
-print(batch["input_ids"].shape)
+print("Input IDs shape:", batch["input_ids"].shape)
+
+# %%
+# 3. 디코딩 (Token ID -> String)
+# [tok.decode vs tok.batch_decode]
+# - tok.decode(): 단일 시퀀스(1D 리스트/텐서)를 문자열 하나로 변환.
+#   예: tok.decode(batch["input_ids"][0])
+# - tok.batch_decode(): 시퀀스 목록(2D 리스트/텐서)을 문자열 리스트로 변환.
+#   배치 단위 데이터를 처리할 때 적합함.
+
+# skip_special_tokens=True 옵션을 사용하면 [CLS], [SEP], [PAD] 등을 제거하고 원문만 확인 가능
+decoded = tok.batch_decode(batch["input_ids"], skip_special_tokens=False)
+print("Decoded strings (with special tokens):", decoded)
+
+decoded_clean = tok.batch_decode(batch["input_ids"], skip_special_tokens=True)
+print("Decoded strings (clean):", decoded_clean)
+```
+
+* `padding=True`는 배치 텐서화를 위해 사실상 필수 (batch내에 가장 긴 샘플에 맞추어짐.)
+* `truncation=True`는 최대 길이 초과 시 안전장치 (model의 최대 context length 제한을 넘지 않도록)
+
+출력은 다음과 같음:
+```
+KeysView(
+{'input_ids': tensor([
+				[ 101, 7592, 2088,  102,    0,    0],
+				[ 101, 2023, 2003, 1037, 3231,  102]
+			]),
+ 'token_type_ids': tensor([
+				[0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0]
+			]),
+ 'attention_mask': tensor([
+				[1, 1, 1, 1, 0, 0],
+				[1, 1, 1, 1, 1, 1]
+			])
+})
+Input IDs shape: torch.Size([2, 6])
 ```
 
 Tokenizer는 
@@ -136,19 +188,35 @@ tok.save_pretrained(save_dir)
 tok2 = AutoTokenizer.from_pretrained(save_dir)
 
 print(f"{type(tok2)      = }")
+print(f"{tok2.is_fast    = }")
 print(f"{tok2.vocab_size = }")
+```
+결과는 다음과 같음:
+
+```Text
+type(tok2)      = <class 'transformers.models.bert.tokenization_bert.BertTokenizer'>
+tok2.is_fast    = True
+tok2.vocab_size = 30522
+```
+
+Fast Tokenzier의 경우 `./tmp_tok` 디렉토리에 다음의 2개의 파일이 생성됨:
+
+```Text
+❯ tree tmp_tok
+tmp_tok
+├── tokenizer_config.json
+└── tokenizer.json
 ```
 
 ### 1.3 주의사항
 
-* `padding=True`는 배치 텐서화를 위해 사실상 필수 (batch내에 가장 긴 샘플에 맞추어짐.)
-* `truncation=True`는 최대 길이 초과 시 안전장치 (model의 최대 context length 제한을 넘지 않도록)
-* 특수 토큰(Special Token) 추가 후에는 `save_pretrained()`로 결과를 고정해두는 습관이 필요함.
-	* Special Token 추가는 단순 문자열 추가 가 아니라
-	* token string과 token ID의 mapping, special token map, added vocabulary를 바꾸는 작업임.
-	* 때문에 저장하지 않으면 나중에 tokenizer를 다시 로드했을 때
-	* 추가한 token이 사라지거나 ID mapping이 달라져, 학습 시점과 추론 시점의 입력 표현이 달라질 수 있음.
-	* 새 token을 추가한 뒤 model의 embedding matrix 의 row의 크기를 거기에 맞추어줘야 함: `model.resize_token_embeddings(len(tok))`
+특수 토큰(Special Token) 추가 후에는 `save_pretrained()`로 결과를 고정해두는 습관이 필요함.
+
+* Special Token 추가는 단순 문자열 추가 가 아니라
+* token string과 token ID의 mapping, special token map, added vocabulary를 바꾸는 작업임.
+* 때문에 저장하지 않으면 나중에 tokenizer를 다시 로드했을 때
+* 추가한 token이 사라지거나 ID mapping이 달라져, 학습 시점과 추론 시점의 입력 표현이 달라질 수 있음.
+* 새 token을 추가한 뒤 model의 embedding matrix 의 row의 크기를 거기에 맞추어줘야 함: `model.resize_token_embeddings(len(tok))`
 
 > 길이가 다른 여러 문장을 하나의 batch tensor로 만들려면 padding이 필요함.  
 > `padding=True` 또는 `padding="longest"`를 사용하면  
@@ -161,10 +229,11 @@ print(f"{tok2.vocab_size = }")
 
 Special Token 을 추가하고 그 token을 model 입력에 사용할 예정이라면 다음과 같은 처리를 수행:
 
-```Python
+```python
+# %%
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-base_model = "..."
+base_model = "bert-base-uncased"
 
 tok = AutoTokenizer.from_pretrained(base_model)
 model = AutoModelForCausalLM.from_pretrained(base_model)
@@ -174,9 +243,11 @@ num_added = tok.add_special_tokens({
     "additional_special_tokens": ["<image>", "<bbox>", "<ocr>"]
 })
 
-# 2. 새 token이 실제로 추가된 경우에만 embedding 크기 조정
+# 2. 새 token이 실제로 추가된 경우에만 embedding matrix 크기 조정
 if num_added > 0:
+    print(f"Before resizing: {model.get_input_embeddings().weight.shape[0]}")
     model.resize_token_embeddings(len(tok))
+    print(f"After resizing: {model.get_input_embeddings().weight.shape[0]}")
 
 # 3. 학습 전 초기 상태 저장
 save_dir = "./model_with_added_tokens_init"
@@ -189,6 +260,9 @@ model.save_pretrained(save_dir)
 ```Python
 tok = AutoTokenizer.from_pretrained("./model_with_added_tokens_init")
 model = AutoModelForCausalLM.from_pretrained("./model_with_added_tokens_init")
+
+print(f"Reloaded model embedding size: {model.get_input_embeddings().weight.shape[0]}")
+print(f"Tokenizer vocab size: {len(tok)}")
 ```
 
 ---
@@ -198,20 +272,43 @@ model = AutoModelForCausalLM.from_pretrained("./model_with_added_tokens_init")
 ### 2.1 예제: AutoImageProcessor로 pixel_values 만들기
 
 ```python
+# %%
+import requests
 from transformers import AutoImageProcessor
 from PIL import Image
 
+# 1. 모델에 맞는 이미지 프로세서 로드
+# AutoImageProcessor는 모델 이름에 따라 적절한 전처리 설정(Resize, Normalize 등)을 자동으로 로드함.
 proc = AutoImageProcessor.from_pretrained("google/vit-base-patch16-224")
+print(f"Image Processor type: {type(proc)}")
+print(f"{proc.is_fast = }")  # 이미지 프로세서에는 일반적으로 is_fast 속성이 없음
 
+# 샘플 이미지 로드 (URL에서 스트리밍으로 읽어와 RGB로 변환)
 img_url = "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/cats.png"
 img = Image.open(requests.get(img_url, stream=True).raw).convert("RGB")
-# img = Image.open("cat.jpg").convert("RGB")
 
-batch = proc(images=[img], return_tensors="pt")
-print(batch.keys())
+# img = Image.open("cat.jpg").convert("RGB")
+print(f"Original image size: {img.size}")  # (width, height) 형태로 출력됨
+
+# %%
+# 2. 이미지를 모델 입력 데이터(Batch)로 변환
+# - images: 이미지 객체 리스트 전달
+# - return_tensors: "pt"(PyTorch) 텐서 형식으로 반환
+batch = proc(
+    images=[img], 
+    return_tensors="pt",
+    # return_tensors="np",
+    )
 # dict_keys(['pixel_values'])  (모델에 따라 추가 key가 있을 수 있음)
+
+for k in batch.keys():
+    print(f"{k}: {batch[k].shape}")
+# pixel_values: (1, 3, 224, 224) 같은 shape의
+
+print(f"{type(batch["pixel_values"]) = }")
 print(batch["pixel_values"].shape)
-# (1, 3, 224, 224) 같은 shape의 tensor객체임.
+# (1, 3, 224, 224) 같은 shape의 tensor객체임
+
 ```
 
 ImageProcessor는 
@@ -225,6 +322,7 @@ ImageProcessor는
 * `from_pretrained()`로 동일 설정을 복원
 
 ```python
+# %%
 save_dir = "./tmp_imgproc"
 proc.save_pretrained(save_dir)
 
@@ -267,8 +365,27 @@ CLIP은 "텍스트 인코더" + "이미지 인코더" 를 함께 쓰는 대표�
 * Pretraining: 대규모 데이터로 사전학습을 수행한 모델임.
 
 ```python
+# %%
 from transformers import AutoProcessor
+from PIL import Image
+import requests
 
+# 샘플 이미지 로드 (URL에서 스트리밍으로 읽어와 RGB로 변환)
+img_url = "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/cats.png"
+img = Image.open(requests.get(img_url, stream=True).raw).convert("RGB")
+print(f"Original image size: {img.size}")  # (width, height) 형태로 출력됨
+img.save("cat.jpg")
+# img = Image.open("cat.jpg").convert("RGB")
+
+# %%
+# 샘플 이미지 로드 (URL에서 스트리밍으로 읽어와 RGB로 변환)
+url = "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/transformers/model_doc/dog-sam.png"
+img = Image.open(requests.get(img_url, stream=True).raw).convert("RGB")
+print(f"Original image size: {img.size}")  # (width, height) 형태로 출력됨
+img.save("dog.jpg")
+# img = Image.open("dog.jpg").convert("RGB")
+
+# %%
 processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
 out = processor(
@@ -278,8 +395,29 @@ out = processor(
     padding=True,
 )
 
-print(out.keys())
+for k in out.keys():
+    print(f"{k}: {type(out[k]) = }{out[k].shape = }")
 # input_ids, attention_mask, pixel_values ... 같은 형태
+
+# %%
+# 3. 프로세서 저장 및 로드
+# processor는 tokenizer와 image_processor의 기능을 모두 포함함.
+# 저장 시 설정 파일들과 각 구성 요소(tokenizer, image_processor 등)의 정보가 함께 저장됨.
+save_dir = "./tmp_proc"
+processor.save_pretrained(save_dir)
+
+# 저장된 디렉토리에서 프로세서를 다시 로드함.
+processor2 = AutoProcessor.from_pretrained(save_dir)
+
+print(f"{type(processor2) = }")
+
+```
+
+결과는 다음과 같음:
+```text
+pixel_values: type(out[k]) = <class 'torch.Tensor'>out[k].shape = torch.Size([2, 3, 224, 224])
+input_ids: type(out[k]) = <class 'torch.Tensor'>out[k].shape = torch.Size([2, 7])
+attention_mask: type(out[k]) = <class 'torch.Tensor'>out[k].shape = torch.Size([2, 7])
 ```
 
 **주의사항**
@@ -326,21 +464,67 @@ print(out.keys())
 | `AutoProcessor`      | `processor_config.json`<br/>(없으면 `preprocessor_config.json` 또는 `config.json`) | `processor_class` / `auto_map` |
 
 * `AutoImageProcessor`는 `config.json`을 fallback으로 사용할 수 있음
-* `AutoProcessor`는 `processor_config.json`이 없으면 다른 config를 참고함
 * `AutoTokenizer`는 `tokenizer_config.json`도 보조로 참고함.
+* `AutoProcessor`는 `processor_config.json`이 없으면 다른 config를 참고함
 
-주의할 점은 다음과 같음:
-* HF의 transformers에서 기본적으로 제공하는 표준 모델들은 `model_type`의 값에 따라 내장된 매핑으로 클래스를 고름.
-* **Custom Class 들의 경우, `auto_map` 필드를 참고함.**
+> `AutoProcessor`는  
+> tokenizer, image processor 등을 직접 대체하는 단일 전처리 객체라기보다,
+> 이들을 하나로 묶어 제공하는 wrapper 성격의 객체임.
+> 예를 들어 CLIP의 경우
+> processor_config.json에는 processor_class: "CLIPProcessor"와 image_processor 설정만 저장되어 있음.  
+>
+> `processor_config.json` 안에 tokenizer 설정이 없더라도 문제가 되진 않음.  
+> `AutoProcessor`는  
+> 먼저 `processor_config.json`의 `processor_class` 값을 통해 `CLIPProcessor`를 선택하고,
+> 이후 선택된 `CLIPProcessor.from_pretrained()` 내부에서
+> tokenizer와 image processor를 각각 필요한 설정 파일로부터 로드하는 구조이기 때문임.  
+>
+> 따라서 CLIP에서 tokenizer 관련 설정은 `processor_config.json`이 아니라
+> tokenizer_config.json과 tokenizer.json을 통해 로드됨.
+> 반면 image processor 관련 설정은 현재 `processor_config.json` 내부의 image_processor 항목에 포함됨.
+>
+> 1. `AutoProcessor.from_pretrained(path)`를 호출함.
+> 2. `AutoProcessor`가 `processor_config.json`을 읽음.
+> 3. `processor_config.json`에서 `processor_class = "CLIPProcessor"` 를 확인함.
+> 4. `AutoProcessor`가 실제 processor class로 `CLIPProcessor`를 선택함.
+> 5. `AutoProcessor`가 `CLIPProcessor.from_pretrained(path)`를 호출함.
+> 6. `CLIPProcessor.from_pretrained()` 내부에서 필요한 하위 구성요소를 로드함.
+>    - image processor: `processor_config.json` 내부의 `image_processor` 설정을 바탕으로 `CLIPImageProcessor`를 구성함.
+>    - tokenizer: 같은 directory의 `tokenizer_config.json`과 `tokenizer.json`을 바탕으로 `CLIPTokenizer` 또는 `CLIPTokenizerFast`를 구성함.
+> 7. 최종적으로 다음 형태의 객체가 반환됨
+>    `CLIPProcessor(image_processor=CLIPImageProcessor(...),tokenizer=CLIPTokenizerFast(...) 또는 CLIPTokenizer(...))`
 
-`BERT` 의 경우 `model_type`가 `bert`로 되어 있으며, 이를 통해 다음이 결정됨:
+
+### 4.3 `AutoModel`의 class 선택 기준과 입력 구조
+
+`AutoModel` 또는 `AutoModelForXxx`는 
+
+* `config.json`을 읽고,
+* 해당 config에 맞는 실제 model class를 선택하여 로드함.
+
+이때 표준 모델과 custom model은 class를 선택하는 방식이 조금 차이가 있음
+
+HF Transformers에서 기본적으로 제공하는 **표준 모델** 들은 
+
+* `config.json`의 `model_type` 값을 기준으로
+* 내부 mapping을 통해 class를 고름.
+
+예를 들어 BERT의 경우 `config.json`에 `"model_type": "bert"`가 저장되어 있고, 이를 통해 다음 class들이 선택됨.
 
 * `AutoConfig` → `BertConfig`
 * `AutoModel` → `BertModel`
-* `AutoTokenizer` → `BertTokenizer` / `BertTokenizerFast`
+* `AutoTokenizer` → `BertTokenizer` 또는 `BertTokenizerFast`
 * `AutoModelForMaskedLM` → `BertForMaskedLM`
 
-Custom model 의 경우 `trsut_remote_code=True` 옵션을 사용하며, `config.json`에 다음의 정보가 있음:
+> 즉 `AutoModel` 계열은
+> class 이름을 직접 지정하지 않아도,
+> `config.json`의 metadata를 바탕으로 적절한 class를 선택함.
+
+반면 Transformers에 기본 등록되어 있지 않은  
+custom model, custom tokenizer, custom config를 사용하는 경우에는  
+`config.json`의 `auto_map` 필드를 참고함.  
+
+예를 들어 custom model의 `config.json`에는 다음과 같은 정보가 들어가야 함.
 
 ```json
 {
@@ -351,18 +535,89 @@ Custom model 의 경우 `trsut_remote_code=True` 옵션을 사용하며, `config
   }
 }
 ```
-* 해당 model은 `auto_map` 필드를 참고하여 관련된 클래스를 import 하게 됨.
 
-### 4.3 AutoModel은 어떤 입력을 기대하나
+* `AutoModel`, `AutoTokenizer`, `AutoConfig`는
+* Transformers 내부 mapping만으로 해당 class를 찾을 수 없기 때문에,
+* `auto_map`에 기록된 경로를 참고하여 필요한 class를 import함.
 
-* `AutoModel`(또는 `AutoModelForXxx`)은 config에 맞는 모델 클래스를 로드 
-* `forward(...)`에서 특정 입력 key(키)를 기대
-* 실무적으로는 
-	* AutoModel을 로드한 뒤, 
-	* 해당 모델에 맞는 `AutoTokenizer`/`AutoImageProcessor`/`AutoProcessor`를 같이 로드 하는 패턴이 일반적.
+또한 외부 repository의 Python code를 실행해야 하므로 일반적으로 `trust_remote_code=True` 옵션이 필요함.
+
+```python
+from transformers import AutoModel
+
+model = AutoModel.from_pretrained(
+    "repo_id_or_local_path",
+    trust_remote_code=True,
+)
+```
+
+다만 `AutoModel`이 model class를 자동으로 골라준다고 해서 입력 형식까지 임의로 맞춰 주는 것은 아님.  
+실제로 model이 어떤 입력 key를 받는지는 선택된 model class의 `forward(...)` 메서드가 결정함.
+
+예를 들어 text model은 보통 다음과 같은 입력 key를 기대함.
+
+```python
+input_ids
+attention_mask
+token_type_ids
+```
+
+image model은 보통 다음과 같은 입력 key를 기대함.
+
+```python
+pixel_values
+```
+
+multi-modal model은 text와 image 입력을 함께 받을 수 있음.
+
+```python
+input_ids
+attention_mask
+pixel_values
+```
+
+따라서 다시 한번 강조하지만,  
+model만 단독으로 로드하기보다, 해당 model에 맞는 전처리 객체를 같이 로드하는 패턴이 일반적임.
+
+* text model → `AutoTokenizer`
+* image model → `AutoImageProcessor`
+* multi-modal model → `AutoProcessor`
+
+이 전처리 객체들은 입력 text나 image를 model이 기대하는 tensor와 key 구조로 변환해 줌.  
+
+* 따라서 사용자가 직접 `input_ids`, `attention_mask`, `pixel_values`를 하나씩 구성하기보다,  
+* 해당 model과 함께 저장된 tokenizer, image processor, processor를 사용하는 것이 안전함.
+
+일반적인 사용 흐름은 다음과 같음.
+
+```python
+from transformers import AutoModel, AutoProcessor
+
+model = AutoModel.from_pretrained("repo_id_or_local_path")
+processor = AutoProcessor.from_pretrained("repo_id_or_local_path")
+
+inputs = processor(
+    text="a photo of a dog",
+    images=image,
+    return_tensors="pt",
+)
+
+outputs = model(**inputs)
+```
+
+* 여기서 `processor(...)`가 반환하는 dictionary의 key가 곧 model의 `forward(...)`에 전달되는 입력 key가 됨.
+* 즉 `AutoProcessor`는 model과 직접 연결된 학습 파라미터를 가지는 것은 아니지만, **model이 기대하는 입력 형식을 맞춰 주는 중요한 역할을 함.**
+
+### 전처리와 AutoClass 및 AutoModel 에서 반드시 기억할 내용
+
+다음을 반드시 기억할것
+
+* 표준 model은 `model_type` 값을 기준으로 Transformers 내부 mapping에서 class가 선택됨.
+* custom model은 `auto_map` 값을 기준으로 custom class가 import됨.
+* 실제 입력 key는 선택된 model class의 `forward(...)` 메서드가 결정함.
+* 입력 tensor와 key 구조는 해당 model에 맞는 `AutoTokenizer`, `AutoImageProcessor`, `AutoProcessor`를 사용하여 맞추는 것이 일반적임.
 
 ---
-
 
 ## 5. `ImageProcessingMixin`으로 Custom ImageProcessor 만들기
 
@@ -370,21 +625,21 @@ Custom model 의 경우 `trsut_remote_code=True` 옵션을 사용하며, `config
 
 다음 중 하나라도 해당되면 Custom ImageProcessor 가  필요.
 
-* **모델 입력 규격이 표준 전처리와 다름**: 예) 6채널, 특수 normalize, 의료영상 전용 windowing 등
+* **모델 입력 규격이 표준 전처리와 다름**:
+    * 예) 6채널, 특수한 normalize, 의료영상 전용 windowing 등이 필요한 경우.
 * 학습/추론 재현성을 위해 “전처리 설정”을 모델과 함께 배포해야 함
 	* ImageProcessor는 `save_pretrained()` 시 
 	* 설정을 `preprocessor_config.json`로 저장
 * Hub 배포 시 `AutoImageProcessor.from_pretrained()`로 자동 로드 기능 추가.
 
-
 ### 5.2 Custom ImageProcessor 최소 구현 골격
 
 핵심 포인트:
 
-* **`ImageProcessingMixin`**이 `save_pretrained()` / `from_pretrained()` 등 “저장-로드” 루틴을 제공
+* **`ImageProcessingMixin`**이 `save_pretrained()` / `from_pretrained()` 등 "저장-로드" 루틴을 제공
 * 이를 상속하여 해당 기능을 그대로 사용하면 됨.
 * 실질적인 전처리 로직은 `__call__`(또는 `preprocess`)에서 구현.
-* 주의할 점은 `to_dict()`로 직렬화 가능한 속성만 남겨야 `preprocessor_config.json`이 안정적으로 생성된다는 점임.
+* **주의할 점은 `to_dict()`로 직렬화 가능한 속성(attributes)**만 남겨야 `preprocessor_config.json`이 안정적으로 생성된다는 점임.
 
 아래 예제는 “Resize + Normalize + CHW 텐서”를 만들어 `pixel_values`를 반환.
 
@@ -674,23 +929,51 @@ print((out["pixel_values"] - out2["pixel_values"]).abs().max().item())
 * auto_map 필드를 만들어 주지 않았기 때문임.
 
 
-### 5.4 (선택) AutoImageProcessor로 로드되게 "배포"하는 관점
+### 5.4 Custom `AutoImageProcessor`를 AutoClass로 로드되게 만드는 방법
 
-**AutoClass** 는 
+Transformers가 기본 제공하는 standard image processor의 경우, 
 
-* 저장된 메타데이터 를 보고 
-* 적절한 클래스를 고름.
+* 저장된 `preprocessor_config.json`의
+* `image_processor_type` 등의 metadata를 기반으로
+* `AutoImageProcessor`가 내부 mapping에서 적절한 class를 선택하여 로드함.
 
-Custom Class 까지 자동으로 로드하려면 보통 다음 중 하나를 이용함:
+> 반면,
+> **custom image processor** 를 `AutoImageProcessor.from_pretrained(...)`으로 로드되게 하려면,
+> AutoClass 연동 정보를 별도로 설정해줘야 함.
 
-* (권장) Custom Class 에 대해 AutoClass 연동 정보를 저장(예: `register_for_auto_class` / `auto_map` 계열)
-* 또는 패키지 형태로 배포하여 import 가능하게 만든 뒤 AutoClass에 등록
-* 이 경우 지정한 디렉토리에 JSON 파일 외에도 관련 모듈 python 파일도 저장됨.
+이를 위한 Custom class의 AutoClass 연동 방식은 크게 두 가지로 구분됨:
 
-AutoClass 확장 개념 자체는 다음 등과 동일한 방식을 채택하고 있음: 
+* **`AutoImageProcessor.register(...)`**
+    * 현재 Python session의 AutoClass mapping에 custom class를 직접 등록하는 방식임.    
+    * 이미 해당 custom class를 `import`할 수 있는 local code 환경에서 사용되는 방식임.
+* **`register_for_auto_class("AutoImageProcessor")`**
+    * 저장 및 배포 시, `config`(정확히는 `preprocessor_config.json`)에 `auto_map` entry를 남기기 위한 방식임.
+    * `save_pretrained()` 또는 `push_to_hub()`와 함께 사용되며, custom class가 정의된 Python file도 설정 json파일들과 함께 저장됨.    
+    * 이 저장된 코드를 로드하여 사용해야하므로, 다시 로드할 때는 보통 `trust_remote_code=True` 옵션을 사용해야 함.
 
-* `AutoConfig.register` 
-* `AutoModel.register`
+정리하면, 
+* `register(...)`는 현재 실행 환경 내에서의 runtime 등록이고,
+* `register_for_auto_class(...)`는 저장/배포 후 다른 환경에서 AutoClass를 통해 로드하기 위한 등록임.
+
+배포 가능한 custom image processor 저장 directory에는 보통 다음 항목들이 함께 포함되어야 함.
+
+* `preprocessor_config.json` : image processor 설정 및 `auto_map` 정보를 포함하는 JSON file
+* custom image processor class가 정의된 Python file (e.g., `image_processing_custom.py`)
+
+로드는 다음처럼 수행함:
+
+```python
+from transformers import AutoImageProcessor
+
+image_processor = AutoImageProcessor.from_pretrained(
+    "repo_id_or_local_path",
+    trust_remote_code=True,
+)
+```
+
+결론적으로, 
+* standard class는 `image_processor_type` 등의 metadata와 Transformers 내부 mapping으로 자동 선택되고,
+* custom class는 `register_for_auto_class(...)`를 통해 저장된 `auto_map` 정보에 의해 로드되는 구조임.
 
 ---
 
