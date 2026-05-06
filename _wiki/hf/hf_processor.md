@@ -99,28 +99,95 @@ Tokenizer는
 
 ### 1.2 저장/로드: tokenizer 아티팩트
 
-Tokenizer를 저장하면 보통 출력 디렉토리에 
+Tokenizer를 저장하면 출력 디렉토리에 tokenizer를 다시 복원하는 데 필요한 파일들이 생성됨.
+
+일반적으로 다음과 같은 파일들이 포함될 수 있음:
 
 * `tokenizer_config.json`, 
-* `special_tokens_map.json`, 
-* **vocab** 파일 등이 생성 
-	* Transformer 5.x에선 `tokenizer.json` 이 vocabrary 정보를 같이 가지는 형태를 취함 
-	* `vocab.txt` 는 `.save_pretrained()`로 생성되지 않음 (transformer 5.x기준)
-* 이는 모델/토크나이저 종류에 따라 구성은 다름.
+* `special_tokens_map.json`,
+* `tokenizer.json`
+* vocabulary 관련 파일
+	* `vocab.txt`
+ 	* `vocab.json`
+	* `merges.txt`
+	* SentencePiece `.model`
+
+다만 실제 생성 파일은 tokenizer 종류에 따라 다름.  
+
+* Transformers 5.x에서는 fast tokenizer와 `tokenizers` backend의 비중이 커짐.
+* 이와 관련된 `tokenizer.json`이 핵심 serialization 파일로 사용되는 경우가 많아짐.
+* 그러나 모든 tokenizer가 항상 같은 파일 구성을 가지는 것은 아니므로, 특정 파일의 생성 여부를 일반화하기 어려움.
+	* 예를 들어 BERT 계열은 `vocab.txt`가 중요하며,
+	* BPE 계열은 `vocab.json`, `merges.txt`가 쓰이는 경우가 많으며,
+	* fast tokenizer에서는 `tokenizer.json`이 핵심 serialization 파일로 사용되는 경우가 많음.
+
+> Transformers 5.x에서는 tokenizer 구현이 tokenizers 기반의 fast tokenizer 쪽으로 정리되면서,
+> `tokenizer.json`이 tokenizer의 핵심 직렬화(serialization) 파일로 더 중요해짐.
+> `tokenizer.json` 파일은 vocabulary, normalizer, pre-tokenizer, post-processor, decoder 등의 정보를 함께 담을 수 있음.
 
 ```python
 save_dir = "./tmp_tok"
+
+# tokenizer의 설정, special token 정보, vocabulary 관련 파일 등을 저장함.
 tok.save_pretrained(save_dir)
 
+# 저장된 디렉토리에서 tokenizer를 다시 로드함.
 tok2 = AutoTokenizer.from_pretrained(save_dir)
-print(type(tok2), tok2.vocab_size)
+
+print(f"{type(tok2)      = }")
+print(f"{tok2.vocab_size = }")
 ```
 
 ### 1.3 주의사항
 
 * `padding=True`는 배치 텐서화를 위해 사실상 필수 (batch내에 가장 긴 샘플에 맞추어짐.)
-* `truncation=True`는 최대 길이 초과 시 안전장치
-* 특수 토큰 추가 후에는 `save_pretrained()`로 결과를 고정해두는 습관이 필요함
+* `truncation=True`는 최대 길이 초과 시 안전장치 (model의 최대 context length 제한을 넘지 않도록)
+* 특수 토큰 추가 후에는 `save_pretrained()`로 결과를 고정해두는 습관이 필요함.
+	* 특수 토큰 추가는 단순 문자열 추가가 아니라
+	* token string과 token ID의 mapping, special token map, added vocabulary를 바꾸는 작업임.
+	* 때문에 저장하지 않으면 나중에 tokenizer를 다시 로드했을 때
+	* 추가한 token이 사라지거나 ID mapping이 달라져, 학습 시점과 추론 시점의 입력 표현이 달라질 수 있음.
+	* 새 token을 추가한 뒤 model의 embedding matrix 의 row의 크기를 거기에 맞추어줘야 함: `model.resize_token_embeddings(len(tok))`
+
+> 길이가 다른 여러 문장을 하나의 batch tensor로 만들려면 padding이 필요함.
+> `padding=True` 또는 `padding="longest"`를 사용하면
+> batch 안에서 가장 긴 sequence 길이에 맞추어 padding이 적용됨.
+> 단, `DataCollatorWithPadding`을 사용하는 경우에는
+>
+> * tokenizer 호출 시점이 아니라
+> * collator 단계에서 동적 padding(dynamic padding)을 수행할 수도 있음.
+
+특수 토큰을 추가하고 그 token을 model 입력에 사용할 예정이라면 다음의 처리를 수행:
+
+```Python
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+base_model = "..."
+
+tok = AutoTokenizer.from_pretrained(base_model)
+model = AutoModelForCausalLM.from_pretrained(base_model)
+
+# 1. tokenizer에 새 special token 추가
+num_added = tok.add_special_tokens({
+    "additional_special_tokens": ["<image>", "<bbox>", "<ocr>"]
+})
+
+# 2. 새 token이 실제로 추가된 경우에만 embedding 크기 조정
+if num_added > 0:
+    model.resize_token_embeddings(len(tok))
+
+# 3. 학습 전 초기 상태 저장
+save_dir = "./model_with_added_tokens_init"
+tok.save_pretrained(save_dir)
+model.save_pretrained(save_dir)
+```
+
+이후 다음과 같이 저장된 디렉토리에서 다시 시작하면 됨:
+
+```Python
+tok = AutoTokenizer.from_pretrained("./model_with_added_tokens_init")
+model = AutoModelForCausalLM.from_pretrained("./model_with_added_tokens_init")
+```
 
 ---
 
