@@ -32,6 +32,8 @@ tokenization을 단순한 전처리 단계로 오인되기도하지만, 실제�
 * Word tokenization은 data sparsity와 OOV (Out Of Vocabulary) 문제가 심각함.
 * 적절한 vocabulary 크기(30K-50K)로 의미 단위를 보존하면서 OOV를 구조적으로 해결하는 subword가 최적의 균형점임.
 
+> **데이터 희소성(Data Sparsity)** 이란, 모델이 다루는 특징 공간(feature space)의 크기에 비해 실제 학습 데이터에서 관측된 사례(instance)가 지극히 적어, 대부분의 특징 조합(feature combination)이 0이거나 통계적으로 신뢰할 수 없을 만큼 낮은 빈도를 가지는 현상을 가리킴.
+
 ### Q2: Vocabulary 크기는 왜 중요할까?
 
 * Vocabulary 크기 $\|V\|$ 는 embedding matrix의 크기( $\|V\| \times d$ )에 직접적으로 영향을 줌.
