@@ -505,27 +505,16 @@ Subword tokenization은 character와 word 사이의 최적의 균형점을 찾�
 ### 7.3 Subword Tokenization의 장점
 
 1. OOV 문제 해결
-
-모든 단어를 기본 단위(character/byte)로 분해 가능
-
-이는 이론적으로 OOV 제거를 의미.
-
+	* 모든 단어를 기본 단위(character/byte)로 분해 가능
+	* 이는 이론적으로 OOV 제거를 의미.
 2. Vocabulary 크기 제어
-
 	* Character: ~100개 (너무 작음)
 	* Word: ~1,000,000개 (너무 큼)
 	* Subword: ~30,000-50,000개 (적절)
-
 3. 의미 단위 부분 보존
-
-```
-"unhappiness"
-→ ['un', '##happiness']
-→ 부정 접두사와 핵심 의미 분리
-```
-
+	* `"unhappiness"` → `['un', '##happiness']`
+	* 앞서 예에서 보이듯이 부정 접두사와 핵심 의미 분리가 가능함.
 4. Sequence length 적절
-
 	* Character 대비: 5-10배 짧음
 	* Word 대비: 1.5-2배 길지만 OOV 없음
 
@@ -557,7 +546,6 @@ BPE와 유사한 방식이나 빈도(frequency)가 아닌 Language model likelih
 * Google에서 개발
 * BERT, DistilBERT 등에서 사용
 
-
 **BPE와의 차이:**
 
 * BPE: 빈도 기반 병합
@@ -567,12 +555,10 @@ BPE와 유사한 방식이나 빈도(frequency)가 아닌 Language model likelih
 
 가장 높은 score를 갖는 symbol pair를 병합함.
 
-\[
-\text{score}(a,b) = \frac{\text{freq}(a,b)}{\text{freq}(a) \times \text{freq}(b)}
-\]
+$$\text{score}(a,b) = \frac{\text{freq}(a,b)}{\text{freq}(a) \times \text{freq}(b)}$$
 
-- 분자 \(\text{freq}(a,b)\)는 두 symbol이 함께 등장한 빈도를 의미함.
-- 분모 \(\text{freq}(a) \times \text{freq}(b)\)는 각 symbol이 개별적으로 얼마나 자주 등장하는지를 보정함.
+- 분자 $\text{freq}(a,b)$는 두 symbol이 함께 등장한 빈도를 의미함.
+- 분모 $\text{freq}(a) \times \text{freq}(b)$는 각 symbol이 개별적으로 얼마나 자주 등장하는지를 보정함.
 - 따라서 단순히 자주 등장하는 pair가 아니라, **각 symbol의 개별 빈도에 비해 함께 등장하는 경향이 강한 pair**가 우선적으로 병합됨.
 
 WordPiece는 단순 빈도만 보지 않고, 두 symbol의 개별 빈도를 분모로 보정하여 “개별적으로 흔한 symbol끼리 우연히 자주 붙은 경우”보다 “서로 결합성이 강한 pair”를 우선 병합함.
