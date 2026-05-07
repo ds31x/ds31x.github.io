@@ -18,9 +18,13 @@ latex   : true
 
 ## Intro.
 
-Tokenization은 자연어 처리(NLP)에서 텍스트를 모델이 처리 가능한 토큰(token)의 시퀀스로 변환하는 과정.
+Tokenization은 자연어 처리(NLP)에서 텍스트를 모델이 처리 가능한 토큰(token)의 시퀀스(sequence)로 변환하는 과정.
 
-tokenization을 단순한 전처리 단계로 오인되기도하지만, 실제로는 이후 기계학습 모델의 비용 구조, 연산 복잡도, 학습 난이도, 표현력 전반에 매우 큰 영향을 주는 핵심 단계임.
+tokenization을 단순한 전처리 단계로 오인되기도하지만, 실제로는 
+
+* 이후 기계학습 모델의 비용 구조,
+* 연산 복잡도, 학습 난이도,
+* 표현력 전반에 매우 큰 영향을 주는 매우 중요한 단계임.
 
 일반적인 token과 tokenizer에 대한 간단한 내용은 다음의 url을 참고:  
 
@@ -32,11 +36,13 @@ tokenization을 단순한 전처리 단계로 오인되기도하지만, 실제�
 * Word tokenization은 data sparsity와 OOV (Out Of Vocabulary) 문제가 심각함.
 * 적절한 vocabulary 크기(30K-50K)로 의미 단위를 보존하면서 OOV를 구조적으로 해결하는 subword가 최적의 균형점임.
 
-> **데이터 희소성(Data Sparsity)** 이란, 모델이 다루는 특징 공간(feature space)의 크기에 비해 실제 학습 데이터에서 관측된 사례(instance)가 지극히 적어, 대부분의 특징 조합(feature combination)이 0이거나 통계적으로 신뢰할 수 없을 만큼 낮은 빈도를 가지는 현상을 가리킴.
+> **데이터 희소성(Data Sparsity)** 이란,
+> 모델이 다루는 특징 공간(feature space)의 크기에 비해 실제 학습 데이터에서 관측된 사례(instance)가 지극히 적어,
+> 대부분의 특징 조합(feature combination)이 0이거나 통계적으로 신뢰할 수 없을 만큼 낮은 빈도를 가지는 현상을 가리킴.
 
 ### Q2: Vocabulary 크기는 왜 중요할까?
 
-* Vocabulary 크기 $\|V\|$ 는 embedding matrix의 크기( $\|V\| \times d$ )에 직접적으로 영향을 줌.
+* Vocabulary 크기(cardinality of vacabulary) $\|V\|$ 는 embedding matrix의 크기( $\|V\| \times d$ )에 직접적으로 영향을 줌.
 * 이 크기는 결국 전체 모델의 파라미터 수와 메모리 사용량에 큰 영향을 미침. 
 * vocabulary 크기는 tokenization 방식(character/word/subword)의 선택, OOV 처리 능력, 그리고 sequence length 간의 trade-off를 반영하여 결정.
 
@@ -78,6 +84,11 @@ output (예측 결과)
 
 * 토큰 ID를 연속 벡터 공간의 벡터(이를 dense vector라고 부름)로 매핑
 * 예: `5432 → [0.23, -0.45, 0.67, ...]`
+
+> Embedding 에 대한 보다 자세한 내용은 다음을 참고할 것:
+>
+> * [Embedding이란?](https://dsaint31.tistory.com/821)
+> * [Embedding의 수학적 정의 및 Embedding Layer](https://dsaint31.tistory.com/820)
 
 ## 2. Vocabulary와 Embedding Matrix의 정의
 
