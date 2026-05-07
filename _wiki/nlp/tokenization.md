@@ -571,7 +571,19 @@ WordPiece는 단순 빈도만 보지 않고, 두 symbol의 개별 빈도를 분�
 
 ### 8.3 Unigram LM (2018)
 
-Unigram LM은 가능한 여러 subword 분해 후보에 확률을 부여하고, 전체 확률이 가장 높은 조합을 선택하는 확률 기반 subword tokenization 방식임.
+Unigram LM(Unigram Language Model)은 
+
+* 가능한 여러 subword 분해 후보에 대한 확률을 계산하고,
+* 전체 확률이 가장 높은 조합을 선택하는 확률 기반 subword tokenization 방식임.*
+* T5, ALBERT 등에서 사용
+
+> **n-gram:** 연속된 n개의 token을 하나의 묶음으로 취급하는 일종의 단위임.
+>
+> **Unigram:** n-gram에서 n=1인 경우. 즉, 개별 token 하나를 가리킴.
+>
+> **Unigram LM:**
+> * unigram(개별 token)만을 단위로 사용하는 언어 모델.
+> * 개별 token의 확률만 다루므로, 결과적으로 각 token이 독립이라는 가정이 됨
 
 * Kudo (2018)
 * SentencePiece의 기본 알고리즘
@@ -585,56 +597,57 @@ Unigram LM은 가능한 여러 subword 분해 후보에 확률을 부여하고, 
 
 **동작 원리:**
 
-* corpus에서 추출한 많은 수의 candidate subword 집합으로 시작
-* 각 subword의 발생 확률을 추정
-* corpus likelihood 기여도가 낮은 subword를 제거(pruning)
+* corpus에서 Suffix Array를 이용하여 자주 반복 등장하는 substring을 대량 추출하고,
+* 여기에 모든 개별 문자를 합쳐 목표 vocabulary 크기의 2~10배에 해당하는 과잉 후보 집합(seed vocabulary)을 구축하여 시작
+* EM 알고리즘으로 각 subword의 확률 $p(x_i)$를 추정
+	* 모든 분할 방식을 확률 비중에 따라 고려하여 기대 빈도를 계산하고,
+    * 이를 정규화하여 확률을 갱신하는 과정을 수렴할 때까지 반복
+* corpus likelihood 기여도가 낮은 subword를 제거(**pruning**)
 * 목표 vocabulary 크기에 도달할 때까지 반복
 
 참고로 Unigram LM 에서의  초기 vocabulary는 보통
 
 * 문자(character)
 * 자주 등장하는 문자 n-gram
-* substring candidate
 
-등으로 구성된 비교적 큰 후보 집합을 의미함하.
+Unigram LM의 핵심은 
 
-Unigram LM의 핵심은 “처음부터 확정된 vocabulary”가 아니라 과잉 생성된 candidate set에서 불필요한 token을 제거해가는 방식이라는 점임.
+* "처음부터 확정된 vocabulary"가 아니라 과잉 생성된 candidate set에서 불필요한 token을 제거해가는 방식이라는 점임.
+* BPE/WordPiece와 달리 확률 분포를 가지므로, 학습 시 다양한 분할을 샘플링하여 regularization 효과를 얻을 수 있다는 점(subword regularization)도 차별점임.
 
-**장점:**
-
-* 여러 가능한 분해 중 확률이 가장 높은 것 선택
-* Tokenization의 다양성 허용: 확률이 높은 것을 고르는게 아닌 확률에 따른 sampling 처리가 가능.
-	* 이같은 sampling으로 처리시 같은 Text도 다르게 tokenization이 될 수 잇음.
-	* Tokenizer를 훈련시킬 때, training regularization으로 사용함. 
-* T5, ALBERT 등에서 사용
-
-> 공백 기준 단어 분리가 어려운 언어에서는 Unigram LM이 BPE보다 segmentation flexibility 측면에서 유리한 경우가 많음.  
-> (하지만 최신 LLM 등에선 Byte-level BPE가 좀 더 우세한 편인 듯하나 Google/T5/Gemma 계열이나 번역 모델에서는 SentencePiece도 여전히 널리 사용됨.)
+> 최신 LLM에서는 Byte-level BPE(BBPE)가 단순성, 속도, 안정성 면에서 주류로 사용되고 있음.
+> Unigram LM의 고유한 장점은 확률 분포 기반이므로
+> 학습 시 다양한 분할을 샘플링할 수 있다는 점(subword regularization)이며,
+> 이것이 BPE의 결정론적 분할과의 근본적 차이임
 >
-> * 이때문에 공백으로 단어 분리가 어려운 영어 외의 언어(한국어,일본어,중국어 등)에서 사용됨.
-> 
-> 다만 실제 성능은 언어, corpus, vocabulary size, downstream task에 따라 달라짐.
-> BPE는 단순성, 속도, 안정성 면에서 여전히 강점이 큼.
+> SentencePiece는 Unigram LM과 BPE를 모두 지원하는 라이브러리이며,
+> * T5/XLNet 등은 SentencePiece + Unigram을,
+> * Gemma/Gemini 등은 SentencePiece + BBPE를 사용함.
+>
+> 공백 없는 언어(한국어, 일본어, 중국어 등)의 처리는
+> SentencePiece 라이브러리 자체의 특성(raw text 직접 처리)이며,
+> Unigram LM 알고리즘 고유의 장점은 아님 (SentencePiece + BBPE도 동일하게 처리 가능).
 
 ### 8.4 SentencePiece (2018)
 
 **참고:**
 
 > SentencePiece는 tokenization 단일 알고리즘이 아니라 프레임워크.
+> **최대 장점은 pretokenizer 없이 raw text에서 시작할 수 있다는 특징** 임.
 
 * Kudo & Richardson (2018)
 * Google에서 개발
 
 **핵심 특징:**
 
-* 언어 독립적: 공백을 포함한 raw text에서 직접 학습
+* **언어 독립적: 공백을 포함한 raw text에서 직접 학습 (SentencePeice의 특징)**
 * Pre-tokenizer 불필요: 언어별 규칙 없이 동작
 * 알고리즘 선택 가능: BPE 또는 Unigram LM 지원
 
 **Tokenization 분류상 위치:**
 
 - Tokenization 단위: Subword
-- 알고리즘: BPE 또는 Unigram LM
+- 알고리즘: BPE (BBPE도 사용가능) 또는 Unigram LM
 - 도구/프레임워크: SentencePiece
 
 > SKTBrain의 KoBERT가 Unigram LM기반의 SentencePiece를 사용함.  
