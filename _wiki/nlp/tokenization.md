@@ -670,7 +670,7 @@ Tokenization algorithm 비교는 다음과 같음.
 | BPE | Character | 빈도 기반 병합 | 결정적 | GPT 초기 계열, 일부 MT |
 | WordPiece | Character | likelihood 기반 병합 | 결정적 | BERT, DistilBERT, mBERT |
 | Unigram LM | Character / Subword candidate | 확률 기반 pruning | 일반적으로 결정적. <br/> sampling 사용 시 확률적 | T5, ALBERT, XLNet |
-| Byte-level BPE | Byte | 빈도 기반 병합 | 결정적 | GPT-2, RoBERTa, GPT-3 계열 |
+| Byte-level BPE | Byte | 빈도 기반 병합 | 결정적 | GPT-2, RoBERTa, <br/> GPT-3 계열 |
 
 ## 10. References
 
