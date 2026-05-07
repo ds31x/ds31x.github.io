@@ -277,13 +277,15 @@ Decoder 출력: "<extra_id_0> for inviting <extra_id_1> last <extra_id_2>"
 
 **5가지 손상 유형**:
 
-| 손상 유형 | 설명 | 예시 |
-|----------|------|------|
-| **Token Masking** | 무작위 토큰을 `[MASK]`로 치환 | "I `[MASK]` pizza" |
-| **Token Deletion** | 무작위 토큰 삭제 | "I pizza" (love 삭제) |
-| **Text Infilling** | 연속 토큰을 단일 `[MASK]`로 치환 | "I `[MASK]` pizza" |
-| **Sentence Permutation** | 문장 순서 섞기 | [Sent3, Sent1, Sent2] |
-| **Document Rotation** | 임의 토큰에서 시작하도록 회전 | "pizza. I love" |
+
+| 손상 유형                | 설명                               | 예시                                                          |
+| -------------------- | -------------------------------- | ----------------------------------------------------------- |
+| **Token Masking**        | 무작위 개별 token을 `[MASK]`로 치환       | `I love pizza` → `I [MASK] pizza`                           |
+| **Token Deletion**       | 무작위 token 삭제                     | `I love pizza` → `I pizza`                                  |
+| **Text Infilling**       | 연속된 token span을 하나의 `[MASK]`로 치환 | `I really love eating pizza` → `I [MASK] pizza`             |
+| **Sentence Permutation** | 문장 순서 섞기                         | `[Sent1, Sent2, Sent3]` → `[Sent3, Sent1, Sent2]`           |
+| **Document Rotation**    | 임의 위치에서 시작하도록 문서 회전              | `I love pizza. It is tasty.` → `pizza. It is tasty. I love` |
+
 
 **실제 설정**:
 
