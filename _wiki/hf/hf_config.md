@@ -3,7 +3,7 @@ layout  : wiki
 title   : HF PretrainedConfig
 summary : Hugging Face PretrainedConfig의 구조, 주요 기능, 텍스트/이미지 모델 설정 및 AutoClass 등록 튜토리얼
 date    : 2026-02-11 22:56:59 +0900
-updated : 2026-04-16 00:00:00 +0900
+updated : 2026-05-13 22:13:20 +0900
 tag     : huggingface transformers pytorch deep-learning nlp computer-vision config pretrained-model
 resource: 31/709D1251394DFBA0DBF7E440BE0A97
 toc     : true
@@ -589,4 +589,8 @@ print(f"업로드 완료: https://huggingface.co/{REPO_ID}")
 * 주의할 점은 PretrainedConfig가 관리하는 공통 속성들은 나중에 직접 대입하기보다 super().__init__(...)으로 넘겨 초기화하는 편이 안전함.
 
 보통 `config`는 "구조", `processor`는 "입력 규격" 을 결정.
+
+## 같이 보면 좋은 자료들
+
+* [[/hf/hf_config_ex.md]]
 

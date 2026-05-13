@@ -3,7 +3,7 @@ layout  : wiki
 title   : HF-Processor
 summary : 전처리를 수행하는 Processor를 설명. Tokenizer와 ImageProcessor 도 같이 다룸.
 date    : 2026-02-12 13:59:26 +0900
-updated : 2026-02-19 12:48:11 +0900
+updated : 2026-05-13 21:53:44 +0900
 tag     : hf
 resource: 87/038A66A07D49FF9052E19D71612C98
 toc     : true
@@ -51,7 +51,12 @@ latex   : false
 * 그래서 `ProcessorMixin` 기반의 **단일 객체**가 내부적으로 다음을 가짐:
   * Tokenizer
   * ImageProcessor (또는 feature extractor)
-* 이를 통해 한 번 호출로 `input_ids` + `pixel_values` 등을 동시에 만들어 모델에 전달
+* 이를 통해 한 번 호출로 `input_ids` + `pixel_values` 등을 동시에 만들어 모델에 전달.
+
+> [[/hf/ProcessorMixin]]은  
+> 
+> * custom processor가 `save_pretrained()`와 `from_pretrained()` 기반의 
+> Hugging Face식 저장·로드 구조를 따르도록 해주는 ***mixin*** class임
 
 ### 0.4 “Processor로 추상화 가능한가?”에 대한 명확한 기준
 

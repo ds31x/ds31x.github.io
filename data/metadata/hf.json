@@ -12,6 +12,7 @@
   "hf_label_align",
   "hf/hf_auto",
   "hf/hf_config",
+  "hf/hf_config_ex",
   "hf/hf_model",
   "hf/hf_processor",
   "hf/hf_start",
