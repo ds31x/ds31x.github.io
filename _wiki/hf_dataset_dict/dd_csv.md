@@ -131,9 +131,14 @@ print(dd["train"].features)
 
 ## 2-4. DatasetDict 객체의 filter와 map 사용법
 
-`DatasetDict(데이터셋딕트)`는 `"train"`, `"validation"` 등의 split을 키로 가지며, 각 값이 `Dataset(데이터셋)` 객체인 구조임.
+`DatasetDict`는 `"train"`, `"validation"` 등의 split을 키로 가지며,  
+각 값이 `Dataset` 객체인 구조임.
 
-CSV 기반 데이터셋을 학습에 사용하기 위해서는 이 구조 위에서 `filter`와 `map` 연산을 통해 전처리를 수행하는 것이 기본 흐름임.
+CSV 기반 데이터셋을 학습에 사용하기 위해서는 이들 객체가 지원하는 
+
+* `filter`와
+* `map` 메서드를 통해
+* 전처리를 수행하는 것이 기본 흐름임.
 
 ### 2-4-1. filter의 역할과 사용법
 
@@ -227,8 +232,9 @@ dd_tok = dd_filtered.map(
 
 ### 2-4-4. remove_columns 사용법
 
-학습 단계에서 `"text"` 원문 컬럼을 사용하지 않는 경우, 
-`remove_columns` 메서들로 특정 컬럼들을 제거 할 수 있음.
+학습 단계에서 `"text"` 원문 컬럼을 사용하지 않는 경우,  
+**`remove_columns` 메서드** 로 특정 column들을 제거 할 수 있음.  
+
 이는 데이터 크기를 줄여줌.
 
 ```python
