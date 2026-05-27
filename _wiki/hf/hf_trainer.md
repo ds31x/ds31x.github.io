@@ -131,6 +131,20 @@ training_args = TrainingArguments(
     save_strategy    = "epoch",
     load_best_model_at_end = True
 )
+
+from transformers import TrainingArguments
+
+training_args = TrainingArguments(
+    output_dir="./results",         # 학습 결과물, checkpoint, log 등이 저장될 directory 지정.
+    eval_strategy="epoch",          # evaluation을 언제 수행할지 지정. 여기서는 매 epoch마다 평가 수행.
+    learning_rate=2e-5,             # optimizer가 parameter를 업데이트할 때 사용할 learning rate 지정.
+    per_device_train_batch_size=16, # 각 device(GPU/CPU)당 training에 사용할 batch size 지정.
+    per_device_eval_batch_size=16,  # 각 device(GPU/CPU)당 evaluation에 사용할 batch size 지정.
+    num_train_epochs=3,             # 전체 training dataset을 몇 번 반복해서 학습할지 지정.
+    weight_decay=0.01,              # overfitting을 줄이기 위한 L2 regularization 계수 지정.
+    save_strategy="epoch",          # model checkpoint를 언제 저장할지 지정. 여기서는 매 epoch마다 저장.
+    load_best_model_at_end=True,    # 학습 종료 후 evaluation 기준으로 가장 좋은 checkpoint를 model에 load.
+)
 ```
 
 이후 다룰 학습 재개 기능을 제대로 사용하기 위해 중요한 것은 다음과 같음:
@@ -140,9 +154,12 @@ training_args = TrainingArguments(
 * `save_strategy`
 * `load_best_model_at_end`
 
+> `load_best_model_at_end=True`를 쓰려면 보통 `eval_strategy`와 `save_strategy`가 서로 호환되어야 함.
+> 여기서는 둘 다 같은 `"epoch"`를 사용하여 적절히 설정.
+
 ## 2-6. metric 정의
 
-Trainer에서 compute_metrics()는 딕셔너리 형태로 여러 metric을 동시에 반환할 수 있음.
+Trainer에서 `compute_metrics()`는 딕셔너리(`dict`) 형태로 여러 metric을 동시에 반환할 수 있음.
 
 * `compute_metrics()`는 `dict` 객체를 반환함.
 * 적절한 key들로 metrics를 넘겨주면 됨.
@@ -188,7 +205,19 @@ def compute_metrics(eval_pred):
     }
 ```
 
-뒤에 다룰 `TrainingArguments`에서 `metric_for_best_model` 을 `"eval_f1"` 으로 설정할 경우, F-1 score로 best checkpoint가 선택됨.
+앞서 다룬 `TrainingArguments`에서 
+
+* `metric_for_best_model` 을 `"eval_f1"` 으로 설정할 경우,
+* F-1 score로 best checkpoint가 선택됨.
+* 지정하지 않으면(`metric_for_best_model=None`)
+* 기본적으로 `eval_loss` 기준으로 best checkpoint가 선택됨.
+
+`metric_for_best_model`와 관련된 기본 설정은 다음이라고 보면 됨.
+
+```
+metric_for_best_model="eval_loss"
+greater_is_better=False
+```
 
 > imbalanced class 인 경우엔, macro average가 보다 선호됨.
 
@@ -200,10 +229,30 @@ from transformers import Trainer
 trainer = Trainer(
     model = model,
     args  = training_args,
-    train_dataset   = tokenized_datasets["train"],
-    eval_dataset    = tokenized_datasets["test"],
-    tokenizer = tokenizer, # 모델 저장 시 함께 저장 & 배치 생성 시 패딩(DataCollator)에 사용됨
+    train_dataset = tokenized_datasets["train"],
+    eval_dataset  = tokenized_datasets["test"],
+    tokenizer = tokenizer, # 구버전 방식: 저장 및 padding 처리에 사용됨.
+                           # 최신 버전에서는 processing_class 사용 권장.
     compute_metrics = compute_metrics
+)
+```
+
+전통적으로는 Trainer에 `tokenize`r를 넘겨서 다음 용도로 사용함:
+
+* `trainer.save_model()` 또는 학습 종료 시 model 저장과 함께 `tokenizer` 저장
+* padding이 필요한 batch 생성 시 data collator가 tokenizer의 pad token 정보를 참고
+* `model`, `tokenizer`, `config`를 같은 directory에 저장해서 나중에 `from_pretrained()`로 다시 load 가능하게 함
+
+최신 코드 스타일은 다음과 같음:
+
+```
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=tokenized_datasets["train"],
+    eval_dataset=tokenized_datasets["test"],
+    processing_class=tokenizer,
+    compute_metrics=compute_metrics,
 )
 ```
 
@@ -240,7 +289,7 @@ trainer.save_model("./final_model")
 # 3. Colab에서 중단된 학습 이어가기
 
 앞서 다룬 기본 사용법만으로도 Trainer의 가치는 충분하지만,  
-Colab 등을 사용하는 개인 연구자의 경우 중단된 학습 이어가는 기능이야말로 정말 유용하다.
+Colab 등을 사용하는 개인 연구자의 경우 중단된 학습 이어가는 기능이야말로 정말 유용함.
 
 
 ## 3-1. 학습 재개 기능의 중요성.
@@ -451,7 +500,7 @@ learning curve를 이어갈 수 있음.
 Stage2에서 backbone을 열어 학습하는 구조에서
 가장 많이 헷갈리는 부분이 **AdamW의 state 동작**임.
 
-> HF의 Trainer의 기본 optimizer는 AdamW임.    
+> HF의 Trainer의 기본 optimizer는 `AdamW`임.    
 > 이에 대해 보다 자세한 내용은 다음을 참고[Adaptive Moment Estimation with Weight decay (AdamW)](https://dsaint31.me/mkdocs_site/ML/ch09/op_adamw/)
 
 여기서 정확히 정리해야 할 것은 세 가지임.
